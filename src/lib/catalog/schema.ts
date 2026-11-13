@@ -4,6 +4,14 @@ const text = z.string().trim().min(1);
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const reference = z.string().regex(/^[a-z0-9-]+\.[a-z0-9-]+$/);
 
+export const ModuleGuideSchema = z.object({
+  level: z.enum(["FOUNDATION", "INTERMEDIATE", "ADVANCED", "SPECIALIZED"]),
+  introduction: z.array(text).min(2),
+  assumedKnowledge: z.array(text),
+  aiReviewChecklist: z.array(text).min(3),
+}).strict();
+export type ModuleGuide = z.infer<typeof ModuleGuideSchema>;
+
 export const TopicPlanSchema = z.object({
   status: z.literal("PLANNED"),
   objectives: z.array(text).min(2),
@@ -34,10 +42,12 @@ export const SubjectSchema = z.object({
   category: z.enum(["PROGRAMMING", "THEORETICAL"]),
   accent: z.enum(["emerald", "amber", "rose", "blue", "violet"]),
   learningOutcomes: z.array(text).min(2),
+  overview: z.array(text).min(2).optional(),
   modules: z.array(z.object({
     slug,
     title: text,
     description: text,
+    guide: ModuleGuideSchema.optional(),
     project: z.object({
       brief: text,
       deliverables: z.array(text).min(1),

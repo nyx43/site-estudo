@@ -4,7 +4,7 @@ import { attempts, lessonProgress, submissions } from "../../src/lib/db/schema";
 import { lessonSteps } from "../../src/lib/study/schema";
 
 const topicId = "python.lacos-de-repeticao";
-const lessonId = `${topicId}.v1`;
+
 
 test.beforeEach(async () => {
   const url = process.env.E2E_DATABASE_URL;
@@ -16,6 +16,7 @@ test.beforeEach(async () => {
 
 async function completeViaApi(request: APIRequestContext) {
   const { data } = await (await request.get(`/api/lessons/${topicId}`)).json();
+  const lessonId = data.lesson.id;
   for (const question of [...data.lesson.prequestions, ...data.lesson.selfExplain, ...data.lesson.retrieval]) {
     const response = await request.post(`/api/lessons/${lessonId}/progress`, { data: { action: "ANSWER", questionId: question.id, answer: "Minha explicação para este conceito." } });
     expect(response.ok()).toBe(true);
@@ -40,9 +41,9 @@ test("aula inteira, retomada, múltiplos envios e consulta da solução", async 
     await expect(card.getByRole("button", { name: "Resposta salva" })).toBeVisible();
   }
   await page.getByRole("button", { name: "Concluir parte e continuar", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Por que repetir instruções?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Por que este conceito existe?" })).toBeVisible();
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Por que repetir instruções?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Por que este conceito existe?" })).toBeVisible();
   for (let part = 2; part <= 9; part++) {
     await expect(page.locator(".reader-topline .eyebrow")).toHaveText(`PARTE ${part} DE 10`);
     await page.getByRole("button", { name: "Concluir parte e continuar", exact: true }).click();

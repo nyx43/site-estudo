@@ -1,14 +1,16 @@
 import { expect, test } from "@playwright/test";
+import { loadCurriculum } from "../../src/lib/content/load-curriculum";
+const definitions = await loadCurriculum();
 
 test("busca, filtros, currículo e navegação em todas as telas", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Conhecimento que/ })).toBeVisible();
-  await expect(page.locator(".subject-card")).toHaveCount(5);
+  await expect(page.locator(".subject-card")).toHaveCount(definitions.length);
   await page.getByRole("button", { name: "Conceituais", exact: true }).click();
-  await expect(page.locator(".subject-card")).toHaveCount(1);
-  await expect(page.locator(".subject-card")).toContainText("Análise de Requisitos");
+  await expect(page.locator(".subject-card")).toHaveCount(definitions.filter((item) => item.category === "THEORETICAL").length);
+  await expect(page.getByRole("heading", { name: "Análise de Requisitos", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Todas as disciplinas" }).click();
   const search = page.getByRole("textbox", { name: "Buscar disciplinas ou tópicos" });
   await search.fill("lacos");
@@ -17,10 +19,10 @@ test("busca, filtros, currículo e navegação em todas as telas", async ({ page
   await search.fill("sem-resultado-improvavel");
   await expect(page.getByRole("heading", { name: "Nenhuma disciplina encontrada" })).toBeVisible();
   await page.getByRole("button", { name: "Limpar filtros" }).click();
-  await expect(page.locator(".subject-card")).toHaveCount(5);
+  await expect(page.locator(".subject-card")).toHaveCount(definitions.length);
   await page.locator(".subject-card").filter({ has: page.getByRole("heading", { name: "Python", exact: true }) }).click();
   await expect(page.getByRole("heading", { name: "Python", exact: true })).toBeVisible();
-  await expect(page.locator(".module-card")).toHaveCount(3);
+  await expect(page.locator(".module-card")).toHaveCount(definitions.find((item) => item.slug === "python")!.modules.length);
   await page.getByRole("link", { name: /Laços de repetição/ }).click();
   await expect(page.getByRole("heading", { name: "Laços de repetição", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Objetivos de aprendizagem" })).toBeVisible();
@@ -34,7 +36,7 @@ test("busca, filtros, currículo e navegação em todas as telas", async ({ page
 test("API pública, recurso ausente e página de evolução", async ({ request, page }) => {
   const response = await request.get("/api/subjects");
   expect(response.ok()).toBe(true);
-  expect((await response.json()).data).toHaveLength(5);
+  expect((await response.json()).data).toHaveLength(definitions.length);
   const missing = await request.get("/api/topics/ausente.topico");
   expect(missing.status()).toBe(404);
   const missingPage = await page.goto("/disciplinas/ausente");

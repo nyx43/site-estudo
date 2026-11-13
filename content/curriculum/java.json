@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 1,
+  "version": 2,
   "slug": "java",
   "name": "Java",
   "description": "Tipos, objetos e contratos para construir programas previsíveis e bem organizados.",
@@ -123,7 +123,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Java verifica muitos tipos antes da execução, mas isso não elimina erros de regras ou de referências. Entender valores, objetos e fluxo ajuda a interpretar tanto mensagens de compilação quanto resultados incorretos.",
+          "O módulo começa com tipos e igualdade, passa por decisões e chega aos métodos. A passagem por valor será rastreada separando a referência copiada do objeto que ela permite acessar."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Separar igualdade de conteúdo e identidade.",
+          "Verificar os limites dos percursos.",
+          "Explicar efeitos de mutação e reatribuição em chamadas."
+        ]
+      }
     },
     {
       "slug": "objetos",
@@ -239,7 +252,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Classes delimitam estado e operações; encapsulamento preserva regras, e não apenas esconde atributos. Uma abstração precisa ser avaliada pelo que permite e pelo que impede.",
+          "Herança, interfaces e composição serão comparadas usando contratos de comportamento. O objetivo é reconhecer se um objeto pode substituir outro sem surpreender o consumidor."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Identificar invariantes da classe.",
+          "Revisar se os subtipos preservam o contrato.",
+          "Substituir uma implementação sem alterar o consumidor."
+        ]
+      }
     },
     {
       "slug": "colecoes-e-qualidade",
@@ -356,8 +382,219 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Coleções e generics tornam explícito que tipo de dado está sendo armazenado e como ele será encontrado. A escolha entre ordem, unicidade e associação muda o comportamento da solução.",
+          "As falhas de recursos e os testes completam o módulo: a estrutura escolhida deve continuar coerente quando houver duplicatas, ausência de dados e erros de entrada ou saída."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Relacionar equals e hashCode quando aplicável.",
+          "Evitar casts que poderiam ser prevenidos pelos tipos.",
+          "Testar falhas de recursos e entradas não encontradas."
+        ]
+      }
+    },
+    {
+      "slug": "design-avancado",
+      "title": "Design e APIs robustas",
+      "description": "Contratos, imutabilidade e tipos em APIs.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "APIs expõem decisões de modelagem aos consumidores. Um tipo pode representar estados válidos e reduzir combinações inválidas, mas ainda precisa de invariantes e documentação de comportamento.",
+          "Vamos comparar composição, imutabilidade e uso de generics sem tratar padrões como receitas. A pergunta central é se uma mudança preserva os contratos dos consumidores."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Identificar estados inválidos representáveis.",
+          "Revisar contratos de igualdade e coleções.",
+          "Evitar abstrações sem um consumidor real."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "imutabilidade-e-apis",
+          "title": "Imutabilidade e design de APIs",
+          "summary": "Estado válido, cópias defensivas e contratos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar mutabilidade exposta.",
+              "Projetar operações que preservem invariantes."
+            ],
+            "prerequisites": [
+              "java.classes-e-encapsulamento",
+              "java.colecoes"
+            ],
+            "lessonOutline": [
+              "Objetos de valor",
+              "Exposição de coleções",
+              "Compatibilidade de consumidores"
+            ],
+            "misconceptions": [
+              "Um campo final não torna todo o grafo de objetos imutável."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma API que devolve uma coleção interna mutável."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Demonstra uma alteração externa indevida.",
+              "Propõe um contrato de acesso coerente."
+            ]
+          }
+        },
+        {
+          "slug": "streams-e-generics",
+          "title": "Streams e limites de tipos",
+          "summary": "Pipelines, operações terminais e segurança de tipos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear um pipeline de transformação.",
+              "Explicar quando uma operação é avaliada."
+            ],
+            "prerequisites": [
+              "java.generics-e-testes"
+            ],
+            "lessonOutline": [
+              "Operações intermediárias e terminais",
+              "Efeitos colaterais em pipelines",
+              "Limites e variância de tipos"
+            ],
+            "misconceptions": [
+              "Criar um Stream não executa automaticamente todas as operações intermediárias."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um pipeline sem operação terminal."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a avaliação observada.",
+              "Separa transformação e efeitos colaterais."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Revisar uma API de catálogo e seus consumidores, com testes de contrato.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "runtime",
+      "title": "Runtime e concorrência",
+      "description": "Memória, coordenação e diagnóstico da JVM.",
+      "guide": {
+        "level": "SPECIALIZED",
+        "introduction": [
+          "Programas concorrentes dependem de visibilidade, atomicidade e ordem, não apenas da existência de várias threads. A JVM também administra memória e compilação durante a execução.",
+          "Diagnosticar exige observar o processo real: cargas, pausas, contenção e limites de recursos. A configuração deve ser justificada por evidências e pelo ambiente de execução."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Distinguir atomicidade e visibilidade.",
+          "Evitar estado compartilhado sem coordenação.",
+          "Relacionar uma medição a uma hipótese."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "concorrencia-e-estado",
+          "title": "Concorrência e estado compartilhado",
+          "summary": "Corridas, sincronização e cancelamento.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma atualização não atômica.",
+              "Explicar a coordenação necessária entre tarefas."
+            ],
+            "prerequisites": [
+              "java.classes-e-encapsulamento"
+            ],
+            "lessonOutline": [
+              "Condições de corrida",
+              "Locks e estruturas concorrentes",
+              "Cancelamento e encerramento"
+            ],
+            "misconceptions": [
+              "Uma operação escrita em uma linha pode envolver várias etapas observáveis por outras threads."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um contador compartilhado com perda de atualizações."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Constrói um entrelaçamento que expõe a falha.",
+              "Justifica a estratégia de coordenação."
+            ]
+          }
+        },
+        {
+          "slug": "jvm-e-observabilidade",
+          "title": "JVM e observabilidade",
+          "summary": "Gargalos, memória e comportamento em execução.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir vazamento lógico de pressão transitória de memória.",
+              "Planejar uma investigação de lentidão."
+            ],
+            "prerequisites": [
+              "java.excecoes-e-recursos",
+              "java.concorrencia-e-estado"
+            ],
+            "lessonOutline": [
+              "Heap e referências vivas",
+              "Pausas e carga",
+              "Perfis e hipóteses verificáveis"
+            ],
+            "misconceptions": [
+              "Aumentar memória pode adiar uma falha sem corrigir sua causa."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um diagnóstico que atribui toda lentidão ao garbage collector."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Escolhe evidências relevantes.",
+              "Define comparação antes/depois."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Investigar uma aplicação sintética com contenção ou retenção indevida de objetos.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
     }
   ],
-  "orderIndex": 1
+  "orderIndex": 1,
+  "overview": [
+    "Java organiza programas com tipos, métodos e objetos, com verificações importantes antes da execução. Essas verificações detectam algumas incompatibilidades, mas a regra de negócio, os estados válidos e a coordenação entre tarefas ainda precisam ser justificados pelo projeto.",
+    "Você avançará dos valores e chamadas para contratos de objetos, coleções, APIs e comportamento da JVM. A leitura por exemplos e os testes de fronteira servem para revisar implementações geradas por IA sem confundir compilar com estar correto."
+  ]
 }

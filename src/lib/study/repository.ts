@@ -10,7 +10,7 @@ export interface Attempt {
 }
 export interface StudyOperations {
   listLessons(): Promise<Lesson[]>;
-  findLessonByTopic(topicId: string): Promise<Lesson | null>;
+  findLessonByTopic(topicId: string, version?: number): Promise<Lesson | null>;
   findLesson(id: string): Promise<Lesson | null>;
   listExercises(lessonId: string): Promise<Exercise[]>;
   findExercise(id: string): Promise<Exercise | null>;

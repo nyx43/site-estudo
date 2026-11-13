@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 1,
+  "version": 2,
   "slug": "python",
   "name": "Python",
   "description": "Do primeiro raciocínio à automação: aprenda a ler, explicar e construir programas em Python.",
@@ -123,7 +123,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Um programa transforma dados por meio de operações e decisões. Neste módulo, nomes e tipos vêm antes de condições e laços, porque cada decisão depende dos valores que entram nela.",
+          "A leitura deve acompanhar o estado após cada instrução. Para revisar código de IA, você precisa conseguir explicar entradas, operações, caminhos e resultados antes de aceitar a justificativa textual."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Identificar tipos e unidades das entradas.",
+          "Rastrear os valores sem depender de executar o programa.",
+          "Testar limites e o caso em que um bloco não executa."
+        ]
+      }
     },
     {
       "slug": "dados-e-funcoes",
@@ -239,7 +252,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Coleções organizam vários valores; funções organizam responsabilidades. A escolha da estrutura e do contrato evita que uma solução cresça como uma sequência de efeitos difíceis de acompanhar.",
+          "Listas, dicionários, parâmetros e referências serão estudados juntos ao efeito de mutações. O objetivo é distinguir transformação de dados, exibição, retorno e estado compartilhado."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Justificar a coleção pela operação necessária.",
+          "Distinguir retorno de impressão.",
+          "Verificar se uma chamada altera a entrada ou depende de estado global."
+        ]
+      }
     },
     {
       "slug": "programas-robustos",
@@ -355,8 +381,225 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Uma automação real precisa lidar com arquivos ausentes, dados inválidos e objetos em estados que o domínio não permite. O caminho de sucesso é apenas um dos comportamentos possíveis.",
+          "Este módulo conecta arquivos, exceções, objetos e testes. A explicação de cada falha deve preservar contexto e deixar claro quando continuar, rejeitar um registro ou encerrar a operação."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Cobrir sucesso, vazio, limite e falha.",
+          "Preservar recursos e informações de diagnóstico.",
+          "Relacionar cada teste a uma regra observável."
+        ]
+      }
+    },
+    {
+      "slug": "protocolos",
+      "title": "Protocolos e composição",
+      "description": "Iteração, contratos e dependências explícitas.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Protocolos descrevem comportamentos que diferentes objetos podem oferecer. Iteradores e geradores permitem produzir dados sob demanda, enquanto contratos de funções delimitam entradas e efeitos.",
+          "A leitura avançada precisa considerar consumo de estado, tempo de vida de recursos e erros adiados. O código mais curto pode esconder uma operação cara ou um iterador já esgotado."
+        ],
+        "assumedKnowledge": [
+          "Funções, coleções e exceções"
+        ],
+        "aiReviewChecklist": [
+          "Verificar se uma fonte pode ser percorrida novamente.",
+          "Explicar quando o código realmente executa.",
+          "Separar contrato de anotação de tipo e validação em execução."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "iteradores-e-geradores",
+          "title": "Iteradores e geradores",
+          "summary": "Dados sob demanda, consumo e término.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir iterável de iterador.",
+              "Rastrear consumo e suspensão de um gerador."
+            ],
+            "prerequisites": [
+              "python.funcoes",
+              "python.listas-e-dicionarios"
+            ],
+            "lessonOutline": [
+              "iter e next",
+              "yield e estado suspenso",
+              "Consumo único e fechamento"
+            ],
+            "misconceptions": [
+              "Uma segunda passagem por um iterador esgotado não recomeça automaticamente."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um relatório que tenta consumir duas vezes a mesma fonte."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o resultado da segunda passagem.",
+              "Propõe recriação ou materialização conforme o tamanho dos dados."
+            ]
+          }
+        },
+        {
+          "slug": "tipos-e-contratos",
+          "title": "Anotações, contratos e fronteiras",
+          "summary": "Tipagem estática, validação e limites do domínio.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir anotação de validação efetiva.",
+              "Definir contratos de entrada e saída."
+            ],
+            "prerequisites": [
+              "python.funcoes",
+              "python.arquivos-e-excecoes"
+            ],
+            "lessonOutline": [
+              "Anotações e ferramentas estáticas",
+              "Dados externos não confiáveis",
+              "Protocolos e contratos mínimos"
+            ],
+            "misconceptions": [
+              "Anotar um parâmetro como int não converte nem valida automaticamente um JSON recebido."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar confiança indevida numa entrada anotada."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Localiza a fronteira que precisa de validação.",
+              "Separa erro de formato de regra de negócio."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Projetar um importador que percorre registros sob demanda, com validação explícita.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "execucao-avancada",
+      "title": "Execução e diagnóstico avançado",
+      "description": "Concorrência, observabilidade e análise de custo.",
+      "guide": {
+        "level": "SPECIALIZED",
+        "introduction": [
+          "Concorrência organiza tarefas que avançam em intervalos sobrepostos; paralelismo implica execução simultânea. Escolher entre async, threads e processos depende da operação e das garantias necessárias.",
+          "A investigação deve começar por medições e exemplos reproduzíveis. Perfis de tempo e memória ajudam a separar uma suspeita sobre desempenho de um gargalo realmente observado."
+        ],
+        "assumedKnowledge": [
+          "Exceções, funções e domínio de percursos"
+        ],
+        "aiReviewChecklist": [
+          "Identificar chamadas bloqueantes no caminho assíncrono.",
+          "Limitar trabalho e tratar cancelamento.",
+          "Medir antes de alterar um algoritmo."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "concorrencia-e-async",
+          "title": "Concorrência, async e cancelamento",
+          "summary": "Coordenar tarefas sem presumir que tudo ficou paralelo.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir concorrência de paralelismo.",
+              "Identificar bloqueios e cancelamentos não tratados."
+            ],
+            "prerequisites": [
+              "python.funcoes",
+              "python.arquivos-e-excecoes"
+            ],
+            "lessonOutline": [
+              "Corrotinas e await",
+              "Operações bloqueantes",
+              "Limites de concorrência e cancelamento"
+            ],
+            "misconceptions": [
+              "Adicionar async a uma função não torna uma operação bloqueante automaticamente cooperativa."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma chamada lenta que bloqueia outras tarefas."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a operação bloqueante.",
+              "Propõe limites e comportamento de cancelamento."
+            ]
+          }
+        },
+        {
+          "slug": "perfil-e-diagnostico",
+          "title": "Perfil, memória e diagnóstico",
+          "summary": "Investigar lentidão e falhas com evidências.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Construir uma reprodução mínima de uma lentidão.",
+              "Relacionar custo de algoritmo e observações de execução."
+            ],
+            "prerequisites": [
+              "python.testes-e-automacao",
+              "algoritmos.complexidade"
+            ],
+            "lessonOutline": [
+              "Medições e linha de base",
+              "Perfis de tempo e alocações",
+              "Regressões e casos de maior volume"
+            ],
+            "misconceptions": [
+              "Uma otimização numa linha rápida pode não alterar o gargalo real."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma proposta de otimização sem medição."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Define uma métrica antes da mudança.",
+              "Compara resultados e comportamento preservado."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Investigar um processamento lento com dados sintéticos e registrar evidências antes/depois.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
     }
   ],
-  "orderIndex": 0
+  "orderIndex": 0,
+  "overview": [
+    "Python é uma linguagem de propósito geral usada em automações, serviços e processamento de dados. A sintaxe enxuta ajuda a começar, mas não elimina a necessidade de entender tipos, referências e contratos: um programa curto pode ter um erro de regra difícil de perceber.",
+    "A trilha começa com valores e fluxo, segue para coleções, funções e recursos e chega a protocolos, concorrência e diagnóstico. O objetivo é ler uma implementação, explicar seu estado e construir um teste que diferencie um resultado correto de uma resposta apenas plausível de IA."
+  ]
 }

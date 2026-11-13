@@ -1,0 +1,1 @@
+ALTER TABLE `Module` ADD `guide` text;

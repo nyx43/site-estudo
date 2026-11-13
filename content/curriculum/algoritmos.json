@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 5,
+  "slug": "algoritmos",
+  "name": "Algoritmos",
+  "description": "Raciocínio, correção e custo antes de escolher uma implementação.",
+  "category": "PROGRAMMING",
+  "accent": "blue",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fundamentos",
+      "title": "Representar e rastrear",
+      "description": "Um algoritmo descreve um procedimento para resolver uma classe de problemas.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Um algoritmo descreve um procedimento para resolver uma classe de problemas. A representação deve explicar entradas, passos e resultado, sem depender de uma linguagem específica.",
+          "Rastrear exemplos pequenos torna o procedimento verificável. Invariantes e condições de término ajudam a justificar por que ele funciona além de um único caso."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "modelagem",
+          "title": "Modelagem de algoritmos",
+          "summary": "Entradas, saídas e passos observáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Especificar entrada e saída.",
+              "Rastrear um procedimento pequeno."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Problema e contrato",
+              "Decomposição em passos",
+              "Rastreamento manual"
+            ],
+            "misconceptions": [
+              "Uma sequência de passos que funciona num exemplo não resolve necessariamente toda a classe de entradas."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar uma suposição escondida num algoritmo de busca."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explicita o contrato.",
+              "Produz um contraexemplo para a suposição."
+            ]
+          }
+        },
+        {
+          "slug": "complexidade",
+          "title": "Complexidade e tamanho da entrada",
+          "summary": "Custo assintótico e limitações de uma medição.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar operações ao tamanho da entrada.",
+              "Comparar crescimento de custos."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Tamanho n e operação relevante",
+              "Tempo e espaço",
+              "Melhor, pior e caso médio"
+            ],
+            "misconceptions": [
+              "Big O não informa sozinho o tempo em segundos de uma execução."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar a afirmação de que dois laços separados sempre são O(n²)."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue soma e produto de custos.",
+              "Explicita hipóteses sobre a entrada."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "estrategias",
+      "title": "Busca e ordenação",
+      "description": "Estratégias diferentes exploram propriedades diferentes dos dados.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Estratégias diferentes exploram propriedades diferentes dos dados. Uma busca binária depende de ordenação, enquanto uma busca sequencial não exige essa propriedade.",
+          "Vamos comparar invariantes, fronteiras e custo antes de escolher a técnica. Uma implementação de IA deve ser revisada também pelas suas pré-condições."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "busca",
+          "title": "Busca sequencial e binária",
+          "summary": "Pré-condições, intervalos e elemento ausente.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a pré-condição da busca binária.",
+              "Rastrear atualização de limites."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Busca sequencial",
+              "Intervalos de busca",
+              "Ausência e limites"
+            ],
+            "misconceptions": [
+              "Busca binária não é correta em qualquer lista não ordenada."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Corrigir o contrato e um erro de limite."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Trata coleção vazia e ausência.",
+              "Preserva o intervalo de busca."
+            ]
+          }
+        },
+        {
+          "slug": "ordenacao",
+          "title": "Ordenação e estabilidade",
+          "summary": "Comparadores e propriedades do resultado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar estabilidade.",
+              "Verificar um comparador coerente."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Critério de ordem",
+              "Estabilidade",
+              "Custos e casos de entrada"
+            ],
+            "misconceptions": [
+              "Uma ordenação pode produzir resultados inconsistentes se o comparador viola seu contrato."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar empates e critérios secundários."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Define a regra para empates.",
+              "Distingue requisito de estabilidade e preferência de implementação."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "avancado",
+      "title": "Estratégias avançadas",
+      "description": "Dividir um problema, escolher uma decisão local ou reutilizar subproblemas são estratégias distintas.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Dividir um problema, escolher uma decisão local ou reutilizar subproblemas são estratégias distintas. Sua aplicabilidade precisa ser demonstrada pelo problema.",
+          "A análise usa exemplos, invariantes e contraexemplos para evitar que um padrão conhecido seja aplicado sem as condições necessárias."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "guloso-e-divisao",
+          "title": "Guloso e divisão e conquista",
+          "summary": "Decisões locais e decomposição.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir as duas estratégias.",
+              "Construir um contraexemplo a uma escolha gulosa."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Subproblemas",
+              "Escolha local",
+              "Prova ou contraexemplo"
+            ],
+            "misconceptions": [
+              "Uma escolha localmente boa não garante um ótimo global."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma seleção gulosa sem justificativa."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explicita a propriedade necessária.",
+              "Mostra uma entrada que distingue as alternativas."
+            ]
+          }
+        },
+        {
+          "slug": "programacao-dinamica",
+          "title": "Programação dinâmica",
+          "summary": "Estados, recorrências e ordem de cálculo.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir um estado e suas dependências.",
+              "Explicar a ordem de avaliação."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Subproblemas sobrepostos",
+              "Recorrência e casos base",
+              "Memoização e tabulação"
+            ],
+            "misconceptions": [
+              "Guardar resultados não corrige uma recorrência errada."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um estado insuficiente para representar o problema."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o significado do estado.",
+              "Verifica casos base e dependências."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Algoritmos descrevem procedimentos para resolver classes de problemas. A correção depende das entradas admitidas, das invariantes preservadas e da razão pela qual os passos terminam, e não da linguagem ou do tamanho do código.",
+    "O percurso combina rastreamento manual, análise de custo e estratégias de solução. Isso permite perguntar a uma IA quais pré-condições ela assumiu, construir contraexemplos e comparar alternativas por comportamento e crescimento do trabalho."
+  ]
+}

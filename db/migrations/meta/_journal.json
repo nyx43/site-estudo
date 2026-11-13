@@ -15,6 +15,20 @@
       "when": 1794585765662,
       "tag": "0001_study-pilot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794590712484,
+      "tag": "0002_module-guides",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794591152394,
+      "tag": "0003_subject-overviews",
+      "breakpoints": true
     }
   ]
 }

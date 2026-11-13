@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 1,
+  "version": 2,
   "slug": "web-dev",
   "name": "Desenvolvimento Web",
   "description": "Da estrutura de uma página às interações e contratos que conectam a web.",
@@ -156,7 +156,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Uma página começa como um documento com significado. HTML organiza conteúdo e controles; CSS define apresentação, fluxo e adaptação, sem substituir a estrutura semântica.",
+          "Vamos estudar cascata, dimensões, layouts e formulários com atenção a teclado, foco e leitura em telas pequenas. Uma aparência correta em uma captura não demonstra que a interação funciona."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Escolher controles pela função.",
+          "Diagnosticar overflow em vez de esconder conteúdo.",
+          "Verificar rótulos e navegação por teclado."
+        ]
+      }
     },
     {
       "slug": "interacao",
@@ -304,7 +317,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "A interface mantém estado e responde a eventos. O que a pessoa vê pode depender de uma requisição ainda pendente, de um erro ou de uma resposta que chegou fora de ordem.",
+          "JavaScript, DOM e componentes serão conectados sem misturar a regra do problema com o mecanismo de renderização. O objetivo é acompanhar de onde vem cada dado e qual ação pode mudá-lo."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Encontrar a fonte de verdade do estado.",
+          "Cobrir espera, sucesso, vazio e erro.",
+          "Impedir que respostas antigas sobrescrevam a intenção atual."
+        ]
+      }
     },
     {
       "slug": "contratos-e-qualidade",
@@ -421,8 +447,219 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Cliente e servidor trocam representações através de contratos. O navegador não é uma fronteira confiável para validar dados ou decidir sozinho se uma operação foi autorizada.",
+          "HTTP, segurança básica e testes permitem revisar fluxos completos. Precisamos observar respostas, efeitos persistidos e mensagens de falha, não apenas se um botão aparece na tela."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Validar no servidor.",
+          "Distinguir falha HTTP de falha de rede.",
+          "Relacionar testes a percursos reais e riscos de entrada."
+        ]
+      }
+    },
+    {
+      "slug": "sistemas-web",
+      "title": "Sistemas web e consistência",
+      "description": "Contratos, cache e estado distribuído.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Uma aplicação web conecta estados em lugares diferentes: navegador, servidor, banco e caches. Repetir uma requisição ou receber respostas fora de ordem pode mudar o resultado observado.",
+          "Vamos estudar quais garantias cada camada oferece. A correção precisa considerar efeitos persistidos, autenticação, autorização e contratos de falha, não apenas o estado visual final."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Verificar reenvios e idempotência.",
+          "Separar autenticação de autorização.",
+          "Definir como um cache fica inválido."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "autenticacao-e-autorizacao",
+          "title": "Autenticação e autorização",
+          "summary": "Identidade, sessões e permissão por recurso.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir provar identidade e autorizar uma ação.",
+              "Localizar verificações obrigatórias no servidor."
+            ],
+            "prerequisites": [
+              "web-dev.validacao-e-seguranca"
+            ],
+            "lessonOutline": [
+              "Sessões e tokens",
+              "Permissão por recurso",
+              "Expiração e revogação"
+            ],
+            "misconceptions": [
+              "Esconder um botão não impede uma chamada direta à API."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar acesso a um recurso de outra pessoa."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a checagem ausente.",
+              "Define testes positivos e negativos."
+            ]
+          }
+        },
+        {
+          "slug": "cache-e-idempotencia",
+          "title": "Cache e idempotência",
+          "summary": "Atualidade, repetição e efeitos únicos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir a validade de uma representação em cache.",
+              "Explicar a repetição segura de uma operação."
+            ],
+            "prerequisites": [
+              "web-dev.http-e-rest",
+              "web-dev.assincrono-e-fetch"
+            ],
+            "lessonOutline": [
+              "Chaves e invalidação",
+              "Reenvios e identificadores",
+              "Concorrência e efeito persistido"
+            ],
+            "misconceptions": [
+              "Desabilitar um botão no cliente não garante que o servidor receberá uma única requisição."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma criação duplicada após perda de resposta."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Propõe uma garantia no servidor.",
+              "Distingue nova intenção de reenvio da mesma intenção."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Especificar um fluxo de criação com reenvio seguro e invalidação do catálogo.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "qualidade-web",
+      "title": "Qualidade e casos específicos",
+      "description": "Acessibilidade, desempenho e diagnóstico em produção.",
+      "guide": {
+        "level": "SPECIALIZED",
+        "introduction": [
+          "Uma interface pode parecer correta e falhar ao usar teclado, leitor de tela, conexão lenta ou aparelho com poucos recursos. Esses cenários precisam aparecer nos critérios de aceitação.",
+          "O diagnóstico parte de um percurso reproduzível e de métricas adequadas. Otimizações serão avaliadas pelo efeito no uso real, com regressões de comportamento controladas."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Testar largura e foco reais.",
+          "Inspecionar rede e trabalho de renderização.",
+          "Confirmar comportamento com falhas e lentidão."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "performance-e-observabilidade",
+          "title": "Performance e observabilidade web",
+          "summary": "Medições de rede, servidor e renderização.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir gargalos de rede e processamento.",
+              "Definir uma linha de base para uma melhoria."
+            ],
+            "prerequisites": [
+              "web-dev.testes-web"
+            ],
+            "lessonOutline": [
+              "Métricas e instrumentação",
+              "Perfis de renderização",
+              "Cargas e regressões"
+            ],
+            "misconceptions": [
+              "Uma nota sintética isolada não resume toda a experiência do usuário."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Investigar uma navegação lenta com evidências de cada camada."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Escolhe uma métrica ligada ao percurso.",
+              "Compara cenários equivalentes."
+            ]
+          }
+        },
+        {
+          "slug": "acessibilidade-avancada",
+          "title": "Acessibilidade em fluxos complexos",
+          "summary": "Foco, anúncios e controles compostos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Planejar foco após alterações de interface.",
+              "Testar controles sem depender de ponteiro."
+            ],
+            "prerequisites": [
+              "web-dev.formularios-e-acessibilidade",
+              "web-dev.estado-e-componentes"
+            ],
+            "lessonOutline": [
+              "Ordem de foco e restauração",
+              "Anúncios de estado",
+              "Formulários e componentes compostos"
+            ],
+            "misconceptions": [
+              "Adicionar ARIA não corrige automaticamente um controle com comportamento incorreto."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um modal ou wizard que perde foco."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Descreve a sequência de teclado.",
+              "Relaciona semântica, estado e interação."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Auditar um fluxo móvel e de teclado e documentar correções reproduzíveis.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
     }
   ],
-  "orderIndex": 3
+  "orderIndex": 3,
+  "overview": [
+    "Desenvolvimento web conecta documentos, interfaces, protocolos e persistência. Uma aplicação precisa ser compreendida desde o significado de um elemento HTML até os efeitos de uma requisição no servidor e no banco.",
+    "O percurso começa com estrutura e layout, segue por estado e assincronia e chega a segurança, cache, acessibilidade e desempenho. Para acompanhar uma IA, você deverá explicar onde cada regra é aplicada e testar o fluxo com teclado, telas pequenas, falhas e reenvios."
+  ]
 }

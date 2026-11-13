@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 10,
+  "slug": "arquitetura-de-software",
+  "name": "Arquitetura de Software",
+  "description": "Organize decisões, fronteiras e dependências a partir de requisitos concretos.",
+  "category": "THEORETICAL",
+  "accent": "blue",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fronteiras",
+      "title": "Módulos e dependências",
+      "description": "Arquitetura organiza decisões que afetam muitos consumidores.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Arquitetura organiza decisões que afetam muitos consumidores. Um módulo é útil quando reúne responsabilidades coerentes e reduz o conhecimento necessário para usar seu contrato.",
+          "Vamos acompanhar como uma mudança atravessa fronteiras e diferenciar uma separação útil de uma camada que apenas repassa chamadas sem acrescentar uma razão."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "modularidade",
+          "title": "Modularidade, coesão e acoplamento",
+          "summary": "Responsabilidades e impactos de mudança.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma fronteira coerente.",
+              "Explicar acoplamento entre consumidores."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Responsabilidade e contrato",
+              "Dependência de detalhes",
+              "Mudança e impacto"
+            ],
+            "misconceptions": [
+              "Mais pastas ou interfaces não garantem menor acoplamento."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma divisão que espalha a mesma regra por várias camadas."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Localiza a regra de negócio.",
+              "Mapeia consumidores afetados."
+            ]
+          }
+        },
+        {
+          "slug": "camadas-e-portas",
+          "title": "Camadas, portas e adaptadores",
+          "summary": "Separar regra e mecanismo.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir regra de negócio e infraestrutura.",
+              "Substituir um adaptador preservando contrato."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Domínio e aplicação",
+              "Portas e composição",
+              "Persistência e apresentação"
+            ],
+            "misconceptions": [
+              "Uma interface sem fronteira real pode apenas aumentar a complexidade."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Comparar uma troca de banco com e sem dependência da interface."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mostra o contrato preservado.",
+              "Justifica a abstração por um consumidor concreto."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "qualidades",
+      "title": "Qualidades e domínio",
+      "description": "Decisões arquiteturais têm custos e atendem cenários de qualidade.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Decisões arquiteturais têm custos e atendem cenários de qualidade. Não existe estilo que maximize ao mesmo tempo todos os atributos para qualquer produto.",
+          "A modelagem do domínio e a análise de cenários permitem justificar escolhas com termos do problema, limites e alternativas consideradas."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "dominio-e-contextos",
+          "title": "Domínio e contextos",
+          "summary": "Vocabulário e regras em fronteiras explícitas.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar significados diferentes de um termo.",
+              "Delimitar uma regra por contexto."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Modelo e linguagem",
+              "Fronteiras",
+              "Integração de contextos"
+            ],
+            "misconceptions": [
+              "Compartilhar o mesmo nome de entidade não implica compartilhar todas as regras."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma entidade usada com significados incompatíveis."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a diferença de significado.",
+              "Define um contrato de integração."
+            ]
+          }
+        },
+        {
+          "slug": "decisoes-arquiteturais",
+          "title": "Decisões e trade-offs",
+          "summary": "Alternativas, consequências e revisão.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Registrar uma decisão com contexto.",
+              "Relacionar escolha a um cenário de qualidade."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "ADRs",
+              "Cenários e restrições",
+              "Reversibilidade e custo"
+            ],
+            "misconceptions": [
+              "Citar um padrão não justifica sua adoção."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma proposta de microserviços sem necessidade demonstrada."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Expõe o problema que exige a decisão.",
+              "Compara alternativas e custos."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "distribuicao",
+      "title": "Distribuição e evolução",
+      "description": "Separar processos cria latência, falhas parciais e problemas de consistência que não existiam do mesmo modo numa chamada local..",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Separar processos cria latência, falhas parciais e problemas de consistência que não existiam do mesmo modo numa chamada local.",
+          "O módulo introduz essas condições antes de padrões de integração, sempre com exemplos de duplicação, ordem e recuperação."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "falhas-parciais",
+          "title": "Falhas parciais e comunicação",
+          "summary": "Latência, timeout e repetição.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar uma resposta perdida com efeito realizado.",
+              "Definir repetição segura."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Chamadas remotas",
+              "Timeout e retries",
+              "Idempotência e limites"
+            ],
+            "misconceptions": [
+              "Timeout não demonstra que a operação remota não aconteceu."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma cobrança ou criação repetida após timeout."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue efeito e resposta.",
+              "Propõe identificação da mesma intenção."
+            ]
+          }
+        },
+        {
+          "slug": "eventos-e-consistencia",
+          "title": "Eventos e consistência",
+          "summary": "Ordem, duplicação e estado derivado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear efeitos de eventos duplicados.",
+              "Explicar uma garantia de consistência."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Eventos e consumidores",
+              "Entrega e ordem",
+              "Reconstrução de estado"
+            ],
+            "misconceptions": [
+              "Receber um evento uma vez num teste não garante entrega única no sistema real."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um consumidor que aplica duas vezes o mesmo efeito."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o estado usado para deduplicar.",
+              "Define como verificar ou reconstruir o resultado."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Arquitetura organiza fronteiras, dependências e decisões que afetam muitos consumidores. Uma boa divisão precisa ser explicada pelo problema, pelos cenários de qualidade e pelo custo das mudanças esperadas.",
+    "O estudo vai de modularidade e contratos para contextos de domínio e sistemas distribuídos. Ao revisar uma proposta de IA, você comparará alternativas, identificará complexidade sem justificativa e investigará falhas parciais e efeitos de integração."
+  ]
+}

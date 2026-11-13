@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 6,
+  "slug": "estruturas-de-dados",
+  "name": "Estruturas de Dados",
+  "description": "Escolha representações pelas operações e garantias que o problema exige.",
+  "category": "PROGRAMMING",
+  "accent": "emerald",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "lineares",
+      "title": "Estruturas lineares",
+      "description": "Estruturas organizam dados e delimitam o custo e o comportamento das operações.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Estruturas organizam dados e delimitam o custo e o comportamento das operações. A escolha depende de acesso, inserção, remoção e ordem, não apenas do nome da coleção.",
+          "Começaremos comparando sequências e interfaces de acesso. Cada operação será rastreada com casos vazios e alterações nas extremidades."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "sequencias",
+          "title": "Arrays, listas e referências",
+          "summary": "Organização e custo de operações.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Comparar acesso e inserção.",
+              "Rastrear ligações entre elementos."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Armazenamento e índices",
+              "Encadeamento",
+              "Casos vazios e extremidades"
+            ],
+            "misconceptions": [
+              "Uma inserção O(1) pode pressupor que a posição ou referência já foi encontrada."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma comparação de custos incompleta."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explicita o custo de localizar a posição.",
+              "Trata inserção e remoção nas extremidades."
+            ]
+          }
+        },
+        {
+          "slug": "pilhas-e-filas",
+          "title": "Pilhas e filas",
+          "summary": "Ordem de atendimento e invariantes.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir LIFO e FIFO.",
+              "Rastrear operações e estado."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Push e pop",
+              "Enfileirar e desenfileirar",
+              "Vazio e capacidade"
+            ],
+            "misconceptions": [
+              "Uma fila não é equivalente a uma pilha só porque ambas armazenam itens."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma ordem de atendimento incorreta."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Prevê a sequência de saídas.",
+              "Define comportamento quando a estrutura está vazia."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "associacoes",
+      "title": "Associações e árvores",
+      "description": "Busca por chave e organização hierárquica exigem contratos de igualdade e ordem.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Busca por chave e organização hierárquica exigem contratos de igualdade e ordem. Colisões e desequilíbrio fazem parte do comportamento possível.",
+          "O módulo compara operações e invariantes sem confundir desempenho esperado com garantia para todas as entradas."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "hashes",
+          "title": "Tabelas hash e colisões",
+          "summary": "Igualdade, distribuição e desempenho esperado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar uma colisão.",
+              "Relacionar igualdade e hash."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Função hash",
+              "Tratamento de colisões",
+              "Fator de carga"
+            ],
+            "misconceptions": [
+              "Uma colisão não significa necessariamente perda de dados."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma implementação que sobrescreve chaves diferentes com o mesmo hash."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Preserva chaves distintas.",
+              "Explica como localizar um item após colisão."
+            ]
+          }
+        },
+        {
+          "slug": "arvores",
+          "title": "Árvores de busca e balanceamento",
+          "summary": "Invariantes e efeito da altura.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear busca e inserção.",
+              "Explicar o impacto da altura."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Relação de ordem",
+              "Percursos",
+              "Balanceamento"
+            ],
+            "misconceptions": [
+              "Uma árvore de busca não balanceada pode degenerar numa sequência linear."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Analisar inserções já ordenadas."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Calcula o caminho percorrido.",
+              "Distingue estrutura de busca e garantia de balanceamento."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "grafos",
+      "title": "Grafos e escolhas de projeto",
+      "description": "Grafos representam relações em redes, dependências e caminhos.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Grafos representam relações em redes, dependências e caminhos. A representação escolhida determina quais operações são simples ou caras.",
+          "Vamos conectar estrutura, algoritmo e requisito, incluindo ciclos, vértices desconectados e limites de memória."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "representacao-de-grafos",
+          "title": "Representação de grafos",
+          "summary": "Vértices, arestas e direção.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher uma representação.",
+              "Distinguir direção e peso."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Listas de adjacência",
+              "Matriz de adjacência",
+              "Grafos esparsos e densos"
+            ],
+            "misconceptions": [
+              "Uma representação adequada para um grafo denso pode desperdiçar memória num grafo esparso."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Justificar a representação de uma rede de dependências."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Relaciona custo às operações necessárias.",
+              "Inclui vértices sem vizinhos."
+            ]
+          }
+        },
+        {
+          "slug": "percursos-e-ciclos",
+          "title": "Percursos e detecção de ciclos",
+          "summary": "Visitação, componentes e término.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear BFS e DFS.",
+              "Explicar o papel do estado de visita."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Busca em largura",
+              "Busca em profundidade",
+              "Ciclos e componentes"
+            ],
+            "misconceptions": [
+              "Sem estado de visita, um percurso pode repetir indefinidamente um ciclo."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um detector de dependências circulares."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o ciclo com evidências.",
+              "Não confunde grafo desconectado com falha de percurso."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Estruturas de Dados organizam informações e oferecem operações sob determinadas regras. Escolher uma representação muda custos, ordem, unicidade e a facilidade de manter as invariantes do domínio.",
+    "Você estudará sequências, pilhas, filas, associações, árvores e grafos com percursos e casos vazios. A revisão de uma IA deve relacionar a estrutura às operações exigidas e separar desempenho esperado de garantias reais."
+  ]
+}

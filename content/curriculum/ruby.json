@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 1,
+  "version": 2,
   "slug": "ruby",
   "name": "Ruby",
   "description": "Objetos, blocos e coleções com foco em leitura e intenção do código.",
@@ -123,7 +123,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Ruby organiza operações como mensagens enviadas a objetos. Valores, retorno de métodos e regras de verdade precisam ser compreendidos na própria linguagem, sem importar suposições de Python ou JavaScript.",
+          "Os blocos acrescentam comportamento aos percursos. Vamos acompanhar quantas vezes um bloco executa, o que ele devolve e qual valor o método que o recebeu retorna."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Interpretar truthiness segundo Ruby.",
+          "Identificar o retorno efetivo de cada método.",
+          "Distinguir each de map."
+        ]
+      }
     },
     {
       "slug": "colecoes",
@@ -240,7 +253,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Arrays e hashes representam formas diferentes de organizar dados. Chaves, valores padrão e referências compartilhadas podem explicar resultados que parecem contraditórios numa leitura rápida.",
+          "Enumerable oferece operações expressivas sobre coleções. A seleção de métodos será feita pelo resultado exigido, com estados intermediários e casos vazios explícitos."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Verificar tipos de chaves.",
+          "Distinguir seleção, transformação e redução.",
+          "Investigar defaults mutáveis compartilhados."
+        ]
+      }
     },
     {
       "slug": "design-e-testes",
@@ -357,8 +383,219 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Classes e módulos permitem compor comportamento, mas também podem esconder a origem de um método e de seu estado. Ler a cadeia de busca é parte da revisão do design.",
+          "Os testes devem verificar retorno, mudanças de estado e falhas. Convenções de nomes ajudam a comunicar intenção, mas não substituem a leitura da implementação."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Localizar o estado que pertence a cada instância.",
+          "Explicar a origem dos métodos compostos.",
+          "Testar retorno e mutação separadamente."
+        ]
+      }
+    },
+    {
+      "slug": "protocolos-avancados",
+      "title": "Protocolos e metaprogramação",
+      "description": "Composição, blocos e comportamento dinâmico.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Ruby permite modificar e construir comportamento em execução. Esse poder é útil quando reduz repetição com um contrato claro, mas pode dificultar descobrir de onde vem uma operação.",
+          "O estudo deve manter exemplos explícitos e rastrear a busca de métodos. Só introduziremos técnicas dinâmicas quando houver uma necessidade que justifique o custo de leitura e teste."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Localizar a definição efetiva de um método.",
+          "Explicar o efeito de capturas e blocos.",
+          "Preferir uma solução explícita quando ela atender ao problema."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "closures-e-procs",
+          "title": "Closures, Proc e lambda",
+          "summary": "Captura de estado e diferenças de chamada.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear estado capturado.",
+              "Distinguir contratos de argumentos e retorno."
+            ],
+            "prerequisites": [
+              "ruby.blocos-e-iteradores",
+              "ruby.classes"
+            ],
+            "lessonOutline": [
+              "Escopo léxico",
+              "Proc e lambda",
+              "Tempo de vida do estado capturado"
+            ],
+            "misconceptions": [
+              "Guardar um bloco pode prolongar o tempo de vida do estado que ele referencia."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma coleção de callbacks que compartilha estado inesperado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica qual estado é compartilhado.",
+              "Propõe um teste que diferencia as chamadas."
+            ]
+          }
+        },
+        {
+          "slug": "metaprogramacao",
+          "title": "Metaprogramação com limites",
+          "summary": "Geração de métodos e contratos observáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a origem de um método gerado.",
+              "Comparar solução explícita e dinâmica."
+            ],
+            "prerequisites": [
+              "ruby.modulos-e-mixins"
+            ],
+            "lessonOutline": [
+              "Definição dinâmica de métodos",
+              "Busca e introspecção",
+              "Testes e documentação do contrato"
+            ],
+            "misconceptions": [
+              "Uma técnica dinâmica não é automaticamente mais reutilizável ou mais clara."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma abstração que mascara erros de nomes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica uma falha encoberta.",
+              "Define quando evitar a técnica."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Comparar duas implementações de um pequeno DSL com testes e explicação de manutenção.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "operacao-ruby",
+      "title": "Operação e qualidade",
+      "description": "Dependências, desempenho e trabalho concorrente.",
+      "guide": {
+        "level": "SPECIALIZED",
+        "introduction": [
+          "Uma aplicação depende de versões de bibliotecas, limites do runtime e recursos externos. O comportamento observado pode mudar quando a carga, o ambiente ou as dependências mudam.",
+          "Este módulo relaciona empacotamento, concorrência e medição. A investigação deve conseguir reproduzir uma falha com dados fictícios e preservar o comportamento esperado ao corrigi-la."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Fixar e explicar versões relevantes.",
+          "Verificar estado compartilhado.",
+          "Medir custo antes de otimizar."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "gems-e-dependencias",
+          "title": "Gems e dependências",
+          "summary": "Ambiente reproduzível e compatibilidade.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a função do lockfile.",
+              "Distinguir requisito de versão e versão instalada."
+            ],
+            "prerequisites": [
+              "ruby.convencoes-e-testes"
+            ],
+            "lessonOutline": [
+              "Gemfile e resolução",
+              "Lockfile e ambiente",
+              "Atualizações e compatibilidade"
+            ],
+            "misconceptions": [
+              "Um intervalo de versões não informa sozinho qual versão está instalada."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma diferença entre ambientes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o artefato de resolução.",
+              "Propõe atualização verificável."
+            ]
+          }
+        },
+        {
+          "slug": "concorrencia-e-performance",
+          "title": "Concorrência e performance",
+          "summary": "Medição, limites e estado compartilhado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Separar espera de processamento.",
+              "Identificar contenção e trabalho duplicado."
+            ],
+            "prerequisites": [
+              "ruby.enumerable",
+              "ruby.convencoes-e-testes"
+            ],
+            "lessonOutline": [
+              "Modelo de execução",
+              "Coordenação de tarefas",
+              "Perfis e alocações"
+            ],
+            "misconceptions": [
+              "Mais tarefas concorrentes podem aumentar contenção sem reduzir tempo total."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma otimização que apenas adiciona threads."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Formula uma hipótese mensurável.",
+              "Verifica resultado e uso de recursos."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Diagnosticar uma transformação de registros e comparar alternativas com evidências.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
     }
   ],
-  "orderIndex": 2
+  "orderIndex": 2,
+  "overview": [
+    "Ruby privilegia objetos, mensagens e blocos para expressar comportamento. Ler o código exige conhecer suas próprias regras de retorno, verdade e busca de métodos, porque algumas expressões parecem familiares e se comportam de outro modo.",
+    "A trilha relaciona fundamentos, coleções e composição antes de introduzir técnicas dinâmicas e operação. O estudo avançado mantém o foco em descobrir de onde vem um comportamento, qual estado é compartilhado e como demonstrar uma falha com um caso pequeno."
+  ]
 }

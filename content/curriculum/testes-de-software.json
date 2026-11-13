@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 9,
+  "slug": "testes-de-software",
+  "name": "Testes de Software",
+  "description": "Verifique comportamento com evidências que possam revelar defeitos reais.",
+  "category": "PROGRAMMING",
+  "accent": "rose",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fundamentos",
+      "title": "Casos e critérios",
+      "description": "Um teste compara um comportamento observado com uma expectativa.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Um teste compara um comportamento observado com uma expectativa. A expectativa precisa ter origem numa regra ou evidência independente da implementação.",
+          "Começaremos por casos de sucesso, fronteira e falha, distinguindo um teste que confirma um exemplo de uma estratégia que busca revelar defeitos."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "casos-e-oraculos",
+          "title": "Casos de teste e oráculos",
+          "summary": "De onde vem o resultado esperado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Derivar um caso de uma regra.",
+              "Identificar o oráculo utilizado."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Entrada e resultado",
+              "Oráculos e incerteza",
+              "Fronteiras e classes de equivalência"
+            ],
+            "misconceptions": [
+              "Copiar o algoritmo da implementação para o teste pode reproduzir o mesmo defeito."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um teste que só espelha a função."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a origem da expectativa.",
+              "Constrói uma entrada que detecta um defeito plausível."
+            ]
+          }
+        },
+        {
+          "slug": "testes-unitarios",
+          "title": "Testes unitários",
+          "summary": "Unidades, contratos e isolamento útil.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher uma unidade de comportamento.",
+              "Evitar asserções acopladas a detalhes irrelevantes."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Funções e contratos",
+              "Arrange, act, assert",
+              "Determinismo e relógio"
+            ],
+            "misconceptions": [
+              "Um teste unitário não precisa verificar cada chamada interna para ser útil."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma suíte que quebra a cada refatoração equivalente."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue comportamento de implementação.",
+              "Mantém falha observável para um defeito real."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "integracao",
+      "title": "Integração e percursos",
+      "description": "Bancos, serviços e interfaces introduzem contratos que um teste isolado pode não exercitar.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Bancos, serviços e interfaces introduzem contratos que um teste isolado pode não exercitar. É preciso decidir quais partes serão reais e quais serão substituídas.",
+          "Dublês e testes de percurso serão usados para investigar fronteiras concretas, com dados exclusivos de teste e verificação de efeitos persistidos."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "integracao-e-contratos",
+          "title": "Integração e contratos",
+          "summary": "Dependências reais e compatibilidade.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher fronteiras de integração.",
+              "Verificar persistência e erros de contrato."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Bancos temporários",
+              "Contratos HTTP",
+              "Falhas e reenvios"
+            ],
+            "misconceptions": [
+              "Substituir o banco por um mock não demonstra que a migração funciona."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma integração cujo teste ignora o efeito persistido."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Usa uma dependência real quando necessário.",
+              "Verifica estado e resposta."
+            ]
+          }
+        },
+        {
+          "slug": "dubles-e-e2e",
+          "title": "Dublês e E2E",
+          "summary": "Escolha de substituições e percursos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir fake, stub e mock por função.",
+              "Definir um percurso de aceitação."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Substituições controladas",
+              "Percursos críticos",
+              "Intermitência e observação"
+            ],
+            "misconceptions": [
+              "A existência de um botão não comprova que sua ação funciona."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um teste de interface sem efeito verificado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Confirma o resultado da interação.",
+              "Mantém isolamento do ambiente de uso."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "estrategias",
+      "title": "Estratégias avançadas",
+      "description": "Cobertura indica execução, não garantia de correção.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Cobertura indica execução, não garantia de correção. Propriedades, mutações e falhas injetadas permitem investigar lacunas que exemplos isolados podem esconder.",
+          "A estratégia precisa considerar risco, custo e confiabilidade. Mais testes não significam mais informação se todos verificam a mesma suposição."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "propriedades-e-mutacao",
+          "title": "Propriedades e teste de mutação",
+          "summary": "Generalização e sensibilidade a defeitos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Expressar uma propriedade de domínio.",
+              "Interpretar uma mutação sobrevivente."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Propriedades e geradores",
+              "Redução de casos",
+              "Mutações e oráculos"
+            ],
+            "misconceptions": [
+              "Alta cobertura pode coexistir com asserções incapazes de detectar erros."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma suíte que aceita a troca de >= por >."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Cria um caso de fronteira.",
+              "Explica o defeito detectado."
+            ]
+          }
+        },
+        {
+          "slug": "confiabilidade-da-suite",
+          "title": "Confiabilidade e falhas de ambiente",
+          "summary": "Diagnóstico de testes intermitentes.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Separar defeito do produto e falha de setup.",
+              "Investigar fontes de não determinismo."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Tempo e concorrência",
+              "Dados compartilhados",
+              "Evidência e repetição dirigida"
+            ],
+            "misconceptions": [
+              "Repetir até passar não explica a causa de uma falha."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma suíte que compartilha estado entre testes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Isola a fonte de interferência.",
+              "Propõe uma correção verificável."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Testes produzem evidências comparando um comportamento com uma expectativa. O valor de um teste depende da regra que ele verifica e dos defeitos que consegue revelar, não só de quantas linhas executa.",
+    "O percurso parte de casos e oráculos, passa por unidades e integração e chega a propriedades, mutações e diagnóstico de intermitência. Você aprenderá a questionar testes gerados por IA que apenas repetem a implementação ou não observam seu efeito real."
+  ]
+}

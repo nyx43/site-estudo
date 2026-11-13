@@ -38,17 +38,21 @@ export function createStudyService(repository: StudyRepository, clock = () => ne
     async availableLessons() {
       const lessons = await repository.listLessons();
       const topics = new Set<string>();
-      return lessons.filter((lesson) => { if (topics.has(lesson.topicId)) return false; topics.add(lesson.topicId); return true; }).map(({ id, topicId, title, status }) => ({ id, topicId, title, status }));
+      return lessons.filter((lesson) => { if (topics.has(lesson.topicId)) return false; topics.add(lesson.topicId); return true; }).map(({ id, topicId, title, status, version, teaching, objectives }) => ({ id, topicId, title, status, version, description: teaching?.introduction[0] ?? objectives[0], level: teaching?.level ?? "FOUNDATION" }));
     },
-    async lesson(topicId: string) {
-      const lesson = await repository.findLessonByTopic(topicId);
+    async lesson(topicId: string, version?: number) {
+      const lesson = await repository.findLessonByTopic(topicId, version);
       if (!lesson) return null;
       const progress = await repository.getProgress(lesson.id);
       const exercises = await Promise.all((await repository.listExercises(lesson.id)).map(async (exercise) => {
         const attempt = await repository.latestAttempt(exercise.id);
         return { id: exercise.id, title: exercise.title, type: exercise.type, isCorrect: await repository.hasSolved(exercise.id), gaveUp: attempt?.gaveUp ?? false };
       }));
-      return { lesson: publicLesson(lesson, progress.answers, progress.completedSteps), progress, exercises };
+      const versions = await Promise.all((await repository.listLessons()).filter((item) => item.topicId === topicId).map(async (item) => {
+        const saved = await repository.getProgress(item.id);
+        return { id: item.id, version: item.version, hasProgress: saved.completedSteps.length > 0 || Object.keys(saved.answers).length > 0, completedAt: saved.completedAt };
+      }));
+      return { lesson: publicLesson(lesson, progress.answers, progress.completedSteps), progress, exercises, versions };
     },
     async progress(lessonId: string, change: ProgressChange) {
       return repository.transaction(async (tx) => {

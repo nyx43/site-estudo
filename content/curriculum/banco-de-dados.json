@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 7,
+  "slug": "banco-de-dados",
+  "name": "Banco de Dados",
+  "description": "Do modelo relacional às transações, índices e diagnóstico de consultas.",
+  "category": "PROGRAMMING",
+  "accent": "amber",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "modelagem",
+      "title": "Modelagem e integridade",
+      "description": "Um banco representa regras sobre dados que persistem além de uma execução.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Um banco representa regras sobre dados que persistem além de uma execução. Tabelas, chaves e restrições precisam corresponder a identidades e relações do domínio.",
+          "A modelagem será avaliada por exemplos de inserção, alteração e exclusão. O objetivo é impedir inconsistências, sem tratar normalização como uma regra mecânica sem contexto."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "modelo-relacional",
+          "title": "Modelo relacional e chaves",
+          "summary": "Identidades, relações e restrições.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir chave primária e estrangeira.",
+              "Modelar uma relação com integridade."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Tabelas e tuplas",
+              "Chaves e unicidade",
+              "Integridade referencial"
+            ],
+            "misconceptions": [
+              "Ter um campo chamado id não garante sozinho a regra de identidade do domínio."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um modelo que aceita referências inexistentes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a restrição ausente.",
+              "Define efeitos de alteração e exclusão."
+            ]
+          }
+        },
+        {
+          "slug": "normalizacao",
+          "title": "Normalização e dependências",
+          "summary": "Redundância e anomalias.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma dependência funcional.",
+              "Explicar anomalias de atualização."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Dependências",
+              "Formas normais iniciais",
+              "Desnormalização deliberada"
+            ],
+            "misconceptions": [
+              "Dividir tabelas sem analisar dependências não demonstra normalização correta."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar dados duplicados com atualizações contraditórias."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mostra a anomalia.",
+              "Justifica uma decomposição que preserva o significado."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "sql",
+      "title": "SQL e comportamento de consultas",
+      "description": "SQL descreve resultados, mas os detalhes de junções, agrupamentos e valores ausentes mudam o conjunto produzido.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "SQL descreve resultados, mas os detalhes de junções, agrupamentos e valores ausentes mudam o conjunto produzido. A consulta deve ser explicada com dados pequenos.",
+          "A análise inclui duplicação de linhas por junções, comportamento de NULL e filtros aplicados antes ou depois de agrupamentos."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "consultas-e-joins",
+          "title": "Consultas, filtros e joins",
+          "summary": "Conjuntos de resultado e multiplicidade.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear uma junção.",
+              "Distinguir INNER e LEFT JOIN."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "SELECT e WHERE",
+              "Condições de junção",
+              "Ausência e duplicação"
+            ],
+            "misconceptions": [
+              "Uma junção pode multiplicar linhas quando a relação não é um-para-um."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um total inflado após um join."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a multiplicidade.",
+              "Propõe uma consulta que preserve a métrica desejada."
+            ]
+          }
+        },
+        {
+          "slug": "null-e-agregacoes",
+          "title": "NULL e agregações",
+          "summary": "Ausência, contagem e agrupamento.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar diferenças entre contagens.",
+              "Rastrear filtros e agrupamentos."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Lógica com NULL",
+              "COUNT e SUM",
+              "GROUP BY e HAVING"
+            ],
+            "misconceptions": [
+              "NULL não se comporta como um valor comum em comparações de igualdade."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um filtro que perde registros ausentes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue ausência de zero.",
+              "Justifica o tratamento dos registros no agrupamento."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "operacao",
+      "title": "Transações e desempenho",
+      "description": "Operações simultâneas precisam preservar invariantes mesmo quando há falha ou repetição.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Operações simultâneas precisam preservar invariantes mesmo quando há falha ou repetição. Uma transação não elimina automaticamente todos os tipos de concorrência incorreta.",
+          "Índices, planos de consulta e migrações serão estudados a partir de custo observado e do efeito sobre dados existentes."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "transacoes",
+          "title": "Transações e concorrência",
+          "summary": "Atomicidade, isolamento e invariantes.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar uma atualização perdida.",
+              "Definir uma operação atômica."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Commit e rollback",
+              "Isolamento e anomalias",
+              "Restrições e idempotência"
+            ],
+            "misconceptions": [
+              "Duas consultas corretas isoladamente podem formar uma operação concorrente incorreta."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um saldo atualizado por leitura e escrita separadas."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Constrói um entrelaçamento que revela a falha.",
+              "Propõe garantia transacional ou restrição adequada."
+            ]
+          }
+        },
+        {
+          "slug": "indices-e-migracoes",
+          "title": "Índices, planos e migrações",
+          "summary": "Leitura eficiente e evolução sem descarte de dados.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar índice e padrão de consulta.",
+              "Planejar uma mudança de schema."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Custo de leitura e escrita",
+              "Planos de consulta",
+              "Migração e compatibilidade"
+            ],
+            "misconceptions": [
+              "Um índice acelera algumas leituras, mas tem custo de armazenamento e atualização."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma migração que apaga uma coluna ainda usada."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mapeia consumidores afetados.",
+              "Define verificação antes e depois da migração."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Um banco mantém dados e regras para além da execução de um programa. Modelos, consultas e transações precisam preservar identidades e relações mesmo quando há alterações, falhas ou acessos simultâneos.",
+    "A trilha parte da modelagem relacional, passa por SQL e chega a concorrência, índices e migrações. O objetivo é acompanhar o caminho do dado e investigar efeitos como linhas duplicadas, referências inválidas ou uma mudança de schema incompatível."
+  ]
+}

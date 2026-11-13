@@ -17,8 +17,8 @@ function operations(db: Connection): StudyOperations {
   }
   return {
     async listLessons() { return (await db.query.lessons.findMany({ orderBy: desc(lessons.version) })).map((row) => LessonSchema.parse(row.definition)); },
-    async findLessonByTopic(topicId) {
-      const row = await db.query.lessons.findFirst({ where: eq(lessons.topicId, topicId), orderBy: desc(lessons.version) });
+    async findLessonByTopic(topicId, version) {
+      const row = await db.query.lessons.findFirst({ where: version === undefined ? eq(lessons.topicId, topicId) : and(eq(lessons.topicId, topicId), eq(lessons.version, version)), orderBy: desc(lessons.version) });
       return row ? LessonSchema.parse(row.definition) : null;
     },
     async findLesson(id) { const row = await db.query.lessons.findFirst({ where: eq(lessons.id, id) }); return row ? LessonSchema.parse(row.definition) : null; },

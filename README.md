@@ -1,6 +1,8 @@
 # Estudo ES
 
-Plataforma pessoal de estudos de Engenharia de Software. Catálogo curricular navegável com cinco disciplinas, 15 módulos e 47 tópicos, mais a aula-piloto de Python — Laços de repetição — e seus 12 exercícios. O piloto tem verificação automática; a revisão pedagógica humana permanece pendente.
+Plataforma pessoal de estudos de Engenharia de Software. O catálogo planeja 13 disciplinas, 49 módulos e 115 tópicos. Três aulas de Python já têm explicações aprofundadas e 24 exercícios: Variáveis e tipos, Condicionais e Laços de repetição. As demais aulas continuam planejadas; não são conteúdo pronto.
+
+As aulas completas ficam em `/aulas`, com leitura livre, comandos explicados, exemplos por linha, casos específicos e diagnóstico de erros em código de IA. O percurso guiado salva respostas e progresso. As três aulas atuais têm verificação automática (`AUTO_CHECKED`); a avaliação humana ficará para depois, conforme solicitado.
 
 O projeto começa como site e deve acomodar dezenas de disciplinas e um aplicativo móvel. O conteúdo é dado versionado; regras de negócio e acesso ao banco ficam fora dos componentes.
 
@@ -27,13 +29,13 @@ npm ci
 CATALOG_STORAGE=files npm run dev
 ```
 
-Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente de leitura para autoria e revisão do plano curricular. O catálogo de arquivos não salva progresso; a aula-piloto e a prática usam SQLite. O modo padrão é `sqlite`; uma falha de banco não aciona fallback automático.
+Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente de leitura para autoria e revisão do plano curricular. O catálogo de arquivos não salva progresso; aulas e prática usam SQLite. O modo padrão é `sqlite`; uma falha de banco não aciona fallback automático.
 
 ## Verificar
 
 | Comando | Verificação |
 | --- | --- |
-| `npm run content:validate` | Contratos, duplicatas, referências e ciclos de pré-requisitos |
+| `npm run content:validate` | Contratos, duplicatas, fontes, conexões, explicações por linha e ciclos de pré-requisitos |
 | `npm run lint` | Regras estáticas |
 | `npm run typecheck` | TypeScript estrito e tipos de rotas Next |
 | `npm test` | Contratos, currículo, busca, serviço e tratamento de erros da API |
@@ -44,11 +46,13 @@ Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente
 
 Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o navegador instalado por `npx playwright install chromium`. Também é possível definir `CHROMIUM_PATH`. Os percursos criam seu próprio banco em `.cache/e2e-*.db` e servidor na porta 3100. Eles não reutilizam o servidor ou o progresso de desenvolvimento. Não execute um servidor no mesmo diretório de build durante `npm run build`.
 
-### Aula-piloto
+### Aulas e prática
 
-Depois de migrar e popular o banco, abra a aula pelo cartão da página inicial ou pelo tópico de laços de repetição. O percurso tem 10 partes, pré-perguntas sem nota, exemplos explicados e autoexplicação. As respostas e partes concluídas ficam salvas no SQLite.
+Depois de migrar e popular o banco, abra `/aulas`. A leitura mostra todo o conteúdo sem perguntas de desbloqueio e não marca partes como concluídas. Cada aula oferece também um percurso guiado de 10 partes, pré-perguntas sem nota, exemplos explicados e autoexplicação. As respostas e partes concluídas ficam salvas no SQLite.
 
-Na prática há 4 quizzes, 3 exercícios de ordenar blocos (Parsons), 3 exemplos com erro e 2 previsões de saída. A correção é determinística no servidor. Uma tentativa pode ter vários envios e fecha ao acertar ou consultar a solução. Reenvios com o mesmo identificador não duplicam registros. A solução fica privada enquanto a tentativa estiver aberta; respostas-modelo das perguntas só são liberadas após o aluno responder, e os palpites são retomados no resumo.
+Variáveis e Condicionais têm 6 exercícios cada; Laços tem 12. A prática combina quizzes, ordenação de blocos (Parsons), exemplos com erro e previsão de saída. A correção é determinística no servidor. Uma tentativa pode ter vários envios e fecha ao acertar ou consultar a solução. Reenvios com o mesmo identificador não duplicam registros. A solução fica privada enquanto a tentativa estiver aberta; respostas-modelo das perguntas só são liberadas após o aluno responder, e os palpites são retomados no resumo.
+
+A versão 1 de Laços permanece preservada. A versão 2 aprofunda o conteúdo sem alterar respostas ou tentativas antigas; quem já estudava a v1 pode retomá-la pelo link na aula guiada. Há quatro versões armazenadas e 36 exercícios no histórico, dos quais três versões e 24 exercícios são atuais.
 
 Os programas do aluno não são executados. Os exemplos e gabaritos Python do conteúdo podem ser verificados offline com `npm run verify:examples`, que exige Python 3 e bubblewrap funcional. O comando usa sandbox sem rede ou acesso ao checkout, com limites de tempo, memória, escrita e saída; falha se o isolamento não estiver disponível. No sandbox interno do agente na nuvem, esse comando precisa de uma execução aprovada fora dele para criar o sandbox bubblewrap. O comando não faz parte de `check`, e sua execução deve ser reportada separadamente.
 
@@ -58,7 +62,8 @@ A revisão humana continua necessária para fatos, linguagem e qualidade pedagó
 
 ```text
 content/curriculum/        Planejamento curricular das disciplinas
-content/study/             Aula e exercícios versionados, com gabaritos privados
+content/study/             Aulas e exercícios versionados, com gabaritos privados
+content/sources/           Metadados de referências reais, sem materiais brutos
 src/lib/catalog/          Contratos, porta do repositório, serviço e busca
 src/lib/study/            Casos de uso e contratos de estudo
 src/lib/pedagogy/         Correção determinística pura
@@ -79,14 +84,16 @@ Para alterar o banco, edite `src/lib/db/schema.ts`, gere uma migração com `npm
 - [Plano e backlog](docs/ROADMAP.md)
 - [Arquitetura e decisões revisáveis](docs/ARCHITECTURE.md)
 - [Planejamento curricular](docs/CURRICULUM.md)
+- [Autoria a partir de materiais](docs/AUTHORING.md)
+- [Fila de revisão posterior](docs/REVIEW_QUEUE.md)
 - [Orientações para agentes](AGENTS.md)
 - [Resultados e pendências de validação](docs/VALIDATION.md)
 
-O documento mestre v2.3 é uma referência de produto; as decisões posteriores do usuário prevalecem. Os textos do currículo são propostas de autoria inicial, sem aprovação pedagógica humana implícita. Futuras aulas precisarão de validação e revisão antes de receber status de conteúdo verificado.
+O documento mestre v2.3 é uma referência de produto; as decisões posteriores do usuário prevalecem. Slides e livros futuros serão fontes para gerar aulas, lições e exercícios próprios, com capítulos/páginas rastreáveis. Os arquivos crus não entram em `public/` ou no Git. O fluxo para os próximos agentes está em `docs/AUTHORING.md`; não existe uploader ou geração automática por IA nesta versão.
 
 ## API de estudo
 
-- `GET /api/lessons/[topicId]`: aula pública, progresso e lista de exercícios; cache privado desativado.
+- `GET /api/lessons/[topicId]`: última versão da aula pública, progresso, exercícios e versões disponíveis; cache privado desativado. `?version=1` consulta uma versão histórica.
 - `POST /api/lessons/[lessonId]/progress`: `ANSWER` com `questionId` e `answer`, ou `COMPLETE_STEP` com `step`. O parâmetro é o ID versionado da aula, apesar do nome compartilhado da pasta de rota.
 - `GET /api/exercises/[id]`: enunciado público e estado da última tentativa.
 - `POST /api/attempts`: inicia ou retoma uma sessão com `exerciseId`, após concluir a aula.

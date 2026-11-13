@@ -4,8 +4,8 @@ import Link from "next/link";
 export const metadata = { title: "O caminho do projeto" };
 
 const milestones = [
-  { title: "Organizar o caminho", status: "Disponível", description: "Catálogo com as cinco disciplinas iniciais, módulos, objetivos, pré-requisitos e planos de avaliação.", current: true },
-  { title: "Aprender e praticar", status: "Piloto em revisão", description: "Aula de laços de repetição em Python, com 12 exercícios, correção determinística e progresso salvo. A revisão pedagógica humana permanece pendente.", current: true },
+  { title: "Organizar o caminho", status: "Disponível", description: "Catálogo ampliável com disciplinas, guias de módulos, objetivos, pré-requisitos e planos de avaliação. Os tópicos planejados indicam o conteúdo que ainda será produzido.", current: true },
+  { title: "Aprender e praticar", status: "Primeiras aulas em revisão", description: "Variáveis e tipos, Condicionais e Laços de repetição em Python: leitura completa, código explicado por linha e 24 exercícios com correção e progresso salvo. A avaliação humana será feita depois.", current: true },
   { title: "Voltar para consolidar", status: "Planejado", description: "Revisão espaçada, sessões curtas de estudo, painel de dificuldades e tutor com respostas simuladas." },
   { title: "Receber ajuda com intenção", status: "Planejado", description: "Integração de IA com pistas progressivas e validação de conteúdo, preservando o raciocínio do aluno." },
   { title: "Construir e demonstrar", status: "Futuro", description: "Execução isolada de código, avaliação por competências e projetos práticos com critérios de aceitação." },

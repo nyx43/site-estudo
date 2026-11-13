@@ -1,4 +1,4 @@
-import type { SubjectAccent, SubjectCategory, TopicPlan } from "./schema";
+import type { SubjectAccent, SubjectCategory, TopicPlan, ModuleGuide } from "./schema";
 export type { SubjectCategory } from "./schema";
 
 // Public catalog DTOs; persistence models never cross the presentation boundary.
@@ -15,6 +15,7 @@ export interface CatalogModule {
   slug: string;
   title: string;
   description: string;
+  guide?: ModuleGuide;
   project: { brief: string; deliverables: string[]; acceptanceCriteria: string[] };
   topics: CatalogTopic[];
 }
@@ -28,6 +29,7 @@ export interface CatalogSubject {
   accent: SubjectAccent;
   version: number;
   learningOutcomes: string[];
+  overview?: string[];
   modules: CatalogModule[];
 }
 

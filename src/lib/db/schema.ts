@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
-import type { SubjectDefinition, TopicPlan } from "../catalog/schema";
+import type { SubjectDefinition, TopicPlan, ModuleGuide } from "../catalog/schema";
 import type { Exercise, Lesson, Answer } from "../study/schema";
 import type { LessonProgress } from "../study/progress";
 import { sql } from "drizzle-orm";
@@ -10,12 +10,14 @@ export const subjects = sqliteTable("Subject", {
   description: text().notNull(), category: text().notNull(), accent: text().notNull(),
   orderIndex: integer().notNull(), version: integer().notNull(),
   learningOutcomes: text({ mode: "json" }).$type<string[]>().notNull(),
+  overview: text({ mode: "json" }).$type<string[]>(),
 });
 
 export const modules = sqliteTable("Module", {
   id: text().primaryKey(), slug: text().notNull(), title: text().notNull(), description: text().notNull(),
   orderIndex: integer().notNull(),
   project: text({ mode: "json" }).$type<SubjectDefinition["modules"][number]["project"]>().notNull(),
+  guide: text({ mode: "json" }).$type<ModuleGuide>(),
   subjectId: text().notNull().references(() => subjects.id, { onDelete: "restrict", onUpdate: "cascade" }),
 }, (table) => [uniqueIndex("Module_subjectId_slug_key").on(table.subjectId, table.slug), index("Module_subjectId_orderIndex_idx").on(table.subjectId, table.orderIndex)]);
 

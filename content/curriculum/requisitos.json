@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "version": 1,
+  "version": 2,
   "slug": "requisitos",
   "name": "Análise de Requisitos",
   "description": "Transforme necessidades em decisões claras, critérios testáveis e escopo compreensível.",
@@ -123,7 +123,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Antes de propor uma tela, precisamos identificar o problema, as pessoas afetadas e o resultado que se deseja obter. Uma funcionalidade solicitada pode ser apenas uma hipótese de solução.",
+          "A elicitação reúne evidências por entrevistas, observação e documentos. Requisitos funcionais, qualidades e restrições serão diferenciados com condições de verificação claras."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Separar fato, hipótese e decisão.",
+          "Identificar quem valida a necessidade.",
+          "Evitar transformar termos vagos em números inventados."
+        ]
+      }
     },
     {
       "slug": "especificacao",
@@ -240,7 +253,20 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Especificar é tornar uma regra compreensível o suficiente para ser discutida e testada. Histórias, exemplos e critérios ajudam a expor ambiguidades, em vez de apenas preencher modelos.",
+          "Cada requisito será acompanhado de situações concretas, resultados esperados e perguntas ainda abertas. Isso permite revisar uma especificação produzida por IA e detectar decisões que ela assumiu sem evidência."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Identificar interpretações concorrentes.",
+          "Preservar valor nos recortes da história.",
+          "Escrever critérios que possam reprovar uma entrega."
+        ]
+      }
     },
     {
       "slug": "gestao-e-mudanca",
@@ -357,8 +383,219 @@
             ]
           }
         }
-      ]
+      ],
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Prioridades e requisitos mudam conforme surgem evidências. Gerir essa mudança exige saber o que será afetado, quais dependências existem e o que fica fora do recorte atual.",
+          "Casos de uso e rastreabilidade conectam origem, comportamento e validação. A documentação é útil quando permite explicar por que uma alteração deve ocorrer e como seu resultado será verificado."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Justificar prioridades e dependências.",
+          "Cobrir fluxos alternativos.",
+          "Rastrear uma mudança até regras, testes e interessados."
+        ]
+      }
+    },
+    {
+      "slug": "analise-avancada",
+      "title": "Análise e negociação avançadas",
+      "description": "Qualidade, conflitos e hipóteses de produto.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Requisitos podem competir entre si: resposta rápida, custo, proteção de dados e facilidade de uso nem sempre melhoram ao mesmo tempo. A negociação precisa tornar esses conflitos explícitos.",
+          "Modelos de domínio e cenários de qualidade ajudam a esclarecer vocabulário, fronteiras e resultados. Um requisito produzido por IA deve ser rastreado até evidências ou tratado como hipótese."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Identificar conflitos entre critérios.",
+          "Separar hipótese de requisito confirmado.",
+          "Definir a situação de medição de uma qualidade."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "cenarios-de-qualidade",
+          "title": "Cenários de qualidade",
+          "summary": "Estímulo, contexto e resposta mensurável.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Descrever uma qualidade em um cenário verificável.",
+              "Explicitar condições e limites de medição."
+            ],
+            "prerequisites": [
+              "requisitos.funcionais-e-nao-funcionais"
+            ],
+            "lessonOutline": [
+              "Atributos de qualidade",
+              "Estímulo e ambiente",
+              "Resposta e medida"
+            ],
+            "misconceptions": [
+              "Uma meta de tempo sem carga e condições de ambiente é incompleta."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma exigência de desempenho sem cenário."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica dados ausentes.",
+              "Formula pergunta de esclarecimento sem inventar um SLA."
+            ]
+          }
+        },
+        {
+          "slug": "dominio-e-conflitos",
+          "title": "Domínio, conflitos e negociação",
+          "summary": "Vocabulário, fronteiras e critérios concorrentes.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Construir um glossário de domínio.",
+              "Explicar um conflito e alternativas de decisão."
+            ],
+            "prerequisites": [
+              "requisitos.elicitacao",
+              "requisitos.rastreabilidade-e-validacao"
+            ],
+            "lessonOutline": [
+              "Linguagem compartilhada",
+              "Regras e exceções",
+              "Negociação e registro de decisões"
+            ],
+            "misconceptions": [
+              "Termos iguais podem ter significados diferentes para interessados distintos."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar interpretações divergentes de uma regra."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mostra as interpretações concorrentes.",
+              "Identifica quem deve decidir e com quais evidências."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Revisar requisitos conflitantes de um sistema fictício com registro das decisões.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "validacao-e-ia",
+      "title": "Validação de especificações e IA",
+      "description": "Rastreabilidade e revisão de decisões automatizadas.",
+      "guide": {
+        "level": "SPECIALIZED",
+        "introduction": [
+          "Uma especificação longa pode esconder contradições, regras sem origem e casos não cobertos. A revisão precisa acompanhar a coerência entre necessidade, regra, exemplo e teste.",
+          "Ao usar IA, a origem das decisões ganha importância. O agente pode ajudar a organizar e propor, mas uma proposta sem evidência não deve se transformar silenciosamente em obrigação do produto."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Rastrear decisões até uma fonte ou hipótese explícita.",
+          "Buscar contraexemplos para critérios.",
+          "Revisar impacto de mudanças em cadeia."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "revisao-de-especificacoes",
+          "title": "Revisão de especificações geradas por IA",
+          "summary": "Contradições, omissões e decisões inventadas.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Classificar uma afirmação como fonte, inferência ou hipótese.",
+              "Detectar inconsistências entre critérios."
+            ],
+            "prerequisites": [
+              "requisitos.dominio-e-conflitos"
+            ],
+            "lessonOutline": [
+              "Proveniência de decisões",
+              "Revisão por cenários",
+              "Lacunas e contradições"
+            ],
+            "misconceptions": [
+              "Texto convincente não demonstra que o interessado confirmou uma regra."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um brief que adiciona pagamento não solicitado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a ampliação de escopo.",
+              "Propõe uma pergunta ou alternativa rastreável."
+            ]
+          }
+        },
+        {
+          "slug": "impacto-e-evolucao",
+          "title": "Impacto e evolução contínua",
+          "summary": "Mudanças de regra, compatibilidade e evidências.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Mapear consumidores e testes afetados por uma mudança.",
+              "Planejar transição entre regras."
+            ],
+            "prerequisites": [
+              "requisitos.rastreabilidade-e-validacao",
+              "requisitos.cenarios-de-qualidade"
+            ],
+            "lessonOutline": [
+              "Análise de impacto",
+              "Compatibilidade e migração",
+              "Validação e acompanhamento"
+            ],
+            "misconceptions": [
+              "Alterar a descrição não atualiza automaticamente implementação, dados e testes."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Analisar a troca de uma regra já usada em produção."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica efeitos sobre dados existentes.",
+              "Define critérios para verificar a transição."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Auditar uma especificação assistida por IA e preparar um plano de mudança verificável.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
     }
   ],
-  "orderIndex": 4
+  "orderIndex": 4,
+  "overview": [
+    "Análise de Requisitos investiga necessidades e transforma decisões em comportamentos verificáveis. Não é apenas escrever listas: é identificar pessoas, contexto, ambiguidades e critérios que permitam discutir se uma solução atende ao problema.",
+    "A trilha vai de elicitação e classificação até negociação, qualidade e evolução. Ao revisar trabalho de IA, você aprenderá a distinguir uma regra confirmada de uma inferência ou invenção e a rastrear seus efeitos até critérios, implementação e testes."
+  ]
 }

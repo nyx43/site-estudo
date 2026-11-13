@@ -1,0 +1,844 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "python.condicionais.v1",
+    "topicId": "python.condicionais",
+    "version": 1,
+    "title": "Condicionais",
+    "status": "AUTO_CHECKED",
+    "objectives": [
+      "Traduzir regras em condições, distinguindo and, or e not.",
+      "Rastrear caminhos exclusivos e independentes com a indentação correta.",
+      "Derivar casos de fronteira e combinações que revelem falhas em código gerado por IA."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Uma regra de negócio costuma ser uma decisão: conceder acesso, classificar uma nota, aceitar uma entrada. Para acompanhar uma IA, precisamos transformar essa regra em condições que possam ser testadas e descobrir se os caminhos cobrem os casos possíveis.",
+        "Você já sabe reconhecer valores e tipos. Agora vamos construir comparações que produzem booleanos, ligá-las com operadores lógicos e entender como a indentação e a ordem dos ramos controlam quais instruções executam."
+      ],
+      "prerequisites": [
+        {
+          "topicId": "python.variaveis-e-tipos",
+          "reason": "As condições dependem dos valores, tipos e operadores usados nas expressões."
+        }
+      ],
+      "glossary": [
+        {
+          "term": "Booleano",
+          "meaning": "Um valor que representa verdadeiro ou falso.",
+          "example": "True e False são os dois valores de bool."
+        },
+        {
+          "term": "Condição",
+          "meaning": "Uma expressão avaliada para decidir um caminho.",
+          "example": "idade >= 18 compara uma idade ao limite inclusivo."
+        },
+        {
+          "term": "Ramo",
+          "meaning": "Um bloco que corresponde a uma alternativa da decisão.",
+          "example": "O bloco do else representa o caminho restante."
+        },
+        {
+          "term": "Indentação",
+          "meaning": "Espaços no início da linha que estruturam os blocos em Python.",
+          "example": "A linha com quatro espaços depois do if pertence a esse bloco."
+        },
+        {
+          "term": "Fronteira",
+          "meaning": "Um valor em que a regra muda de resultado.",
+          "example": "Se o limite é 18, os casos 17, 18 e 19 verificam a fronteira."
+        },
+        {
+          "term": "Curto-circuito",
+          "meaning": "Avaliação que pode dispensar a parte direita de uma operação lógica.",
+          "example": "Em False and expressao, expressao não é avaliada."
+        }
+      ],
+      "commands": [
+        {
+          "name": "if, elif e else",
+          "kind": "KEYWORD",
+          "syntax": "if condicao: ...; elif outra_condicao: ...; else: ...",
+          "explanation": "if inicia uma decisão; elif adiciona uma alternativa testada quando as anteriores falham; else cobre o restante. Em uma cadeia, só um bloco é escolhido.",
+          "whenToUse": "Implementar classificações exclusivas e regras com alternativas claras.",
+          "pitfalls": [
+            "else não é obrigatório; se faltar, alguns casos podem não executar ação alguma.",
+            "Uma condição ampla antes de uma específica pode esconder esta última."
+          ],
+          "examples": [
+            {
+              "id": "cond-if",
+              "title": "Um caminho por classificação",
+              "purpose": "Representar faixas sem executar caminhos incompatíveis.",
+              "code": "nota = 7\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define o valor que será comparado. Neste exemplo não há leitura de entrada externa."
+                },
+                {
+                  "line": 2,
+                  "explanation": "if avalia a comparação >=, que inclui o limite 7. Os dois-pontos abrem o bloco."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Os quatro espaços indicam uma instrução pertencente ao primeiro ramo. Ela só executa se esse teste for verdadeiro."
+                },
+                {
+                  "line": 4,
+                  "explanation": "elif só é considerado se o if anterior não tiver sido escolhido. Aqui não será necessário testá-lo."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Este bloco pertence ao elif, e não ao if inicial."
+                },
+                {
+                  "line": 6,
+                  "explanation": "else não possui condição: é o caminho restante quando nenhum teste anterior da cadeia foi verdadeiro."
+                },
+                {
+                  "line": 7,
+                  "explanation": "Este bloco corresponde ao caso restante. Só um dos três blocos será escolhido nesta execução."
+                }
+              ],
+              "takeaway": "A ordem dos testes faz parte da regra. Uma faixa ampla antes de uma faixa específica pode tornar esta última inalcançável.",
+              "expectedOutput": "Aprovado"
+            }
+          ]
+        },
+        {
+          "name": "Comparações (==, !=, <, <=, >, >=)",
+          "kind": "OPERATOR",
+          "syntax": "valor >= limite",
+          "explanation": "Comparações relacionam valores e produzem uma resposta booleana nos casos básicos. >= inclui o limite, enquanto > não inclui. == compara igualdade e não faz atribuição.",
+          "whenToUse": "Traduzir limites e condições observáveis do requisito.",
+          "pitfalls": [
+            "Comparar números guardados como texto pode dar uma ordem lexicográfica.",
+            "Escolher > em vez de >= muda o caso exatamente no limite."
+          ],
+          "examples": [
+            {
+              "id": "cond-limites",
+              "title": "Teste a fronteira",
+              "purpose": "Verificar inclusão e exclusão do limite.",
+              "code": "idade = 18\nprint(idade >= 18)\nprint(idade > 18)\nprint(idade == 18)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define o valor de fronteira."
+                },
+                {
+                  "line": 2,
+                  "explanation": ">= inclui o próprio limite."
+                },
+                {
+                  "line": 3,
+                  "explanation": "> exige um valor estritamente maior."
+                },
+                {
+                  "line": 4,
+                  "explanation": "== testa igualdade e não modifica idade."
+                }
+              ],
+              "takeaway": "Um único caractere no operador pode alterar o requisito.",
+              "expectedOutput": "True\nFalse\nTrue"
+            }
+          ]
+        },
+        {
+          "name": "and, or e not",
+          "kind": "OPERATOR",
+          "syntax": "condicao_a and condicao_b",
+          "explanation": "and combina exigências simultâneas; or aceita uma alternativa; not inverte a interpretação de verdade. and e or usam curto-circuito e podem devolver operandos, não necessariamente um bool.",
+          "whenToUse": "Combinar critérios cujo significado já foi esclarecido.",
+          "pitfalls": [
+            "Não trocar e por ou porque o código parece mais curto.",
+            "Use parênteses para tornar combinações complexas legíveis."
+          ],
+          "examples": [
+            {
+              "id": "cond-and",
+              "title": "Duas exigências simultâneas",
+              "purpose": "Testar uma política de acesso com critérios independentes.",
+              "code": "admin = True\nativo = False\nif admin and ativo:\n    print(\"Liberado\")\nelse:\n    print(\"Bloqueado\")",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define a primeira condição: o usuário do exemplo é administrador."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Define a segunda condição: o usuário está inativo."
+                },
+                {
+                  "line": 3,
+                  "explanation": "and exige que ambas as condições sejam verdadeiras para escolher o bloco. Como ativo é False, a condição não é satisfeita."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Seria a saída do caminho autorizado, mas essa linha não executa neste caso."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Escolhe o caminho alternativo porque a condição do if não foi satisfeita."
+                },
+                {
+                  "line": 6,
+                  "explanation": "Informa o resultado da regra, sem implementar autenticação real."
+                }
+              ],
+              "takeaway": "Duas exigências ligadas por e não podem ser trocadas por or sem mudar o requisito.",
+              "expectedOutput": "Bloqueado"
+            }
+          ]
+        },
+        {
+          "name": "Curto-circuito",
+          "kind": "CONCEPT",
+          "syntax": "guarda and operacao_que_depende_da_guarda",
+          "explanation": "A parte esquerda pode determinar o resultado sem avaliar a direita. Isso permite que uma guarda valide uma condição antes de uma operação que depende dela.",
+          "whenToUse": "Expressar dependências simples de forma clara.",
+          "pitfalls": [
+            "A ordem é essencial.",
+            "Uma guarda não substitui validação completa de tipo ou do contrato."
+          ],
+          "examples": [
+            {
+              "id": "cond-curto-circuito",
+              "title": "A ordem protege uma operação",
+              "purpose": "Evitar avaliar uma divisão quando o denominador não permite a operação.",
+              "code": "divisor = 0\nif divisor != 0 and 10 / divisor > 2:\n    print(\"Acima do limite\")\nelse:\n    print(\"Condição não atendida\")",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define o caso de fronteira que causaria divisão por zero."
+                },
+                {
+                  "line": 2,
+                  "explanation": "and avalia a parte esquerda primeiro. Como divisor != 0 é falso, a divisão à direita não é avaliada."
+                },
+                {
+                  "line": 3,
+                  "explanation": "O ramo verdadeiro não executa, pois a condição inteira não foi satisfeita."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Seleciona o caminho restante."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Mostra a decisão sem executar a operação inválida."
+                }
+              ],
+              "takeaway": "Essa proteção depende da ordem e de and. Trocar por or ou avaliar a divisão antes elimina a proteção.",
+              "expectedOutput": "Condição não atendida"
+            }
+          ]
+        },
+        {
+          "name": "bool e interpretação de verdade",
+          "kind": "TYPE",
+          "syntax": "bool(valor)",
+          "explanation": "Converte a interpretação de verdade de um objeto para True ou False. Zero, None e coleções vazias são falsos nos casos básicos; muitos outros valores são verdadeiros.",
+          "whenToUse": "Entender condições diretas e investigar configurações recebidas.",
+          "pitfalls": [
+            "Uma string não vazia com o texto False é verdadeira.",
+            "Não confundir ausência de valor com um zero válido para o domínio."
+          ],
+          "examples": [
+            {
+              "id": "cond-bool",
+              "title": "Texto que parece falso",
+              "purpose": "Inspecionar valores usados diretamente em condições.",
+              "code": "entrada = \"False\"\nprint(bool(entrada))\nprint(bool(\"\"))",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Guarda uma string de cinco caracteres, e não o booleano False."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Uma string não vazia é considerada verdadeira, independentemente de estar escrita False dentro dela."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Uma string vazia é considerada falsa. A conversão não interpreta palavras como sim, não, true ou false."
+                }
+              ],
+              "takeaway": "Ao receber uma configuração textual, defina valores aceitos explicitamente. bool(texto) não é um parser de respostas humanas.",
+              "expectedOutput": "True\nFalse"
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "cond-if",
+          "title": "Um caminho por classificação",
+          "purpose": "Representar faixas sem executar caminhos incompatíveis.",
+          "code": "nota = 7\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+          "lineNotes": [
+            {
+              "line": 1,
+              "explanation": "Define o valor que será comparado. Neste exemplo não há leitura de entrada externa."
+            },
+            {
+              "line": 2,
+              "explanation": "if avalia a comparação >=, que inclui o limite 7. Os dois-pontos abrem o bloco."
+            },
+            {
+              "line": 3,
+              "explanation": "Os quatro espaços indicam uma instrução pertencente ao primeiro ramo. Ela só executa se esse teste for verdadeiro."
+            },
+            {
+              "line": 4,
+              "explanation": "elif só é considerado se o if anterior não tiver sido escolhido. Aqui não será necessário testá-lo."
+            },
+            {
+              "line": 5,
+              "explanation": "Este bloco pertence ao elif, e não ao if inicial."
+            },
+            {
+              "line": 6,
+              "explanation": "else não possui condição: é o caminho restante quando nenhum teste anterior da cadeia foi verdadeiro."
+            },
+            {
+              "line": 7,
+              "explanation": "Este bloco corresponde ao caso restante. Só um dos três blocos será escolhido nesta execução."
+            }
+          ],
+          "takeaway": "A ordem dos testes faz parte da regra. Uma faixa ampla antes de uma faixa específica pode tornar esta última inalcançável.",
+          "expectedOutput": "Aprovado"
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Categorias sobrepostas",
+          "explanation": "Dois testes independentes podem executar duas ações. A escolha entre if e elif deve vir da regra, não da preferência de escrita.",
+          "example": {
+            "id": "cond-ifs",
+            "title": "Dois if não formam uma cadeia",
+            "purpose": "Observar duas decisões independentes.",
+            "code": "nota = 8\nif nota >= 7:\n    print(\"Aprovado\")\nif nota >= 5:\n    print(\"Recuperação\")",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Define uma nota que satisfaz as duas comparações."
+              },
+              {
+                "line": 2,
+                "explanation": "Primeiro teste independente: 8 é maior ou igual a 7."
+              },
+              {
+                "line": 3,
+                "explanation": "Executa a saída desse primeiro teste."
+              },
+              {
+                "line": 4,
+                "explanation": "Começa outro if, sem relação de exclusão com o anterior. A comparação também é verdadeira."
+              },
+              {
+                "line": 5,
+                "explanation": "Executa uma segunda saída, contraditória caso a intenção fosse uma única classificação."
+              }
+            ],
+            "takeaway": "Use if separados quando várias ações puderem ocorrer. Use uma cadeia quando as categorias precisarem ser exclusivas.",
+            "expectedOutput": "Aprovado\nRecuperação"
+          }
+        },
+        {
+          "title": "Valor no limite",
+          "explanation": "Um teste deve incluir o valor imediatamente abaixo, o próprio limite e o valor imediatamente acima.",
+          "example": {
+            "id": "cond-fronteira",
+            "title": "Três valores essenciais",
+            "purpose": "Construir evidências para uma regra inclusiva.",
+            "code": "print(17 >= 18)\nprint(18 >= 18)\nprint(19 >= 18)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Confere o caso imediatamente abaixo."
+              },
+              {
+                "line": 2,
+                "explanation": "Confere o próprio limite que deve ser incluído."
+              },
+              {
+                "line": 3,
+                "explanation": "Confere o caso imediatamente acima."
+              }
+            ],
+            "takeaway": "Casos de fronteira expõem erros que uma entrada distante do limite pode não revelar.",
+            "expectedOutput": "False\nTrue\nTrue"
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "Acesso concedido a um administrador inativo",
+          "request": "Liberar somente quando a pessoa for administradora E estiver ativa.",
+          "generated": {
+            "id": "cond-ia-ruim",
+            "title": "Uma alternativa no lugar de uma exigência",
+            "purpose": "Observar a falha da condição usando or.",
+            "code": "admin = True\nativo = False\nif admin or ativo:\n    print(\"Liberado\")\nelse:\n    print(\"Bloqueado\")",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "O exemplo satisfaz o critério de administrador."
+              },
+              {
+                "line": 2,
+                "explanation": "O mesmo exemplo não satisfaz o critério de atividade."
+              },
+              {
+                "line": 3,
+                "explanation": "or considera suficiente uma alternativa verdadeira."
+              },
+              {
+                "line": 4,
+                "explanation": "O programa libera acesso, contrariando a exigência simultânea."
+              },
+              {
+                "line": 5,
+                "explanation": "Este ramo não foi escolhido."
+              },
+              {
+                "line": 6,
+                "explanation": "Seria a saída quando ambas as alternativas fossem falsas."
+              }
+            ],
+            "takeaway": "O programa roda, mas a política está errada.",
+            "expectedOutput": "Liberado"
+          },
+          "diagnosis": [
+            "O pedido exige duas condições ao mesmo tempo.",
+            "or aceita o administrador mesmo estando inativo.",
+            "A revisão precisa cobrir as quatro combinações possíveis de dois booleanos."
+          ],
+          "correction": {
+            "id": "cond-and",
+            "title": "Duas exigências simultâneas",
+            "purpose": "Testar uma política de acesso com critérios independentes.",
+            "code": "admin = True\nativo = False\nif admin and ativo:\n    print(\"Liberado\")\nelse:\n    print(\"Bloqueado\")",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Define a primeira condição: o usuário do exemplo é administrador."
+              },
+              {
+                "line": 2,
+                "explanation": "Define a segunda condição: o usuário está inativo."
+              },
+              {
+                "line": 3,
+                "explanation": "and exige que ambas as condições sejam verdadeiras para escolher o bloco. Como ativo é False, a condição não é satisfeita."
+              },
+              {
+                "line": 4,
+                "explanation": "Seria a saída do caminho autorizado, mas essa linha não executa neste caso."
+              },
+              {
+                "line": 5,
+                "explanation": "Escolhe o caminho alternativo porque a condição do if não foi satisfeita."
+              },
+              {
+                "line": 6,
+                "explanation": "Informa o resultado da regra, sem implementar autenticação real."
+              }
+            ],
+            "takeaway": "Duas exigências ligadas por e não podem ser trocadas por or sem mudar o requisito.",
+            "expectedOutput": "Bloqueado"
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "admin=True, ativo=True",
+              "expected": "Liberado",
+              "why": "Ambas as exigências foram atendidas."
+            },
+            {
+              "scenario": "admin=True, ativo=False",
+              "expected": "Bloqueado",
+              "why": "A atividade é obrigatória."
+            },
+            {
+              "scenario": "admin=False, ativo=True",
+              "expected": "Bloqueado",
+              "why": "O papel de administrador é obrigatório."
+            },
+            {
+              "scenario": "admin=False, ativo=False",
+              "expected": "Bloqueado",
+              "why": "Nenhuma exigência foi atendida."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Validação e exceções",
+          "explanation": "Uma condição pode rejeitar dados de domínio inválidos; uma conversão também pode falhar antes de você chegar a ela. Planeje as duas situações.",
+          "topicIds": [
+            "python.arquivos-e-excecoes"
+          ],
+          "caution": "Não capture toda exceção e devolva sucesso: isso pode ocultar o defeito."
+        },
+        {
+          "title": "Decisões dentro de percursos",
+          "explanation": "Laços aplicam decisões a vários valores. O bloco interno e o estado acumulado precisam permanecer coerentes.",
+          "topicIds": [
+            "python.lacos-de-repeticao"
+          ],
+          "caution": "Não confunda uma decisão por item com uma decisão sobre a coleção inteira."
+        }
+      ],
+      "reviewChecklist": [
+        "A condição corresponde às palavras e, ou e não do requisito?",
+        "O limite deve ser incluído ou excluído?",
+        "Os ramos são exclusivos ou várias ações devem ocorrer?",
+        "Há entrada não coberta ou condição inalcançável?",
+        "Os tipos dos valores comparados estão corretos?"
+      ],
+      "sources": [
+        {
+          "sourceId": "python-controlflow",
+          "locator": "4.1 — if Statements",
+          "use": "Semântica da cadeia if/elif/else e da ordem de decisão."
+        },
+        {
+          "sourceId": "python-functions",
+          "locator": "bool e tipos embutidos",
+          "use": "Interpretação de verdade e limites de conversão."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "pre-1",
+        "prompt": "Qual a diferença entre idade > 18 e idade >= 18?",
+        "modelAnswer": "O primeiro exclui o valor 18; o segundo o inclui."
+      },
+      {
+        "id": "pre-2",
+        "prompt": "Se um requisito exige duas condições ao mesmo tempo, você espera and ou or?",
+        "modelAnswer": "and, porque ambas precisam ser satisfeitas."
+      }
+    ],
+    "why": {
+      "problem": "Uma regra diz que uma pessoa deve ser administradora e estar ativa. Precisamos representar exatamente esse e no programa.",
+      "cost": "Uma condição errada pode funcionar nos exemplos comuns e falhar numa fronteira ou numa combinação menos óbvia."
+    },
+    "mentalModel": {
+      "analogy": "Pense numa sequência de portas: numa cadeia if/elif, você testa a próxima somente se ainda não escolheu uma porta.",
+      "limits": "Dois if independentes são duas decisões, não duas portas de uma mesma cadeia.",
+      "trace": {
+        "headers": [
+          "nota",
+          "nota >= 7",
+          "nota >= 5, se necessário",
+          "Saída"
+        ],
+        "rows": [
+          [
+            "8",
+            "True",
+            "não é avaliado",
+            "Aprovado"
+          ],
+          [
+            "6",
+            "False",
+            "True",
+            "Recuperação"
+          ],
+          [
+            "4",
+            "False",
+            "False",
+            "Reprovado"
+          ]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Condições decidem quais blocos executar. Comparações produzem booleanos nos casos básicos, e a interpretação de verdade decide o caminho de uma instrução if.",
+      "parts": [
+        "Uma cadeia escolhe no máximo um ramo.",
+        "Testes independentes podem executar várias ações.",
+        "A ordem e os limites das comparações fazem parte da regra."
+      ],
+      "code": "nota = 7\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+      "expectedOutput": "Aprovado"
+    },
+    "workedExamples": [
+      {
+        "problem": "Representar faixas sem executar caminhos incompatíveis.",
+        "subgoals": [
+          {
+            "label": "Passo 1",
+            "code": "nota = 7",
+            "why": "Define o valor que será comparado. Neste exemplo não há leitura de entrada externa."
+          },
+          {
+            "label": "Passo 2",
+            "code": "if nota >= 7:",
+            "why": "if avalia a comparação >=, que inclui o limite 7. Os dois-pontos abrem o bloco."
+          },
+          {
+            "label": "Passo 3",
+            "code": "    print(\"Aprovado\")",
+            "why": "Os quatro espaços indicam uma instrução pertencente ao primeiro ramo. Ela só executa se esse teste for verdadeiro."
+          },
+          {
+            "label": "Passo 4",
+            "code": "elif nota >= 5:",
+            "why": "elif só é considerado se o if anterior não tiver sido escolhido. Aqui não será necessário testá-lo."
+          },
+          {
+            "label": "Passo 5",
+            "code": "    print(\"Recuperação\")",
+            "why": "Este bloco pertence ao elif, e não ao if inicial."
+          },
+          {
+            "label": "Passo 6",
+            "code": "else:",
+            "why": "else não possui condição: é o caminho restante quando nenhum teste anterior da cadeia foi verdadeiro."
+          },
+          {
+            "label": "Passo 7",
+            "code": "    print(\"Reprovado\")",
+            "why": "Este bloco corresponde ao caso restante. Só um dos três blocos será escolhido nesta execução."
+          }
+        ],
+        "expectedOutput": "Aprovado"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "ifs-independentes",
+        "claim": "Trocar elif por outro if preserva sempre a mesma decisão.",
+        "refutation": "Com nota 8, dois if separados podem imprimir Aprovado e Recuperação.",
+        "correct": "Escolha cadeia para categorias exclusivas e if separados para ações independentes."
+      },
+      {
+        "tag": "texto-false",
+        "claim": "bool(\"False\") produz False.",
+        "refutation": "A string não está vazia, então sua interpretação de verdade é verdadeira.",
+        "correct": "Interprete formatos textuais explicitamente quando precisar de um booleano de domínio."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Ler uma implementação",
+        "description": "Identificar valores, estados e decisões antes de aceitar uma explicação de IA."
+      },
+      {
+        "context": "Investigar uma falha",
+        "description": "Construir uma entrada pequena que diferencie o comportamento esperado do observado."
+      },
+      {
+        "context": "Explicar uma decisão",
+        "description": "Justificar o tipo, a operação ou o caminho escolhido em termos do requisito."
+      }
+    ],
+    "efficiency": {
+      "naive": "nota = 7\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+      "better": "nota = 7\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+      "criterion": "Nesta aula de base, priorize clareza e correção. A forma de referência é repetida para não introduzir uma otimização artificial antes de entender o comportamento.",
+      "expectedOutput": "Aprovado"
+    },
+    "summary": "Condições precisam representar a regra, não apenas parecer plausíveis. Confira tipos, fronteiras, combinações lógicas e caminhos que ficam sem ação. Para categorias exclusivas, escolha uma cadeia com ordem coerente.",
+    "selfExplain": [
+      {
+        "id": "self-1",
+        "prompt": "Por que testar apenas admin=True e ativo=True não detecta o erro de trocar and por or?",
+        "modelAnswer": "Ambas as operações são verdadeiras nesse caso. Os cenários mistos, em que só uma condição é verdadeira, distinguem as duas regras."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "retrieve-1",
+        "prompt": "Quando o elif é considerado?",
+        "modelAnswer": "Somente se os testes anteriores da mesma cadeia não selecionaram um ramo."
+      },
+      {
+        "id": "retrieve-2",
+        "prompt": "bool(\"False\") vale o quê?",
+        "modelAnswer": "True: uma string não vazia não é um parser de palavras booleanas."
+      },
+      {
+        "id": "retrieve-3",
+        "prompt": "Quais valores você usaria para testar o limite inclusivo 18?",
+        "modelAnswer": "17, 18 e 19, além de formatos ou tipos inválidos se fizerem parte da entrada."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "python.condicionais.v1.quiz-01",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Inclua o limite",
+      "prompt": "A regra aceita idade a partir de 18, incluindo 18. Qual comparação representa isso?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": ">= inclui o próprio limite. > excluiria o valor 18.",
+      "options": [
+        {
+          "id": "a",
+          "text": "idade > 18",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        },
+        {
+          "id": "b",
+          "text": "idade >= 18",
+          "feedback": ">= inclui o próprio limite. > excluiria o valor 18."
+        },
+        {
+          "id": "c",
+          "text": "idade == 19",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.condicionais.v1.quiz-02",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Exigências simultâneas",
+      "prompt": "A pessoa precisa ser administradora E estar ativa. Qual combinação expressa a regra?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "and exige as duas condições. or permitiria satisfazer apenas uma.",
+      "options": [
+        {
+          "id": "a",
+          "text": "admin or ativo",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        },
+        {
+          "id": "b",
+          "text": "admin and ativo",
+          "feedback": "and exige as duas condições. or permitiria satisfazer apenas uma."
+        },
+        {
+          "id": "c",
+          "text": "not admin",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.condicionais.v1.previsao-01",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Cadeia exclusiva",
+      "prompt": "Preveja a saída. Use uma linha para cada impressão.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "O primeiro teste falha; o elif é verdadeiro e seleciona somente seu bloco.",
+      "code": "nota = 6\nif nota >= 7:\n    print(\"Aprovado\")\nelif nota >= 5:\n    print(\"Recuperação\")\nelse:\n    print(\"Reprovado\")",
+      "solution": {
+        "output": "Recuperação"
+      }
+    },
+    {
+      "id": "python.condicionais.v1.previsao-02",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Dois testes independentes",
+      "prompt": "Preveja a saída. Use uma linha para cada impressão.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "Os dois if são independentes e suas condições são verdadeiras.",
+      "code": "n = 8\nif n >= 7:\n    print(\"A\")\nif n >= 5:\n    print(\"B\")",
+      "solution": {
+        "output": "A\nB"
+      }
+    },
+    {
+      "id": "python.condicionais.v1.erro-01",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Revise a lógica",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "or aceita uma alternativa; a string não vazia é verdadeira independentemente da palavra que contém.",
+      "items": [
+        {
+          "id": "a",
+          "text": "or exige que as duas alternativas sejam verdadeiras."
+        },
+        {
+          "id": "b",
+          "text": "Uma cadeia pode ter um else opcional."
+        },
+        {
+          "id": "c",
+          "text": "bool(\"False\") interpreta a palavra e devolve False."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "python.condicionais.v1.erro-02",
+      "lessonId": "python.condicionais.v1",
+      "topicId": "python.condicionais",
+      "title": "Revise os caminhos",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "Uma condição ampla pode selecionar o caso antes de a condição específica ser alcançada.",
+      "items": [
+        {
+          "id": "a",
+          "text": "A indentação ajuda a determinar quais instruções pertencem a um bloco."
+        },
+        {
+          "id": "b",
+          "text": "Uma faixa ampla antes de uma específica nunca altera quais casos são alcançados."
+        },
+        {
+          "id": "c",
+          "text": "Testar o próprio limite ajuda a distinguir > de >=."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "b"
+        ]
+      }
+    }
+  ]
+}

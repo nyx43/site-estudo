@@ -21,13 +21,13 @@ describe("catálogo e busca", () => {
   });
   it("busca nomes e tópicos sem depender de acento ou caixa", async () => {
     const subjects = await service.listSubjects();
-    expect(filterSubjects(subjects, "ANALISE", "ALL").map((item) => item.slug)).toEqual(["requisitos"]);
+    expect(filterSubjects(subjects, "ANALISE DE REQUISITOS", "ALL").map((item) => item.slug)).toEqual(["requisitos"]);
     expect(filterSubjects(subjects, "laços", "ALL").map((item) => item.slug)).toEqual(["python"]);
   });
   it("combina categoria e termos e aceita busca vazia", async () => {
     const subjects = await service.listSubjects();
-    expect(filterSubjects(subjects, "   ", "ALL")).toHaveLength(5);
-    expect(filterSubjects(subjects, "", "PROGRAMMING")).toHaveLength(4);
+    expect(filterSubjects(subjects, "   ", "ALL")).toHaveLength(subjects.length);
+    expect(filterSubjects(subjects, "", "PROGRAMMING")).toHaveLength(subjects.filter((item) => item.category === "PROGRAMMING").length);
     expect(filterSubjects(subjects, "python", "THEORETICAL")).toHaveLength(0);
     expect(filterSubjects(subjects, "contratos segurança", "PROGRAMMING").map((item) => item.slug)).toContain("web-dev");
   });
@@ -40,7 +40,7 @@ describe("contrato HTTP", () => {
     expect(response.status).toBe(200);
     const result = await response.json();
     expect(result.meta.version).toBe(1);
-    expect(result.data).toHaveLength(5);
+    expect(result.data.map((item: { slug: string }) => item.slug)).toEqual((await service.listSubjects()).map((item) => item.slug));
     expect(JSON.stringify(result)).not.toMatch(/solutionJson|tutorNotes|misconceptionTag/);
   });
   it("entrega disciplina individual e tópico pelo mesmo serviço", async () => {

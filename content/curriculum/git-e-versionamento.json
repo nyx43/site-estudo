@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 8,
+  "slug": "git-e-versionamento",
+  "name": "Git e Versionamento",
+  "description": "Entenda estados, histórico e integração para revisar mudanças com segurança.",
+  "category": "PROGRAMMING",
+  "accent": "violet",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "estado",
+      "title": "Estados e histórico",
+      "description": "Git registra snapshots e relações entre commits.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Git registra snapshots e relações entre commits. O diretório de trabalho, a área de preparação e o histórico são estados diferentes e precisam ser lidos separadamente.",
+          "Antes de executar um comando sugerido por IA, vamos explicar seu efeito e identificar quais dados podem ser preservados ou descartados."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "estado-e-commit",
+          "title": "Estado, staging e commit",
+          "summary": "O que realmente será registrado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir working tree, index e commit.",
+              "Revisar o conteúdo preparado."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Status e diff",
+              "Staging seletivo",
+              "Snapshot e mensagem"
+            ],
+            "misconceptions": [
+              "Um arquivo salvo no editor não está automaticamente incluído no próximo commit."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um commit que inclui arquivos não relacionados."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o diff preparado.",
+              "Separa mudanças sem descartar trabalho."
+            ]
+          }
+        },
+        {
+          "slug": "historico-e-remotes",
+          "title": "Histórico e remotes",
+          "summary": "Referências, fetch e rastreamento.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Ler relações entre commits.",
+              "Distinguir fetch e integração."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Refs e HEAD",
+              "Remote tracking",
+              "Fetch, pull e push"
+            ],
+            "misconceptions": [
+              "Fetch não modifica automaticamente o conteúdo da branch atual."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar diferenças entre referência local e remota."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Localiza o commit de cada referência.",
+              "Explica qual operação muda o histórico local."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "integracao",
+      "title": "Branches e conflitos",
+      "description": "Uma branch é uma referência móvel para um commit.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Uma branch é uma referência móvel para um commit. Integrar trabalho significa combinar históricos e resolver escolhas sem apagar a intenção das mudanças.",
+          "Conflitos de texto são apenas uma categoria de problema: código que mescla sem conflito pode ainda quebrar o comportamento."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "branches-e-merge",
+          "title": "Branches e merge",
+          "summary": "Ancestral comum e integração.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a função de uma branch.",
+              "Rastrear uma integração."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Ancestralidade",
+              "Fast-forward e merge",
+              "Revisão do resultado"
+            ],
+            "misconceptions": [
+              "Ausência de conflito de texto não demonstra compatibilidade semântica."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar duas alterações compatíveis em texto e conflitantes em regra."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o comportamento combinado.",
+              "Escolhe um teste que detecte a regressão."
+            ]
+          }
+        },
+        {
+          "slug": "conflitos",
+          "title": "Conflitos e preservação de trabalho",
+          "summary": "Resolver diferenças com contexto.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Interpretar as versões de um conflito.",
+              "Preservar mudanças necessárias dos dois lados."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Marcadores e contexto",
+              "Intenção das alterações",
+              "Validação após resolver"
+            ],
+            "misconceptions": [
+              "Escolher sempre um dos lados pode apagar uma correção importante."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Resolver um conflito de contrato e consumidor."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Justifica a resolução.",
+              "Verifica os consumidores afetados."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "revisao",
+      "title": "Revisão e recuperação",
+      "description": "Históricos úteis permitem localizar uma regressão e entender por que uma decisão foi tomada.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Históricos úteis permitem localizar uma regressão e entender por que uma decisão foi tomada. Reescrever histórico compartilhado tem efeitos diferentes de acrescentar um novo commit.",
+          "O módulo compara reversão, rebase e investigação sem transformar comandos destrutivos em atalhos para qualquer problema."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "revert-e-rebase",
+          "title": "Revert, rebase e recuperação",
+          "summary": "Efeitos sobre identidade de commits.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir reversão e reescrita.",
+              "Planejar recuperação sem descartar trabalho."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Revert",
+              "Rebase e novos commits",
+              "Reflog e preservação"
+            ],
+            "misconceptions": [
+              "Rebase pode mudar identidades de commits mesmo quando os arquivos finais parecem iguais."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma recomendação de reescrita de histórico compartilhado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o efeito para outros consumidores.",
+              "Propõe uma alternativa conforme o objetivo."
+            ]
+          }
+        },
+        {
+          "slug": "revisao-e-bisect",
+          "title": "Revisão, bisect e regressões",
+          "summary": "Relacionar diffs e comportamento.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Localizar uma regressão por busca no histórico.",
+              "Definir um teste que classifique commits."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Diff e contexto",
+              "Bisect",
+              "Evidências e limites"
+            ],
+            "misconceptions": [
+              "Um teste intermitente pode classificar commits incorretamente numa investigação."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Planejar uma busca por uma regressão reproduzível."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Define critério de bom e ruim.",
+              "Registra incertezas e reproduções."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Git registra snapshots e suas relações, permitindo compreender, integrar e recuperar mudanças. O arquivo atual, o que está preparado para commit e o que existe numa referência remota são estados diferentes.",
+    "Vamos estudar esses estados antes de branches, conflitos e reescrita de histórico. Ao trabalhar com IA, você deve conseguir explicar o efeito de um comando antes de executá-lo, revisar o diff e preservar alterações que não pertencem à tarefa atual."
+  ]
+}

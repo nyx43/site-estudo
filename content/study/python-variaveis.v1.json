@@ -1,0 +1,793 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "python.variaveis-e-tipos.v1",
+    "topicId": "python.variaveis-e-tipos",
+    "version": 1,
+    "title": "Variáveis e tipos",
+    "status": "AUTO_CHECKED",
+    "objectives": [
+      "Rastrear atribuições sem confundir nome, valor e tipo.",
+      "Distinguir soma numérica de concatenação e justificar conversões.",
+      "Explicar cada linha de um programa simples e propor casos que revelem erros de tipos."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Um programa não entende que um dado é idade, preço ou quantidade só pelo nome que escolhemos. Ele opera sobre valores concretos, com tipos e regras próprias. Antes de acompanhar um código gerado por IA, você precisa reconhecer quais valores entram, como são transformados e o que sai.",
+        "Começaremos sem instalar bibliotecas e sem depender de projetos grandes. Cada exemplo abaixo pode ser lido como um pequeno programa completo. A saída esperada fica junto ao código, e cada linha tem uma explicação de sua função e de seus efeitos."
+      ],
+      "prerequisites": [],
+      "glossary": [
+        {
+          "term": "Literal",
+          "meaning": "Uma forma de escrever um valor diretamente no código.",
+          "example": "3 é um literal inteiro; \"3\" é um literal de texto."
+        },
+        {
+          "term": "Variável ou nome",
+          "meaning": "Um identificador associado a um objeto em determinado momento.",
+          "example": "idade = 20 associa idade ao inteiro 20."
+        },
+        {
+          "term": "Tipo",
+          "meaning": "A categoria que define operações e comportamentos de um objeto.",
+          "example": "\"2\" + \"3\" concatena; 2 + 3 soma."
+        },
+        {
+          "term": "Expressão",
+          "meaning": "Um trecho que é avaliado e produz um valor.",
+          "example": "idade + 1 produz um novo valor a partir de idade."
+        },
+        {
+          "term": "Argumento",
+          "meaning": "Um valor fornecido em uma chamada.",
+          "example": "Em print(idade), idade é o argumento avaliado antes da chamada."
+        },
+        {
+          "term": "Exceção",
+          "meaning": "Um sinal de que uma operação não pode prosseguir normalmente.",
+          "example": "int(\"vinte\") gera ValueError."
+        },
+        {
+          "term": "Saída",
+          "meaning": "Aquilo que o programa envia para o destino de exibição.",
+          "example": "print(15) escreve 15 e, por padrão, uma quebra de linha."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Atribuição (=)",
+          "kind": "SYNTAX",
+          "syntax": "nome = expressao",
+          "explanation": "Primeiro a expressão do lado direito é avaliada; depois o nome do lado esquerdo recebe a associação ao resultado. A atribuição não exibe o valor automaticamente em um arquivo de programa.",
+          "whenToUse": "Guardar e atualizar o estado que será usado nas próximas instruções.",
+          "pitfalls": [
+            "Não confundir = com ==.",
+            "Um nome não vira uma fórmula que acompanha futuras mudanças de outro nome."
+          ],
+          "examples": [
+            {
+              "id": "vars-atribuir",
+              "title": "Nomes e valores, sem uma ligação automática",
+              "purpose": "Acompanhar o efeito de uma nova atribuição.",
+              "code": "quantidade = 3\ncopia = quantidade\nquantidade = 8\nprint(copia, quantidade)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Avalia o literal inteiro 3 e associa o nome quantidade a esse valor. O sinal = não faz uma comparação."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Avalia quantidade neste momento: o valor é 3. copia passa a referenciar esse mesmo inteiro; não guarda uma fórmula que acompanha o nome quantidade."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Associa quantidade ao inteiro 8. Isso não altera o inteiro 3 nem reatribui o nome copia."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Chama print com dois argumentos, separados por vírgula. O separador padrão é um espaço, então a linha mostra 3 8."
+                }
+              ],
+              "takeaway": "Reatribuição de um nome e alteração de um objeto são coisas diferentes. Coleções mutáveis terão um tratamento próprio.",
+              "expectedOutput": "3 8"
+            }
+          ]
+        },
+        {
+          "name": "Tipos e type",
+          "kind": "TYPE",
+          "syntax": "type(objeto)",
+          "explanation": "Nesta forma de chamada, type informa o tipo de um objeto. É útil para investigar um dado recebido, mas não valida sozinho a regra de negócio.",
+          "whenToUse": "Distinguir texto, números e booleanos durante a leitura e o diagnóstico.",
+          "pitfalls": [
+            "O nome da variável não determina seu tipo.",
+            "Uma string com dígitos continua sendo str."
+          ],
+          "examples": [
+            {
+              "id": "vars-tipos",
+              "title": "O valor tem um tipo",
+              "purpose": "Distinguir número, texto e booleano sem adivinhar pelo visual.",
+              "code": "idade = 20\ntexto = \"20\"\nativo = True\nprint(type(idade), type(texto), type(ativo))",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "O literal sem aspas representa um inteiro, adequado para contagens e operações inteiras."
+                },
+                {
+                  "line": 2,
+                  "explanation": "As aspas delimitam uma string. O conteúdo parece um número, mas o tipo continua sendo texto."
+                },
+                {
+                  "line": 3,
+                  "explanation": "True é um valor booleano de Python, com inicial maiúscula, e representa verdadeiro."
+                },
+                {
+                  "line": 4,
+                  "explanation": "type recebe cada objeto e retorna seu tipo. print exibe as três representações dos tipos."
+                }
+              ],
+              "takeaway": "Ter caracteres numéricos dentro de uma string não a transforma automaticamente em número.",
+              "expectedOutput": "<class 'int'> <class 'str'> <class 'bool'>"
+            }
+          ]
+        },
+        {
+          "name": "Conversão com int",
+          "kind": "TYPE",
+          "syntax": "int(texto_inteiro)",
+          "explanation": "int constrói um inteiro a partir de uma representação válida. Converter é uma operação explícita e pode falhar; não é uma garantia de que qualquer texto será aceito.",
+          "whenToUse": "Interpretar contagens ou identificadores realmente numéricos, conforme o contrato de entrada.",
+          "pitfalls": [
+            "int(\"3.5\") não interpreta um inteiro válido.",
+            "Converter um código como \"0012\" pode perder zeros que pertencem ao identificador."
+          ],
+          "examples": [
+            {
+              "id": "vars-converter",
+              "title": "Conversão explícita",
+              "purpose": "Transformar duas entradas textuais antes de somar.",
+              "code": "primeiro = \"10\"\nsegundo = \"5\"\ntotal = int(primeiro) + int(segundo)\nprint(total)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Simula um dado recebido como texto; não lê nenhum arquivo ou serviço."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Guarda outra string com a representação textual de um inteiro."
+                },
+                {
+                  "line": 3,
+                  "explanation": "int constrói inteiros a partir das strings válidas. Só depois + soma os números convertidos."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Mostra o inteiro 15; não é a concatenação de textos 105."
+                }
+              ],
+              "takeaway": "Valide o formato que a aplicação aceita. Uma string arbitrária pode causar ValueError na conversão.",
+              "expectedOutput": "15"
+            }
+          ]
+        },
+        {
+          "name": "Entrada com input",
+          "kind": "FUNCTION",
+          "syntax": "input(mensagem)",
+          "explanation": "Lê uma linha e devolve texto. A mensagem é um argumento opcional para orientar a pessoa no terminal.",
+          "whenToUse": "Criar exemplos interativos simples; em sites, as entradas normalmente virão de formulários ou requisições, não de input.",
+          "pitfalls": [
+            "Não presumir retorno numérico.",
+            "Definir como entradas vazias e formatos inválidos serão tratados."
+          ],
+          "examples": [
+            {
+              "id": "vars-input",
+              "title": "Entrada, conversão e saída",
+              "purpose": "Acompanhar o que input devolve e o que o programa faz com isso.",
+              "code": "entrada = input(\"Idade: \")\nidade = int(entrada)\nprint(idade + 1)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "input mostra o texto do prompt sem uma quebra final, lê uma linha e devolve uma string sem a quebra de linha digitada."
+                },
+                {
+                  "line": 2,
+                  "explanation": "int tenta interpretar a string como um inteiro. Neste exemplo a entrada simulada é 20; uma entrada como vinte exigiria tratamento de erro."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Calcula idade + 1 e mostra o resultado. O terminal pode exibir também o que a pessoa digitou; a saída capturada aqui não inclui esse eco."
+                }
+              ],
+              "takeaway": "input não devolve automaticamente int ou float. A política de validação pertence ao seu programa.",
+              "expectedOutput": "Idade: 21",
+              "stdin": "20\n"
+            }
+          ]
+        },
+        {
+          "name": "Operadores aritméticos",
+          "kind": "OPERATOR",
+          "syntax": "a + b; a / b; a // b; a % b",
+          "explanation": "O operador seleciona uma operação sobre operandos compatíveis. + também concatena strings; /, // e % expressam resultados distintos.",
+          "whenToUse": "Relacionar a conta ao requisito: divisão proporcional, grupos inteiros ou resto.",
+          "pitfalls": [
+            "Não generalizar truncamento para // com negativos.",
+            "Divisão por zero é um caso que precisa de regra ou tratamento."
+          ],
+          "examples": [
+            {
+              "id": "vars-operadores",
+              "title": "Divisão, quociente e resto",
+              "purpose": "Escolher uma operação pelo resultado que ela representa.",
+              "code": "print(7 / 2)\nprint(7 // 2)\nprint(7 % 2)\nprint(-7 // 2)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "/ faz divisão real; com esses operandos inteiros, o resultado é um float."
+                },
+                {
+                  "line": 2,
+                  "explanation": "// faz divisão com arredondamento para baixo, em direção a menos infinito. Para 7 e 2, o resultado é 3."
+                },
+                {
+                  "line": 3,
+                  "explanation": "% devolve o resto compatível com a divisão inteira: 7 = 3 * 2 + 1."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Para negativos, arredondar para baixo não é truncar em direção a zero: -3.5 vai para -4."
+                }
+              ],
+              "takeaway": "Não descreva // como simplesmente cortar casas decimais: essa explicação falha para números negativos.",
+              "expectedOutput": "3.5\n3\n1\n-4"
+            }
+          ]
+        },
+        {
+          "name": "print e f-strings",
+          "kind": "SYNTAX",
+          "syntax": "print(f\"Total: {valor:.2f}\")",
+          "explanation": "print exibe os argumentos; uma f-string constrói texto a partir de expressões entre chaves. O formato controla a apresentação.",
+          "whenToUse": "Criar mensagens legíveis e observar estados durante uma investigação.",
+          "pitfalls": [
+            "Exibir não é salvar em banco nem retornar de uma função.",
+            "Formatar duas casas não torna o cálculo exato."
+          ],
+          "examples": [
+            {
+              "id": "vars-formatar",
+              "title": "Texto e apresentação",
+              "purpose": "Separar o valor numérico de sua apresentação ao usuário.",
+              "code": "valor = 12.5\nmensagem = f\"Total: {valor:.2f}\"\nprint(mensagem)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Guarda um float. Sua representação usual não exige duas casas decimais."
+                },
+                {
+                  "line": 2,
+                  "explanation": "O prefixo f cria uma string formatada. As chaves avaliam valor; : inicia a especificação de formato; .2f solicita duas casas na apresentação decimal."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Mostra a mensagem construída, sem mudar o tipo ou o valor da variável valor."
+                }
+              ],
+              "takeaway": "Formatar uma string não transforma float em aritmética decimal exata nem altera o número original.",
+              "expectedOutput": "Total: 12.50"
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "vars-relatorio",
+          "title": "Um relatório mínimo, do dado à mensagem",
+          "purpose": "Calcular um total e explicar cada etapa.",
+          "code": "quantidade = 4\npreco_unitario = 2.5\ntotal = quantidade * preco_unitario\nprint(f\"Itens: {quantidade}; total: {total:.2f}\")",
+          "lineNotes": [
+            {
+              "line": 1,
+              "explanation": "Define uma contagem inteira."
+            },
+            {
+              "line": 2,
+              "explanation": "Define o preço de demonstração como float; o exemplo não implementa uma política financeira completa."
+            },
+            {
+              "line": 3,
+              "explanation": "Avalia os dois nomes e multiplica os valores. O resultado é associado a total."
+            },
+            {
+              "line": 4,
+              "explanation": "Interpola a contagem e o total em uma mensagem, usando .2f apenas para a apresentação."
+            }
+          ],
+          "takeaway": "Ao revisar uma IA, confira a origem, o tipo e a unidade de cada valor antes de conferir somente a mensagem final.",
+          "expectedOutput": "Itens: 4; total: 10.00"
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Números decimais e igualdade",
+          "explanation": "Pequenas diferenças de representação não autorizam arredondar tudo. É preciso decidir qual precisão o problema exige e como o resultado será comparado.",
+          "example": {
+            "id": "vars-float",
+            "title": "A precisão tem limites",
+            "purpose": "Reconhecer uma fronteira de representação, em vez de corrigir números por tentativa.",
+            "code": "resultado = 0.1 + 0.2\nprint(resultado)\nprint(resultado == 0.3)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Os floats representam aproximações binárias. Essa soma não produz exatamente o mesmo valor representado pelo literal 0.3."
+              },
+              {
+                "line": 2,
+                "explanation": "A representação revela uma pequena diferença em relação à escrita decimal esperada."
+              },
+              {
+                "line": 3,
+                "explanation": "== compara os valores representados. Para este caso, a igualdade exata é falsa."
+              }
+            ],
+            "takeaway": "Tolerâncias, Decimal e inteiros em unidades mínimas dependem do domínio. Não aplique arredondamento arbitrário para esconder uma falha.",
+            "expectedOutput": "0.30000000000000004\nFalse"
+          }
+        },
+        {
+          "title": "Texto com ponto decimal",
+          "explanation": "O tipo da entrada e o formato aceito são parte do contrato. Uma conversão pode ser válida para um tipo e inválida para outro.",
+          "example": {
+            "id": "vars-formato-invalido",
+            "title": "Quando uma conversão não cabe",
+            "purpose": "Distinguir texto de inteiro de texto de número decimal.",
+            "code": "entrada = \"3.5\"\nprint(int(entrada))",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "A string contém um ponto decimal. Ainda é texto, e não um float."
+              },
+              {
+                "line": 2,
+                "explanation": "int não interpreta essa string como um inteiro decimal válido e lança ValueError. O print não chega a mostrar um resultado."
+              }
+            ],
+            "takeaway": "int(3.5) e int(\"3.5\") recebem objetos de tipos diferentes. Não remova informação do usuário sem uma regra explícita.",
+            "expectedError": "ValueError"
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "A IA somou ou juntou textos?",
+          "request": "Receber duas representações textuais de inteiros e mostrar sua soma numérica.",
+          "generated": {
+            "id": "vars-ia-ruim",
+            "title": "Uma soma que virou concatenação",
+            "purpose": "Inspecionar uma resposta plausível de IA que usa os tipos errados.",
+            "code": "a = \"10\"\nb = \"5\"\nprint(a + b)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "A primeira entrada está em formato textual."
+              },
+              {
+                "line": 2,
+                "explanation": "A segunda entrada também é uma string."
+              },
+              {
+                "line": 3,
+                "explanation": "Para duas strings, + concatena os conteúdos: a saída é 105, e não o número 15."
+              }
+            ],
+            "takeaway": "O código executa sem exceção, mas viola o requisito de somar numericamente.",
+            "expectedOutput": "105"
+          },
+          "diagnosis": [
+            "O requisito fala em soma numérica, mas as entradas continuam sendo strings.",
+            "A saída 105 é um resultado válido de concatenação, então a ausência de exceção não prova correção.",
+            "A correção deve converter apenas formatos que o contrato permite, sem descartar silenciosamente dados inválidos."
+          ],
+          "correction": {
+            "id": "vars-converter",
+            "title": "Conversão explícita",
+            "purpose": "Transformar duas entradas textuais antes de somar.",
+            "code": "primeiro = \"10\"\nsegundo = \"5\"\ntotal = int(primeiro) + int(segundo)\nprint(total)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Simula um dado recebido como texto; não lê nenhum arquivo ou serviço."
+              },
+              {
+                "line": 2,
+                "explanation": "Guarda outra string com a representação textual de um inteiro."
+              },
+              {
+                "line": 3,
+                "explanation": "int constrói inteiros a partir das strings válidas. Só depois + soma os números convertidos."
+              },
+              {
+                "line": 4,
+                "explanation": "Mostra o inteiro 15; não é a concatenação de textos 105."
+              }
+            ],
+            "takeaway": "Valide o formato que a aplicação aceita. Uma string arbitrária pode causar ValueError na conversão.",
+            "expectedOutput": "15"
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Entradas \"10\" e \"5\"",
+              "expected": "15",
+              "why": "Distingue soma de concatenação."
+            },
+            {
+              "scenario": "Entradas \"0\" e \"-2\"",
+              "expected": "-2",
+              "why": "Confere zero e número negativo."
+            },
+            {
+              "scenario": "Entrada \"dez\"",
+              "expected": "Mensagem de validação ou exceção tratada numa versão posterior",
+              "why": "O formato não é um inteiro; não se deve inventar um valor."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Referências e mutabilidade",
+          "explanation": "Os nomes apontam para objetos. Com listas e dicionários, dois nomes podem compartilhar um objeto que pode mudar.",
+          "topicIds": [
+            "python.escopo-e-mutabilidade"
+          ],
+          "caution": "Os inteiros deste começo são imutáveis; não conclua que todos os tipos se comportam como eles."
+        },
+        {
+          "title": "Contratos de funções e validação",
+          "explanation": "Tipos, formatos e unidades devem aparecer nos contratos das funções e das entradas. Anotações de tipo ajudam a comunicar intenção, mas não validam automaticamente dados externos.",
+          "topicIds": [
+            "python.funcoes",
+            "python.arquivos-e-excecoes"
+          ],
+          "caution": "A escolha de validação depende da fronteira: terminal, arquivo, formulário ou API."
+        }
+      ],
+      "reviewChecklist": [
+        "Consigo apontar o tipo e a unidade de cada entrada?",
+        "Cada operador está fazendo a operação exigida pelo problema?",
+        "A conversão aceita somente formatos que o contrato permite?",
+        "A saída está sendo confundida com armazenamento ou retorno?",
+        "Testei zero, negativos, texto inválido e precisão quando forem relevantes?"
+      ],
+      "sources": [
+        {
+          "sourceId": "python-introduction",
+          "locator": "3.1 — Numbers e Text",
+          "use": "Semântica de atribuição, tipos e operações básicas."
+        },
+        {
+          "sourceId": "python-functions",
+          "locator": "input, int, print e type",
+          "use": "Contratos das operações embutidas e falhas de conversão."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "pre-1",
+        "prompt": "O que você espera de \"10\" + \"5\"?",
+        "modelAnswer": "O resultado é a string \"105\", pois + concatena duas strings."
+      },
+      {
+        "id": "pre-2",
+        "prompt": "Se a = 3, b = a e depois a = 8, b também vira 8?",
+        "modelAnswer": "Não neste caso. b continua referenciando o inteiro 3."
+      }
+    ],
+    "why": {
+      "problem": "Uma automação recebe quantidades como texto e precisa calcular um total. Antes de escrever muitas linhas, precisamos saber o que cada entrada representa.",
+      "cost": "Tipos ou unidades confundidos podem produzir uma saída plausível e incorreta sem lançar exceção."
+    },
+    "mentalModel": {
+      "analogy": "Pense em nomes como etiquetas associadas a objetos. Uma atribuição pode mudar para qual objeto uma etiqueta aponta.",
+      "limits": "Essa imagem não significa que cada atribuição copia um objeto. Objetos mutáveis podem ser compartilhados por vários nomes.",
+      "trace": {
+        "headers": [
+          "Instrução",
+          "quantidade",
+          "copia",
+          "Efeito"
+        ],
+        "rows": [
+          [
+            "quantidade = 3",
+            "3",
+            "não definido",
+            "Associa o primeiro nome"
+          ],
+          [
+            "copia = quantidade",
+            "3",
+            "3",
+            "Lê o valor atual"
+          ],
+          [
+            "quantidade = 8",
+            "8",
+            "3",
+            "Reassocia somente quantidade"
+          ]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Nomes permitem guardar associações a valores; o tipo do valor determina quais operações fazem sentido. Leia a expressão da direita antes de interpretar uma atribuição.",
+      "parts": [
+        "Atribuição não é comparação.",
+        "Aspas criam texto; números sem aspas podem representar valores numéricos.",
+        "Uma chamada avalia seus argumentos e aplica a operação solicitada."
+      ],
+      "code": "quantidade = 3\ncopia = quantidade\nquantidade = 8\nprint(copia, quantidade)",
+      "expectedOutput": "3 8"
+    },
+    "workedExamples": [
+      {
+        "problem": "Calcular um total e explicar cada etapa.",
+        "subgoals": [
+          {
+            "label": "Passo 1",
+            "code": "quantidade = 4",
+            "why": "Define uma contagem inteira."
+          },
+          {
+            "label": "Passo 2",
+            "code": "preco_unitario = 2.5",
+            "why": "Define o preço de demonstração como float; o exemplo não implementa uma política financeira completa."
+          },
+          {
+            "label": "Passo 3",
+            "code": "total = quantidade * preco_unitario",
+            "why": "Avalia os dois nomes e multiplica os valores. O resultado é associado a total."
+          },
+          {
+            "label": "Passo 4",
+            "code": "print(f\"Itens: {quantidade}; total: {total:.2f}\")",
+            "why": "Interpola a contagem e o total em uma mensagem, usando .2f apenas para a apresentação."
+          }
+        ],
+        "expectedOutput": "Itens: 4; total: 10.00"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "texto-numero",
+        "claim": "Uma string com dígitos já é um número.",
+        "refutation": "\"10\" + \"5\" produz \"105\", porque os operandos são strings.",
+        "correct": "Converta explicitamente quando o contrato exigir um número."
+      },
+      {
+        "tag": "atribuicao-formula",
+        "claim": "copia = quantidade faz copia acompanhar todas as mudanças de quantidade.",
+        "refutation": "Depois de quantidade = 8, copia pode continuar referenciando o inteiro 3.",
+        "correct": "A atribuição usa o valor da expressão naquele momento."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Ler uma implementação",
+        "description": "Identificar valores, estados e decisões antes de aceitar uma explicação de IA."
+      },
+      {
+        "context": "Investigar uma falha",
+        "description": "Construir uma entrada pequena que diferencie o comportamento esperado do observado."
+      },
+      {
+        "context": "Explicar uma decisão",
+        "description": "Justificar o tipo, a operação ou o caminho escolhido em termos do requisito."
+      }
+    ],
+    "efficiency": {
+      "naive": "quantidade = 3\ncopia = quantidade\nquantidade = 8\nprint(copia, quantidade)",
+      "better": "quantidade = 3\ncopia = quantidade\nquantidade = 8\nprint(copia, quantidade)",
+      "criterion": "Nesta aula de base, priorize clareza e correção. A forma de referência é repetida para não introduzir uma otimização artificial antes de entender o comportamento.",
+      "expectedOutput": "3 8"
+    },
+    "summary": "Identifique tipos, operações e unidades. Converta somente formatos permitidos. Atribuição associa nomes a objetos; print apenas exibe. Uma saída plausível não substitui um teste do requisito.",
+    "selfExplain": [
+      {
+        "id": "self-1",
+        "prompt": "Explique por que uma soma de entradas de formulário pode virar concatenação.",
+        "modelAnswer": "Formulários normalmente entregam texto. Se as entradas continuarem strings, + concatena. A solução depende de validar o formato e converter para o tipo numérico adequado."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "retrieve-1",
+        "prompt": "Qual a diferença entre = e ==?",
+        "modelAnswer": "= realiza atribuição; == compara igualdade."
+      },
+      {
+        "id": "retrieve-2",
+        "prompt": "O que input devolve?",
+        "modelAnswer": "Uma string com o conteúdo da linha, sem a quebra final."
+      },
+      {
+        "id": "retrieve-3",
+        "prompt": "int(\"3.5\") é equivalente a int(3.5)?",
+        "modelAnswer": "Não. A string não representa um inteiro aceito nessa forma; já int aplicado ao float trunca em direção a zero."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "python.variaveis-e-tipos.v1.quiz-01",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "Texto ou soma?",
+      "prompt": "Qual é o resultado de \"10\" + \"5\"?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "Duas strings são concatenadas; converter é uma operação explícita.",
+      "options": [
+        {
+          "id": "a",
+          "text": "15",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        },
+        {
+          "id": "b",
+          "text": "105, como texto",
+          "feedback": "Duas strings são concatenadas; converter é uma operação explícita."
+        },
+        {
+          "id": "c",
+          "text": "Uma conversão automática para float",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.variaveis-e-tipos.v1.quiz-02",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "Atribuição e igualdade",
+      "prompt": "Qual símbolo testa igualdade?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "= atribui; == compara; += realiza uma atribuição aumentada.",
+      "options": [
+        {
+          "id": "a",
+          "text": "=",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        },
+        {
+          "id": "b",
+          "text": "==",
+          "feedback": "= atribui; == compara; += realiza uma atribuição aumentada."
+        },
+        {
+          "id": "c",
+          "text": "+=",
+          "feedback": "Revise a operação e os tipos antes de escolher o resultado."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.variaveis-e-tipos.v1.previsao-01",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "O valor guardado",
+      "prompt": "Preveja a saída. Use uma linha para cada impressão.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "b recebeu a associação ao inteiro 3 antes de a ser reatribuído.",
+      "code": "a = 3\nb = a\na = 8\nprint(b)",
+      "solution": {
+        "output": "3"
+      }
+    },
+    {
+      "id": "python.variaveis-e-tipos.v1.previsao-02",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "Conversão antes da soma",
+      "prompt": "Preveja a saída. Use uma linha para cada impressão.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "As conversões produzem inteiros, então + calcula a soma 6.",
+      "code": "a = \"4\"\nb = \"2\"\nprint(int(a) + int(b))",
+      "solution": {
+        "output": "6"
+      }
+    },
+    {
+      "id": "python.variaveis-e-tipos.v1.erro-01",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "Revise as operações",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "print apenas escreve uma representação na saída configurada; não é uma operação de persistência.",
+      "items": [
+        {
+          "id": "a",
+          "text": "print salva automaticamente o valor em um banco de dados."
+        },
+        {
+          "id": "b",
+          "text": "Uma string pode conter dígitos e continuar sendo texto."
+        },
+        {
+          "id": "c",
+          "text": "Usar uma variável não definida pode gerar NameError."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a"
+        ]
+      }
+    },
+    {
+      "id": "python.variaveis-e-tipos.v1.erro-02",
+      "lessonId": "python.variaveis-e-tipos.v1",
+      "topicId": "python.variaveis-e-tipos",
+      "title": "Revise as conversões",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 1,
+      "skills": [
+        "ler-e-explicar-codigo"
+      ],
+      "explanation": "Uma representação textual decimal não é aceita por int nessa forma; formatar controla apresentação, não precisão interna.",
+      "items": [
+        {
+          "id": "a",
+          "text": "int(\"3.5\") aceita diretamente essa representação como inteiro."
+        },
+        {
+          "id": "b",
+          "text": "int(3.5) trunca em direção a zero."
+        },
+        {
+          "id": "c",
+          "text": "Formatação com duas casas transforma float em aritmética decimal exata."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "c"
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { asc, eq, type SQL } from "drizzle-orm";
-import { SubjectSchema, TopicPlanSchema } from "../catalog/schema";
+import { ModuleGuideSchema, SubjectSchema, TopicPlanSchema } from "../catalog/schema";
 import type { CatalogRepository, CatalogSubject } from "../catalog/types";
 import type { Database } from "./client";
 import { subjects, modules, topics } from "./schema";
@@ -17,9 +17,11 @@ function toSubject(row: SubjectRow): CatalogSubject {
     id: row.id, slug: row.slug, name: row.name, description: row.description,
     category: SubjectSchema.shape.category.parse(row.category), accent: SubjectSchema.shape.accent.parse(row.accent),
     version: row.version, learningOutcomes: SubjectSchema.shape.learningOutcomes.parse(row.learningOutcomes),
+    ...(row.overview ? { overview: SubjectSchema.shape.overview.unwrap().parse(row.overview) } : {}),
     modules: row.modules.map((item) => ({
       id: item.id, slug: item.slug, title: item.title, description: item.description,
       project: SubjectSchema.shape.modules.element.shape.project.parse(item.project),
+      ...(item.guide ? { guide: ModuleGuideSchema.parse(item.guide) } : {}),
       topics: item.topics.map((topic) => ({ id: topic.id, slug: topic.slug, title: topic.title, summary: topic.summary, plan: TopicPlanSchema.parse(topic.plan) })),
     })),
   };

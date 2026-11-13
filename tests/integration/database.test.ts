@@ -11,6 +11,9 @@ import { createFileCatalogRepository } from "../../src/lib/content/catalog-repos
 import { createDatabase } from "../../src/lib/db/client";
 import { subjects, modules, topics } from "../../src/lib/db/schema";
 
+const definitions = await loadCurriculum();
+const moduleCount = definitions.flatMap((subject) => subject.modules).length;
+const topicCount = definitions.flatMap((subject) => subject.modules.flatMap((item) => item.topics)).length;
 let directory: string;
 let connection: ReturnType<typeof createDatabase>;
 
@@ -34,9 +37,9 @@ describe("migração, seed e adaptador SQLite", () => {
     const definitions = await loadCurriculum();
     await seedCatalog(connection.db, definitions);
     await seedCatalog(connection.db, definitions);
-    expect(await connection.db.select({ count: count() }).from(subjects)).toEqual([{ count: 5 }]);
-    expect(await connection.db.select({ count: count() }).from(modules)).toEqual([{ count: 15 }]);
-    expect(await connection.db.select({ count: count() }).from(topics)).toEqual([{ count: 47 }]);
+    expect(await connection.db.select({ count: count() }).from(subjects)).toEqual([{ count: definitions.length }]);
+    expect(await connection.db.select({ count: count() }).from(modules)).toEqual([{ count: moduleCount }]);
+    expect(await connection.db.select({ count: count() }).from(topics)).toEqual([{ count: topicCount }]);
   });
 
   it("entrega o mesmo contrato nos adaptadores SQLite e arquivos", async () => {
@@ -52,7 +55,7 @@ describe("migração, seed e adaptador SQLite", () => {
     const invalid = await loadCurriculum();
     invalid[0].modules[0].topics[0].plan.prerequisites = ["ausente.topico"];
     await expect(seedCatalog(connection.db, invalid)).rejects.toThrow("Pré-requisito inexistente");
-    expect(await connection.db.select({ count: count() }).from(topics)).toEqual([{ count: 47 }]);
+    expect(await connection.db.select({ count: count() }).from(topics)).toEqual([{ count: topicCount }]);
   });
 
   it("atualiza conteúdo conhecido sem apagar disciplinas locais", async () => {
@@ -64,7 +67,7 @@ describe("migração, seed e adaptador SQLite", () => {
     await seedCatalog(connection.db, [extra]);
     definitions[0].description = "Descrição atualizada para verificar o upsert.";
     await seedCatalog(connection.db, definitions);
-    expect(await connection.db.select({ count: count() }).from(subjects)).toEqual([{ count: 6 }]);
+    expect(await connection.db.select({ count: count() }).from(subjects)).toEqual([{ count: definitions.length + 1 }]);
     const row = await connection.db.query.subjects.findFirst({ where: eq(subjects.id, definitions[0].slug) });
     expect(row?.description).toBe(definitions[0].description);
     expect(await connection.db.query.subjects.findFirst({ where: eq(subjects.id, extra.slug) })).toBeDefined();

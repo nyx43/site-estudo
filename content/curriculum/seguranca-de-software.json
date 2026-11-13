@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 12,
+  "slug": "seguranca-de-software",
+  "name": "Segurança de Software",
+  "description": "Reconheça fronteiras de confiança e transforme riscos em verificações concretas.",
+  "category": "THEORETICAL",
+  "accent": "violet",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fronteiras",
+      "title": "Ameaças e entradas",
+      "description": "Segurança começa por identificar ativos, atores e fronteiras de confiança.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Segurança começa por identificar ativos, atores e fronteiras de confiança. Uma entrada pode ter formato válido e ainda solicitar uma operação que não deve ser permitida.",
+          "O estudo separa validação, autorização e tratamento de conteúdo. A proteção precisa existir na camada que executa o efeito, e não apenas na interface."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "ameacas-e-confianca",
+          "title": "Modelagem de ameaças",
+          "summary": "Ativos, atores e fronteiras.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma fronteira de confiança.",
+              "Relacionar ameaça a ativo e cenário."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Ativos e atores",
+              "Fluxos e confiança",
+              "Risco e mitigação"
+            ],
+            "misconceptions": [
+              "Uma lista genérica de ameaças não demonstra risco no contexto do sistema."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma análise sem fluxo de dados ou ativo definido."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Descreve o cenário concreto.",
+              "Relaciona a medida ao risco observado."
+            ]
+          }
+        },
+        {
+          "slug": "validacao-de-entrada",
+          "title": "Validação e conteúdo não confiável",
+          "summary": "Formato, contexto e interpretação.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir validar, parametrizar e codificar saída.",
+              "Localizar interpretação perigosa."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Contratos de entrada",
+              "Consultas parametrizadas",
+              "Saída conforme o contexto"
+            ],
+            "misconceptions": [
+              "Remover alguns caracteres não substitui parametrização ou renderização segura."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar concatenação de dados numa consulta."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a interpretação indevida.",
+              "Escolhe uma proteção adequada à fronteira."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "acesso",
+      "title": "Identidade e acesso",
+      "description": "Autenticação identifica um ator; autorização decide se ele pode executar uma ação sobre um recurso.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Autenticação identifica um ator; autorização decide se ele pode executar uma ação sobre um recurso. A diferença precisa aparecer em cada operação sensível.",
+          "Sessões e segredos também têm ciclo de vida. A análise considera expiração, revogação, destino e exposição em logs ou no navegador."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "autorizacao-por-recurso",
+          "title": "Autorização por recurso",
+          "summary": "Permissão além da existência de uma sessão.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir uma verificação por recurso.",
+              "Construir um teste de acesso negado."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Identidade",
+              "Propriedade e permissão",
+              "Negação por padrão"
+            ],
+            "misconceptions": [
+              "Uma sessão válida não autoriza automaticamente acesso a qualquer registro."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma API que aceita o ID de outro usuário."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Localiza o ponto de autorização.",
+              "Verifica cenários permitidos e proibidos."
+            ]
+          }
+        },
+        {
+          "slug": "segredos-e-sessoes",
+          "title": "Segredos e sessões",
+          "summary": "Armazenamento, destino e revogação.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma exposição desnecessária.",
+              "Explicar o ciclo de vida de um segredo."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Servidor e cliente",
+              "Logs e configuração",
+              "Rotação e expiração"
+            ],
+            "misconceptions": [
+              "Uma variável de ambiente incluída no bundle do cliente deixa de ser privada."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma chave de serviço enviada ao navegador."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica os consumidores corretos.",
+              "Propõe um fluxo sem expor o valor."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "operacao",
+      "title": "Dependências e operação segura",
+      "description": "Bibliotecas, arquivos e integrações ampliam a superfície de risco.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Bibliotecas, arquivos e integrações ampliam a superfície de risco. A origem e a integridade de um artefato importam tanto quanto seu nome.",
+          "A revisão também precisa distinguir análise assistida por IA de validação real. Conteúdo recuperado pode conter instruções que não devem controlar o sistema."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "dependencias-e-integridade",
+          "title": "Dependências e integridade",
+          "summary": "Origem, versões e verificação.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a função de checksums e lockfiles.",
+              "Planejar uma atualização verificável."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Origem e distribuição",
+              "Verificação de artefatos",
+              "Atualizações e regressões"
+            ],
+            "misconceptions": [
+              "Desativar uma verificação para concluir instalação remove uma garantia, não resolve sua causa."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um procedimento que ignora checksum."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a garantia perdida.",
+              "Propõe restauração da verificação."
+            ]
+          }
+        },
+        {
+          "slug": "ia-e-fronteiras",
+          "title": "IA, dados recuperados e confiança",
+          "summary": "Prompt injection e validação de resultados.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir instrução autorizada e texto de uma fonte.",
+              "Definir validação independente da resposta de IA."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Dados e instruções",
+              "Saídas estruturadas",
+              "Revisão e execução isolada"
+            ],
+            "misconceptions": [
+              "Um PDF ou resposta de ferramenta não deve ganhar autoridade sobre o pedido do usuário."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um fluxo que executa comandos sugeridos num documento."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mantém a fonte como dado.",
+              "Exige validação e isolamento adequados antes de efeitos."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Segurança de Software analisa o que precisa ser protegido, quem pode agir e onde uma entrada atravessa uma fronteira de confiança. Uma ação com formato válido ainda pode ser indevida para aquele recurso ou ator.",
+    "O percurso relaciona ameaças, validação, acesso, segredos e dependências. A revisão assistida por IA deve manter essas fronteiras claras e verificar resultados de forma independente, sem transformar instruções de um documento recuperado em autoridade sobre o projeto."
+  ]
+}

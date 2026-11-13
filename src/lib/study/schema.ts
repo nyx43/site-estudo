@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TeachingSchema } from "./teaching-schema";
 
 const text = z.string().trim().min(1);
 const code = z.string().min(1).max(8000).refine((value) => value.trim().length > 0, "Código vazio.");
@@ -12,6 +13,7 @@ export const LessonSchema = z.object({
   id, topicId: id, version: z.number().int().positive(), title: text,
   status: z.enum(["DRAFT", "AUTO_CHECKED", "VERIFIED"]),
   objectives: z.array(text).min(2).max(5),
+  teaching: TeachingSchema.optional(),
   prequestions: z.array(question).min(2).max(3),
   why: z.object({ problem: text, cost: text }).strict(),
   mentalModel: z.object({ analogy: text, limits: text, trace: z.object({ headers: z.array(text), rows: z.array(z.array(z.string())) }) }).strict(),

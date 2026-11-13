@@ -1,0 +1,1112 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "python.lacos-de-repeticao.v2",
+    "topicId": "python.lacos-de-repeticao",
+    "version": 2,
+    "title": "Laços de repetição",
+    "status": "AUTO_CHECKED",
+    "objectives": [
+      "Prever quantas vezes um laço executa e qual saída ele produz.",
+      "Escolher entre percorrer uma coleção com for e controlar uma condição com while.",
+      "Identificar erros de limite, atualização e reinicialização de um acumulador."
+    ],
+    "prequestions": [
+      {
+        "id": "pre-range",
+        "prompt": "Sem executar: quais números você espera ver em range(1, 4)? Escreva seu palpite.",
+        "modelAnswer": "1, 2 e 3. O início é incluído; o limite final, 4, fica de fora. Errar esse palpite não reduz uma nota."
+      },
+      {
+        "id": "pre-soma",
+        "prompt": "Como você somaria os valores de uma lista sem escrever uma soma diferente para cada tamanho de lista?",
+        "modelAnswer": "Guardaria um total inicial igual a zero, percorreria a lista e acrescentaria cada valor ao total. O mesmo algoritmo funciona para listas de tamanhos diferentes."
+      }
+    ],
+    "why": {
+      "problem": "Imagine receber uma lista com mil despesas. Escrever uma soma com mil parcelas seria trabalhoso, e a lista de amanhã pode ter outro tamanho. Precisamos descrever a ação de somar uma vez e repeti-la para cada valor disponível.",
+      "cost": "Copiar instruções faz o tamanho do programa depender do tamanho dos dados e facilita esquecer um item. Um laço representa a repetição: você define o que acontece a cada volta e qual regra decide quando terminar."
+    },
+    "mentalModel": {
+      "analogy": "Pense em percorrer uma fila de cartões: pegue um cartão, faça a ação e avance. Cada volta é uma iteração. No for, a sequência entrega o próximo item. No while, a condição é consultada antes de cada volta.",
+      "limits": "A analogia não garante término. Um while pode repetir indefinidamente se nada fizer sua condição se tornar falsa. Também pode executar zero vezes se a condição já começar falsa.",
+      "trace": {
+        "headers": [
+          "Momento",
+          "n",
+          "n > 0",
+          "Ação"
+        ],
+        "rows": [
+          [
+            "Antes da 1ª volta",
+            "3",
+            "Verdadeiro",
+            "Mostra 3; diminui n para 2"
+          ],
+          [
+            "Antes da 2ª volta",
+            "2",
+            "Verdadeiro",
+            "Mostra 2; diminui n para 1"
+          ],
+          [
+            "Antes da 3ª volta",
+            "1",
+            "Verdadeiro",
+            "Mostra 1; diminui n para 0"
+          ],
+          [
+            "Próximo teste",
+            "0",
+            "Falso",
+            "Termina o laço"
+          ]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Um laço repete um bloco de instruções. Em Python, a indentação indica quais instruções pertencem ao bloco. for percorre os elementos de um iterável; while repete enquanto sua condição for verdadeira.",
+      "parts": [
+        "for item in sequencia: obtém um item por iteração. O laço termina quando a sequência se esgota.",
+        "while condicao: testa a condição antes de cada volta. Você precisa raciocinar sobre a atualização e o término.",
+        "range(inicio, fim) produz inteiros desde inicio até antes de fim, com passo 1. Com um único argumento, o início padrão é 0.",
+        "Uma linha indentada pertence ao bloco. Uma linha que volta ao nível anterior fica depois do laço."
+      ],
+      "code": "for numero in range(3):\n    print(numero)",
+      "expectedOutput": "0\n1\n2"
+    },
+    "workedExamples": [
+      {
+        "problem": "Somar os valores 2, 4 e 6 e mostrar apenas o total final.",
+        "subgoals": [
+          {
+            "label": "Iniciar o acumulador",
+            "code": "total = 0",
+            "why": "Zero é o ponto inicial da soma. Inicializar antes do laço preserva o resultado entre as voltas e define o total mesmo se a coleção estiver vazia."
+          },
+          {
+            "label": "Percorrer os valores",
+            "code": "for numero in [2, 4, 6]:",
+            "why": "A variável numero recebe um valor da lista em cada volta; não precisamos escrever um caso para cada posição."
+          },
+          {
+            "label": "Acrescentar ao total",
+            "code": "    total += numero",
+            "why": "A operação combina o total anterior com o valor atual. Os totais parciais serão 2, 6 e 12."
+          },
+          {
+            "label": "Mostrar o resultado final",
+            "code": "print(total)",
+            "why": "A linha fica fora do bloco. Ela executa uma vez, quando o percurso termina, e mostra 12."
+          }
+        ],
+        "expectedOutput": "12"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "range-fim",
+        "claim": "range(1, 5) inclui o 5.",
+        "refutation": "Não inclui: os valores são 1, 2, 3 e 4. Se o 5 estivesse incluído, seriam cinco valores, mas esse intervalo contém quatro.",
+        "correct": "Com passo positivo igual a 1, o limite final fica de fora. Para incluir 5 começando em 1, use range(1, 6)."
+      },
+      {
+        "tag": "while-teste",
+        "claim": "O while testa a condição só uma vez ou executa pelo menos uma volta.",
+        "refutation": "A condição é testada antes de cada volta. Se n começar em 0, while n > 0 não executa o corpo nenhuma vez.",
+        "correct": "Rastreie a condição a cada iteração e inclua o caso em que ela já começa falsa."
+      },
+      {
+        "tag": "acumulador-interno",
+        "claim": "Zerar o total dentro do laço é equivalente a zerá-lo antes.",
+        "refutation": "Zerar em cada volta descarta os valores anteriores. Ao somar 2, 4 e 6 desse jeito, o último resultado parcial seria 6, não 12.",
+        "correct": "Inicialize o acumulador antes do laço e atualize seu valor dentro do bloco."
+      },
+      {
+        "tag": "saida-parcial",
+        "claim": "Colocar print(total) dentro ou fora do laço produz a mesma saída.",
+        "refutation": "Dentro do laço, ele executa uma vez por iteração e mostra resultados parciais. Fora, ele executa uma vez depois do percurso.",
+        "correct": "Escolha a indentação conforme a intenção: acompanhar cada passo ou mostrar somente o resultado final."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Arquivos",
+        "description": "Percorrer linhas de um arquivo para validar cada registro antes de incluí-lo num relatório."
+      },
+      {
+        "context": "Coleções",
+        "description": "Somar despesas, contar itens que atendem a uma condição e construir uma nova lista."
+      },
+      {
+        "context": "Interação",
+        "description": "Repetir uma solicitação enquanto a entrada continuar inválida, com uma condição de saída explícita."
+      }
+    ],
+    "efficiency": {
+      "naive": "numeros = [2, 4, 6]\ntotal = 0\nfor numero in numeros:\n    total += numero\nprint(total)",
+      "better": "numeros = [2, 4, 6]\nprint(sum(numeros))",
+      "criterion": "Quando a intenção é apenas somar números, sum expressa isso diretamente e reduz a quantidade de estado que precisamos acompanhar. O laço explícito continua útil para aprender, validar itens ou aplicar regras adicionais. Ambas as versões percorrem a coleção; a versão curta não elimina esse trabalho.",
+      "expectedOutput": "12"
+    },
+    "summary": "for percorre uma sequência; while consulta uma condição antes de cada volta. A indentação define o bloco. Ao acumular, comece fora do laço e atualize dentro dele. Antes de confiar numa solução, confira os limites, o caso vazio e o que faz a repetição terminar.",
+    "selfExplain": [
+      {
+        "id": "self-acumulador",
+        "prompt": "Explique com suas palavras por que total = 0 fica antes do laço e print(total) fica depois no exemplo da soma.",
+        "modelAnswer": "O total precisa preservar a soma entre as voltas; zerá-lo dentro apagaria o histórico. O print fica depois para mostrar uma única soma final. Com o total inicial definido antes, uma lista vazia também resulta em zero."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "retrieve-range",
+        "prompt": "Sem voltar à explicação: quantas iterações tem range(2, 5), e quais são os valores?",
+        "modelAnswer": "Três iterações, com 2, 3 e 4. O limite final 5 não é incluído."
+      },
+      {
+        "id": "retrieve-zero",
+        "prompt": "O que acontece com o corpo de while n > 0 se n já começar em 0?",
+        "modelAnswer": "Ele não executa. A condição é falsa antes da primeira volta."
+      },
+      {
+        "id": "retrieve-update",
+        "prompt": "Se um while depende de n > 0, o que você deve verificar sobre as mudanças de n?",
+        "modelAnswer": "Se o estado avança em direção a tornar a condição falsa. Também é preciso considerar os caminhos que podem deixar de atualizar n, em vez de presumir que uma atualização sempre ocorre."
+      }
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Repetir uma instrução não é apenas escrever for. É escolher o estado inicial, explicar qual item ou condição está sendo observado, controlar o que muda e saber por que o programa termina. Esse raciocínio permite acompanhar automações e identificar erros em respostas de IA.",
+        "Aqui você encontra os comandos, programas completos e explicações por linha. Depois dos casos básicos, há fronteiras como coleções vazias, passo negativo, desvios com break/continue e diferenças entre somar e contar. As conexões avançadas indicam quando será necessário estudar coleções, iteradores e desempenho com mais profundidade."
+      ],
+      "prerequisites": [
+        {
+          "topicId": "python.variaveis-e-tipos",
+          "reason": "É preciso reconhecer atribuição, números, texto e chamadas."
+        },
+        {
+          "topicId": "python.condicionais",
+          "reason": "Os testes e os blocos internos dependem de condições e indentação."
+        }
+      ],
+      "glossary": [
+        {
+          "term": "Iteração",
+          "meaning": "Uma execução do corpo do laço.",
+          "example": "Um for sobre três valores normalmente executa três iterações."
+        },
+        {
+          "term": "Iterável",
+          "meaning": "Um objeto do qual é possível obter itens sucessivamente.",
+          "example": "Listas, strings e range podem ser percorridos."
+        },
+        {
+          "term": "Acumulador",
+          "meaning": "Um estado que reúne resultados de várias iterações.",
+          "example": "total começa em zero e recebe cada parcela."
+        },
+        {
+          "term": "Invariante",
+          "meaning": "Uma propriedade que deve permanecer válida ao longo do algoritmo.",
+          "example": "Depois de cada volta, total corresponde à soma dos itens já processados."
+        },
+        {
+          "term": "Término",
+          "meaning": "A razão pela qual a repetição pode parar.",
+          "example": "Uma sequência acaba ou uma condição fica falsa."
+        }
+      ],
+      "commands": [
+        {
+          "name": "for e in",
+          "kind": "KEYWORD",
+          "syntax": "for item in iteravel:",
+          "explanation": "for pede um item de cada vez a um objeto iterável e associa esse item ao nome antes de executar o bloco. in faz parte da sintaxe desse percurso.",
+          "whenToUse": "Percorrer valores conhecidos, sem controlar manualmente um índice.",
+          "pitfalls": [
+            "Uma lista vazia executa zero voltas.",
+            "O alvo do for recebe um valor, não uma fórmula que acompanha uma posição."
+          ],
+          "examples": [
+            {
+              "id": "lacos-for",
+              "title": "Percorrer valores",
+              "purpose": "Separar o item atual da coleção completa.",
+              "code": "nomes = [\"Ana\", \"Bia\"]\nfor nome in nomes:\n    print(nome)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Os colchetes criam uma lista com duas strings."
+                },
+                {
+                  "line": 2,
+                  "explanation": "A cada volta, nome recebe uma das strings na ordem da lista; : abre o bloco."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Os espaços colocam print dentro do laço, então ele executa para cada nome."
+                }
+              ],
+              "takeaway": "O percurso pode ser compreendido sem criar um contador manual.",
+              "expectedOutput": "Ana\nBia"
+            }
+          ]
+        },
+        {
+          "name": "range",
+          "kind": "TYPE",
+          "syntax": "range(inicio, fim, passo)",
+          "explanation": "range é um tipo de sequência imutável de inteiros. O limite final é exclusivo; o passo padrão é 1 e não pode ser zero.",
+          "whenToUse": "Representar progressões inteiras e repetições numeradas.",
+          "pitfalls": [
+            "Um passo negativo precisa combinar com os limites para produzir valores.",
+            "range não cria automaticamente uma lista materializada com todos os números."
+          ],
+          "examples": [
+            {
+              "id": "lacos-range",
+              "title": "Passo negativo e fim exclusivo",
+              "purpose": "Conferir a direção e a condição de término.",
+              "code": "for n in range(5, 0, -2):\n    print(n)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Começa em 5 e diminui de 2 em 2; o limite 0 não entra na sequência."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Mostra o item atual em cada uma das três iterações."
+                }
+              ],
+              "takeaway": "O número de iterações depende dos limites e do sinal do passo.",
+              "expectedOutput": "5\n3\n1"
+            }
+          ]
+        },
+        {
+          "name": "while",
+          "kind": "KEYWORD",
+          "syntax": "while condicao:",
+          "explanation": "Avalia a condição antes de cada volta e executa o bloco somente enquanto ela for verdadeira. Não existe atualização automática de um contador.",
+          "whenToUse": "Repetir segundo uma condição de estado, com término ou limite de tentativas explícito.",
+          "pitfalls": [
+            "Pode executar zero vezes.",
+            "Uma atualização no caminho errado pode não ocorrer em todas as voltas."
+          ],
+          "examples": [
+            {
+              "id": "lacos-while",
+              "title": "Condição e atualização",
+              "purpose": "Observar o caminho completo que chega ao próximo teste.",
+              "code": "n = 3\nwhile n > 0:\n    print(n)\n    n -= 1",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define o estado inicial."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Consulta o estado atual antes de entrar no bloco."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Mostra o valor antes da atualização."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Diminui n em uma unidade antes de voltar ao teste."
+                }
+              ],
+              "takeaway": "Escreva por que o estado se aproxima do término, em vez de presumir que while termina sozinho.",
+              "expectedOutput": "3\n2\n1"
+            }
+          ]
+        },
+        {
+          "name": "Acumulador e +=",
+          "kind": "SYNTAX",
+          "syntax": "total += valor",
+          "explanation": "No caso numérico deste exemplo, calcula a soma com o total anterior e associa o resultado novamente ao nome total. O estado precisa começar antes do percurso.",
+          "whenToUse": "Somar, contar ou resumir informações de vários itens.",
+          "pitfalls": [
+            "Não reinicializar o estado que precisa persistir entre voltas.",
+            "Somar o valor e contar um item são operações diferentes."
+          ],
+          "examples": [
+            {
+              "id": "lacos-acumulador",
+              "title": "Estado entre iterações",
+              "purpose": "Tornar os totais parciais visíveis.",
+              "code": "total = 0\nfor valor in [2, 4, 6]:\n    total += valor\n    print(total)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Define o elemento inicial da soma fora do laço."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Percorre a lista de demonstração."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Acrescenta o item atual ao total preservado da volta anterior."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Está dentro do bloco e mostra cada total parcial."
+                }
+              ],
+              "takeaway": "A posição de print altera quais evidências você observa, sem necessariamente alterar a soma.",
+              "expectedOutput": "2\n6\n12"
+            }
+          ]
+        },
+        {
+          "name": "break e continue",
+          "kind": "KEYWORD",
+          "syntax": "break; continue",
+          "explanation": "break encerra o laço mais interno; continue passa à próxima iteração. Em um while, um continue anterior à atualização pode impedir o progresso do estado.",
+          "whenToUse": "Encerrar uma busca já resolvida ou ignorar um item conforme uma regra clara.",
+          "pitfalls": [
+            "break não encerra todos os laços aninhados nem a função inteira.",
+            "continue pode pular atualizações necessárias."
+          ],
+          "examples": [
+            {
+              "id": "lacos-break",
+              "title": "Ignorar e encerrar são ações diferentes",
+              "purpose": "Rastrear os dois caminhos sem executar código ilimitado.",
+              "code": "for n in range(6):\n    if n == 1:\n        continue\n    if n == 4:\n        break\n    print(n)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Percorre os inteiros 0 a 5."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Confere o item que deve ser ignorado."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Vai à próxima iteração sem chegar ao print para o valor 1."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Confere a condição que encerra a busca."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Encerra o laço quando n é 4; 4 e 5 não serão impressos."
+                },
+                {
+                  "line": 6,
+                  "explanation": "Executa apenas para os itens que passaram pelos dois desvios."
+                }
+              ],
+              "takeaway": "A posição dos desvios determina quais instruções são alcançadas.",
+              "expectedOutput": "0\n2\n3"
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "lacos-revisao",
+          "title": "Conte sem somar valores",
+          "purpose": "Distinguir a quantidade de itens da soma de seus conteúdos.",
+          "code": "contagem = 0\nfor valor in [1, 2, 4]:\n    if valor % 2 == 0:\n        contagem += 1\nprint(contagem)",
+          "lineNotes": [
+            {
+              "line": 1,
+              "explanation": "Começa uma contagem em zero."
+            },
+            {
+              "line": 2,
+              "explanation": "Percorre os três valores."
+            },
+            {
+              "line": 3,
+              "explanation": "% calcula o resto; resto zero na divisão por 2 identifica um par."
+            },
+            {
+              "line": 4,
+              "explanation": "Só o bloco do if incrementa a contagem. Somar 1 conta um item; somar valor faria outra conta."
+            },
+            {
+              "line": 5,
+              "explanation": "Está fora do for e mostra a contagem final."
+            }
+          ],
+          "takeaway": "Uma IA pode escrever um algoritmo executável que calcula uma métrica diferente da pedida.",
+          "expectedOutput": "2"
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Coleção vazia",
+          "explanation": "Nenhuma iteração ocorre. O acumulador definido antes do laço continua sendo um resultado válido para uma soma vazia.",
+          "example": {
+            "id": "lacos-vazio",
+            "title": "O laço pode não executar",
+            "purpose": "Testar o estado definido antes do percurso.",
+            "code": "total = 0\nfor valor in []:\n    total += valor\nprint(total)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Define um resultado inicial mesmo sem itens."
+              },
+              {
+                "line": 2,
+                "explanation": "Uma lista vazia não fornece item algum."
+              },
+              {
+                "line": 3,
+                "explanation": "Não executa nesta entrada."
+              },
+              {
+                "line": 4,
+                "explanation": "Mostra o estado inicial que foi preservado."
+              }
+            ],
+            "takeaway": "Uma variável inicializada apenas no corpo pode não existir após um percurso vazio.",
+            "expectedOutput": "0"
+          }
+        },
+        {
+          "title": "Laços aninhados",
+          "explanation": "Um laço interno executa para cada item do externo. O trabalho não deve ser estimado olhando apenas o número de linhas do programa.",
+          "example": {
+            "id": "lacos-aninhados",
+            "title": "Duas dimensões de um percurso",
+            "purpose": "Explicar a ordem e a quantidade de combinações.",
+            "code": "for linha in range(2):\n    for coluna in range(2):\n        print(linha, coluna)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "O laço externo escolhe a linha atual."
+              },
+              {
+                "line": 2,
+                "explanation": "Para cada linha, o laço interno percorre novamente as duas colunas."
+              },
+              {
+                "line": 3,
+                "explanation": "O bloco mais interno mostra uma combinação por vez."
+              }
+            ],
+            "takeaway": "Neste caso há 2 × 2 execuções do print; dados maiores podem ampliar muito o trabalho.",
+            "expectedOutput": "0 0\n0 1\n1 0\n1 1"
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "A IA perdeu as parcelas anteriores",
+          "request": "Somar todos os valores e imprimir o total final.",
+          "generated": {
+            "id": "lacos-ia-ruim",
+            "title": "O total reinicia a cada volta",
+            "purpose": "Reproduzir um erro lógico que não gera exceção.",
+            "code": "for valor in [2, 4, 6]:\n    total = 0\n    total += valor\nprint(total)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Começa a percorrer os valores."
+              },
+              {
+                "line": 2,
+                "explanation": "Zera o resultado em todas as voltas, apagando a soma anterior."
+              },
+              {
+                "line": 3,
+                "explanation": "Acrescenta apenas o valor da volta atual ao zero recém-atribuído."
+              },
+              {
+                "line": 4,
+                "explanation": "Depois da última volta, o total contém somente 6."
+              }
+            ],
+            "takeaway": "Executar sem erro não prova que o requisito da soma foi cumprido.",
+            "expectedOutput": "6"
+          },
+          "diagnosis": [
+            "A inicialização do acumulador está dentro do bloco repetido, por isso ele volta a zero a cada item.",
+            "O resultado coincide com o último item; uma lista de um item esconderia a falha.",
+            "O caso vazio também precisa de uma definição de total antes do percurso."
+          ],
+          "correction": {
+            "id": "lacos-ia-correto",
+            "title": "Preserve o estado da soma",
+            "purpose": "Corrigir a inicialização e explicitar o caso vazio.",
+            "code": "total = 0\nfor valor in [2, 4, 6]:\n    total += valor\nprint(total)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Define o acumulador antes de qualquer iteração."
+              },
+              {
+                "line": 2,
+                "explanation": "Obtém um valor por volta."
+              },
+              {
+                "line": 3,
+                "explanation": "Acrescenta o valor atual sem descartar os anteriores."
+              },
+              {
+                "line": 4,
+                "explanation": "Mostra a soma final, inclusive zero quando não houver itens."
+              }
+            ],
+            "takeaway": "Confira o efeito da correção em mais de uma entrada.",
+            "expectedOutput": "12"
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Lista [2, 4, 6]",
+              "expected": "12",
+              "why": "Detecta a perda de parcelas anteriores."
+            },
+            {
+              "scenario": "Lista vazia",
+              "expected": "0",
+              "why": "Verifica que o estado existe sem iterações."
+            },
+            {
+              "scenario": "Lista [5]",
+              "expected": "5",
+              "why": "Cobre o caso mínimo, mas não é suficiente sozinho."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Iteradores e consumo de dados",
+          "explanation": "Um percurso pode consumir itens de uma fonte que não guarda todos os valores em memória. Iteradores e geradores têm estado de consumo próprio.",
+          "topicIds": [
+            "python.iteradores-e-geradores"
+          ],
+          "caution": "Não presuma que um iterador pode ser percorrido duas vezes com o mesmo resultado."
+        },
+        {
+          "title": "Mutação durante o percurso",
+          "explanation": "Alterar a coleção que você está percorrendo pode mudar os próximos itens observados. Muitas tarefas ficam mais claras produzindo uma nova coleção.",
+          "topicIds": [
+            "python.listas-e-dicionarios",
+            "python.escopo-e-mutabilidade"
+          ],
+          "caution": "A regra depende da estrutura e da operação; não generalize comportamento de listas para dicionários."
+        },
+        {
+          "title": "Custo e algoritmos",
+          "explanation": "Dois laços aninhados podem multiplicar o número de operações. Uma forma curta não é automaticamente mais eficiente.",
+          "topicIds": [
+            "algoritmos.complexidade"
+          ],
+          "caution": "Analise o tamanho da entrada e o trabalho realizado, não apenas a quantidade de linhas."
+        }
+      ],
+      "reviewChecklist": [
+        "Qual é o estado inicial e qual é o caso vazio?",
+        "Quantas voltas acontecem e quais limites ficam de fora?",
+        "O estado é atualizado em todos os caminhos necessários?",
+        "A indentação corresponde ao que precisa repetir?",
+        "A métrica calculada é a pedida: soma, contagem, busca ou transformação?",
+        "Tenho um exemplo que expõe o erro, e outro que confirma a correção?"
+      ],
+      "sources": [
+        {
+          "sourceId": "python-controlflow",
+          "locator": "4.2–4.4 — for, range, break e continue",
+          "use": "Percurso, limites e controle de fluxo."
+        },
+        {
+          "sourceId": "python-functions",
+          "locator": "range e sum",
+          "use": "Natureza do range e contrato da soma embutida."
+        }
+      ]
+    }
+  },
+  "exercises": [
+    {
+      "id": "python.lacos-de-repeticao.v2.quiz-01",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Onde o intervalo termina?",
+      "prompt": "Qual sequência é produzida por range(1, 5)?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "O início 1 é incluído, e o limite final 5 fica de fora.",
+      "options": [
+        {
+          "id": "a",
+          "text": "1, 2, 3, 4, 5",
+          "feedback": "O limite final não é incluído.",
+          "misconceptionTag": "range-fim"
+        },
+        {
+          "id": "b",
+          "text": "1, 2, 3, 4",
+          "feedback": "Correto. O início 1 é incluído, e o limite final 5 fica de fora."
+        },
+        {
+          "id": "c",
+          "text": "0, 1, 2, 3, 4",
+          "feedback": "Com dois argumentos, o primeiro define o início.",
+          "misconceptionTag": "range-fim"
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.quiz-02",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Pode não haver primeira volta?",
+      "prompt": "n começa em 0. Quantas vezes o corpo de while n > 0 executa?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "A condição é falsa desde o início; o corpo não executa.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Nenhuma vez",
+          "feedback": "Correto. A condição é falsa desde o início; o corpo não executa."
+        },
+        {
+          "id": "b",
+          "text": "Uma vez, antes do primeiro teste",
+          "feedback": "while testa antes de entrar no corpo.",
+          "misconceptionTag": "while-teste"
+        },
+        {
+          "id": "c",
+          "text": "Infinitas vezes",
+          "feedback": "A condição já é falsa no primeiro teste.",
+          "misconceptionTag": "while-teste"
+        }
+      ],
+      "solution": {
+        "optionId": "a"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.quiz-03",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Um total que se perde",
+      "prompt": "Para somar todos os valores de uma lista, onde você deve inicializar total = 0?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "O acumulador começa antes do laço e é atualizado dentro dele.",
+      "options": [
+        {
+          "id": "a",
+          "text": "No início de cada volta",
+          "feedback": "Isso descartaria o valor acumulado antes de acrescentar o próximo item.",
+          "misconceptionTag": "acumulador-interno"
+        },
+        {
+          "id": "b",
+          "text": "Depois de acrescentar cada item",
+          "feedback": "Isso zeraria o resultado que acabou de ser calculado.",
+          "misconceptionTag": "acumulador-interno"
+        },
+        {
+          "id": "c",
+          "text": "Antes de começar o laço",
+          "feedback": "Correto. O acumulador começa antes do laço e é atualizado dentro dele."
+        }
+      ],
+      "solution": {
+        "optionId": "c"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.quiz-04",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Uma saída ou várias?",
+      "prompt": "total começa em 0. Um laço soma 1, depois 2, depois 3. Se print(total) estiver dentro do bloco, depois da soma, o que ele mostra?",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "Dentro do bloco, a impressão acompanha os totais parciais: 1, 3 e 6.",
+      "options": [
+        {
+          "id": "a",
+          "text": "Somente 6",
+          "feedback": "Isso ocorreria com a impressão depois do laço.",
+          "misconceptionTag": "saida-parcial"
+        },
+        {
+          "id": "b",
+          "text": "1, 2 e 3, em linhas separadas",
+          "feedback": "A impressão é do total acumulado, não apenas do item atual.",
+          "misconceptionTag": "saida-parcial"
+        },
+        {
+          "id": "c",
+          "text": "0, 0 e 0, em linhas separadas",
+          "feedback": "O total é atualizado antes da impressão.",
+          "misconceptionTag": "saida-parcial"
+        },
+        {
+          "id": "d",
+          "text": "1, 3 e 6, em linhas separadas",
+          "feedback": "Correto. Dentro do bloco, a impressão acompanha os totais parciais: 1, 3 e 6."
+        }
+      ],
+      "solution": {
+        "optionId": "d"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.parsons-01",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Monte a soma",
+      "prompt": "Organize os blocos para somar 2, 4 e 6 e imprimir apenas 12. Ajuste a indentação e deixe de fora o bloco que não serve.",
+      "type": "PARSONS",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "O total começa fora; a soma é repetida dentro; a impressão final fica fora. Atribuir total = n perderia os valores anteriores.",
+      "blocks": [
+        {
+          "id": "a",
+          "code": "for n in [2, 4, 6]:",
+          "distractor": false
+        },
+        {
+          "id": "b",
+          "code": "print(total)",
+          "distractor": false
+        },
+        {
+          "id": "c",
+          "code": "total = 0",
+          "distractor": false
+        },
+        {
+          "id": "d",
+          "code": "total += n",
+          "distractor": false
+        },
+        {
+          "id": "e",
+          "code": "total = n",
+          "distractor": true
+        }
+      ],
+      "solution": {
+        "orders": [
+          [
+            {
+              "id": "c",
+              "indent": 0
+            },
+            {
+              "id": "a",
+              "indent": 0
+            },
+            {
+              "id": "d",
+              "indent": 1
+            },
+            {
+              "id": "b",
+              "indent": 0
+            }
+          ]
+        ],
+        "output": "12"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.parsons-02",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Uma contagem que termina",
+      "prompt": "Monte uma contagem que imprima 3, 2 e 1 em linhas separadas e termine.",
+      "type": "PARSONS",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "A condição é testada antes de cada volta; a diminuição aproxima n de zero. Aumentar n manteria a condição verdadeira.",
+      "blocks": [
+        {
+          "id": "a",
+          "code": "while n > 0:",
+          "distractor": false
+        },
+        {
+          "id": "b",
+          "code": "n -= 1",
+          "distractor": false
+        },
+        {
+          "id": "c",
+          "code": "print(n)",
+          "distractor": false
+        },
+        {
+          "id": "d",
+          "code": "n = 3",
+          "distractor": false
+        },
+        {
+          "id": "e",
+          "code": "n += 1",
+          "distractor": true
+        }
+      ],
+      "solution": {
+        "orders": [
+          [
+            {
+              "id": "d",
+              "indent": 0
+            },
+            {
+              "id": "a",
+              "indent": 0
+            },
+            {
+              "id": "c",
+              "indent": 1
+            },
+            {
+              "id": "b",
+              "indent": 1
+            }
+          ]
+        ],
+        "output": "3\n2\n1"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.parsons-03",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Conte somente os pares",
+      "prompt": "Conte quantos valores de [1, 2, 4] são pares e imprima o resultado uma vez. A operação % fornece o resto da divisão; resto zero por 2 identifica um par.",
+      "type": "PARSONS",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "O if pertence ao laço e o incremento pertence ao if. Incrementar por 1 conta itens; somar n calcularia outro resultado.",
+      "blocks": [
+        {
+          "id": "a",
+          "code": "if n % 2 == 0:",
+          "distractor": false
+        },
+        {
+          "id": "b",
+          "code": "print(contagem)",
+          "distractor": false
+        },
+        {
+          "id": "c",
+          "code": "contagem += 1",
+          "distractor": false
+        },
+        {
+          "id": "d",
+          "code": "for n in [1, 2, 4]:",
+          "distractor": false
+        },
+        {
+          "id": "e",
+          "code": "contagem = 0",
+          "distractor": false
+        },
+        {
+          "id": "f",
+          "code": "contagem += n",
+          "distractor": true
+        }
+      ],
+      "solution": {
+        "orders": [
+          [
+            {
+              "id": "e",
+              "indent": 0
+            },
+            {
+              "id": "d",
+              "indent": 0
+            },
+            {
+              "id": "a",
+              "indent": 1
+            },
+            {
+              "id": "c",
+              "indent": 2
+            },
+            {
+              "id": "b",
+              "indent": 0
+            }
+          ]
+        ],
+        "output": "2"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.erro-01",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Revise o intervalo",
+      "prompt": "Sobre range(1, 5), marque TODAS as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "O intervalo contém 1, 2, 3 e 4: quatro valores, sem 0 e sem 5.",
+      "items": [
+        {
+          "id": "a",
+          "text": "O valor 5 aparece na sequência."
+        },
+        {
+          "id": "b",
+          "text": "A sequência tem quatro valores."
+        },
+        {
+          "id": "c",
+          "text": "O primeiro valor da sequência é 0."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.erro-02",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Revise o término",
+      "prompt": "n começa em 3. O corpo de while n > 0 apenas imprime n, sem modificar nenhum estado. Marque TODAS as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "Sem atualização, n permanece em 3 e a condição segue verdadeira. while não diminui variáveis automaticamente.",
+      "items": [
+        {
+          "id": "a",
+          "text": "O laço termina sozinho depois de três voltas."
+        },
+        {
+          "id": "b",
+          "text": "A condição é consultada antes de cada volta."
+        },
+        {
+          "id": "c",
+          "text": "O valor de n diminui automaticamente por ser um while."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.erro-03",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Revise o acumulador",
+      "prompt": "Um programa executa total = 0 dentro de cada volta, soma o item atual e imprime total depois do laço. Marque TODAS as afirmações incorretas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "Zerar em cada volta perde o histórico. Se a lista estiver vazia e a inicialização só ocorrer no corpo, total não será definido por esse laço.",
+      "items": [
+        {
+          "id": "a",
+          "text": "Essa inicialização preserva a soma de todas as voltas."
+        },
+        {
+          "id": "b",
+          "text": "Inicializar o total antes do laço evita perder o histórico da soma."
+        },
+        {
+          "id": "c",
+          "text": "Apenas mover o print para fora já garante um total definido quando a lista é vazia."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.previsao-01",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Rastreie a soma",
+      "prompt": "Digite exatamente a saída, sem aspas.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "Os valores 1, 2 e 3 são somados. A impressão fora do laço mostra somente 6.",
+      "code": "total = 0\nfor n in range(1, 4):\n    total += n\nprint(total)",
+      "solution": {
+        "output": "6"
+      }
+    },
+    {
+      "id": "python.lacos-de-repeticao.v2.previsao-02",
+      "lessonId": "python.lacos-de-repeticao.v2",
+      "topicId": "python.lacos-de-repeticao",
+      "title": "Rastreie a condição",
+      "prompt": "Digite a saída usando uma linha para cada impressão.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 2,
+      "skills": [
+        "rastrear-lacos"
+      ],
+      "explanation": "A primeira volta mostra 2, a segunda mostra 1. Quando n chega a 0, a condição é falsa antes da próxima impressão.",
+      "code": "n = 2\nwhile n > 0:\n    print(n)\n    n -= 1",
+      "solution": {
+        "output": "2\n1"
+      }
+    }
+  ]
+}

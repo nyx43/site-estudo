@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 11,
+  "slug": "redes",
+  "name": "Redes de Computadores",
+  "description": "Acompanhe uma comunicação por suas camadas, nomes, conexões e falhas.",
+  "category": "THEORETICAL",
+  "accent": "emerald",
+  "learningOutcomes": [
+    "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
+    "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fundamentos",
+      "title": "Endereços e camadas",
+      "description": "Uma aplicação depende de serviços diferentes para localizar e alcançar outra: nomes, endereços e protocolos não são a mesma coisa..",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Uma aplicação depende de serviços diferentes para localizar e alcançar outra: nomes, endereços e protocolos não são a mesma coisa.",
+          "A decomposição por camadas ajuda a investigar uma falha sem atribuir todo problema à internet. Precisamos observar qual etapa falhou e o que a evidência realmente demonstra."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "enderecos-e-camadas",
+          "title": "Endereços, portas e camadas",
+          "summary": "Responsabilidades e identificação de destinos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir nome, IP e porta.",
+              "Localizar a camada de uma evidência."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Camadas e encapsulamento",
+              "Endereços e portas",
+              "Rotas e alcance"
+            ],
+            "misconceptions": [
+              "Um nome resolvido não demonstra que a porta de destino aceita conexões."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um diagnóstico baseado apenas em resolução de nome."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a etapa ainda não verificada.",
+              "Propõe um teste não destrutivo adequado."
+            ]
+          }
+        },
+        {
+          "slug": "dns",
+          "title": "DNS e resolução",
+          "summary": "Nomes, registros e cache.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar o papel da resolução.",
+              "Distinguir resultado em cache e consulta atual."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Registros",
+              "Resolução e cache",
+              "TTL e falhas"
+            ],
+            "misconceptions": [
+              "Uma resposta DNS em cache pode permanecer após uma alteração no servidor autoritativo."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar destinos diferentes para o mesmo nome."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Relaciona o resultado ao contexto da consulta.",
+              "Explica o efeito do cache."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "transporte",
+      "title": "Transporte e proteção",
+      "description": "Uma conexão entrega dados sob regras que não garantem, por si só, que a aplicação terminou a operação desejada..",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Uma conexão entrega dados sob regras que não garantem, por si só, que a aplicação terminou a operação desejada.",
+          "TCP, UDP e TLS serão diferenciados pelas responsabilidades e pelas evidências que oferecem, sem tratar criptografia como autorização."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "tcp-e-udp",
+          "title": "TCP e UDP",
+          "summary": "Fluxos, mensagens e confiabilidade.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir fluxo de bytes e datagramas.",
+              "Explicar limites das garantias de transporte."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Conexão e entrega",
+              "Ordenação e perdas",
+              "Fronteiras de mensagens"
+            ],
+            "misconceptions": [
+              "Uma leitura de socket não corresponde necessariamente a uma mensagem completa da aplicação."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um protocolo que presume uma mensagem por leitura."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Define enquadramento de mensagens.",
+              "Trata leituras parciais."
+            ]
+          }
+        },
+        {
+          "slug": "tls",
+          "title": "TLS e identidade do servidor",
+          "summary": "Criptografia e verificação de identidade.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar a função de um certificado.",
+              "Distinguir transporte protegido e permissão de acesso."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Handshake",
+              "Cadeia de confiança",
+              "Identidade e validade"
+            ],
+            "misconceptions": [
+              "Desativar verificação de certificado não corrige a causa de uma falha de confiança."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma recomendação de ignorar TLS."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a verificação que falhou.",
+              "Propõe correção mantendo a confiança."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    },
+    {
+      "slug": "diagnostico",
+      "title": "HTTP e diagnóstico",
+      "description": "Uma requisição pode falhar no cliente, proxy, transporte ou serviço remoto.",
+      "guide": {
+        "level": "ADVANCED",
+        "introduction": [
+          "Uma requisição pode falhar no cliente, proxy, transporte ou serviço remoto. O status e o corpo precisam ser interpretados no contexto em que foram observados.",
+          "Os testes devem preservar origem e momento da evidência. Uma tentativa antiga não prova o estado atual, e uma falha de um protocolo não demonstra falha de todos."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Explicar a regra e as hipóteses antes de revisar a implementação.",
+          "Construir um caso que diferencie resultado esperado e falha plausível.",
+          "Relacionar a correção ao contrato, sem aceitar apenas a justificativa da IA."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "http-e-proxies",
+          "title": "HTTP, proxies e políticas",
+          "summary": "Responsabilidades de intermediários.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir erro de proxy e erro do serviço.",
+              "Explicar redirecionamentos e destinos."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Requisições e respostas",
+              "Intermediários",
+              "Políticas e redirecionamentos"
+            ],
+            "misconceptions": [
+              "Um 403 pode vir de um intermediário, e não da aplicação final."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma recusa de destino sem trocar credenciais sem evidência."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica quem respondeu.",
+              "Propõe a próxima verificação com escopo adequado."
+            ]
+          }
+        },
+        {
+          "slug": "diagnostico-de-rede",
+          "title": "Diagnóstico de rede",
+          "summary": "Hipóteses e testes por camada.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Construir uma sequência de testes.",
+              "Separar observação e hipótese."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Alcance e nome",
+              "Conexão e protocolo",
+              "Evidências e comparação"
+            ],
+            "misconceptions": [
+              "Um ping sem resposta não demonstra sozinho que um serviço HTTP está indisponível."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um diagnóstico que generaliza um teste isolado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Escolhe o protocolo relevante.",
+              "Registra o que continua desconhecido."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Aplicar os conceitos do módulo a um caso pequeno, com decisões e verificações explícitas.",
+        "deliverables": [
+          "Explicação das decisões e hipóteses",
+          "Casos de teste com resultados esperados"
+        ],
+        "acceptanceCriteria": [
+          "Os casos demonstram os critérios, incluindo uma falha plausível de implementação."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Redes conectam aplicações por meio de serviços e protocolos com responsabilidades diferentes. Nome, endereço, porta, conexão e mensagem não são sinônimos, e cada etapa oferece evidências distintas durante uma falha.",
+    "A trilha conecta endereçamento, DNS, transporte e TLS a HTTP e intermediários. O objetivo é montar diagnósticos por camada e evitar conclusões maiores do que os testes permitem, inclusive quando uma IA sugere trocar credenciais ou desativar verificações sem evidência."
+  ]
+}

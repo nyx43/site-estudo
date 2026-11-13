@@ -1,54 +1,40 @@
 # Plano de execução e passagem para outros agentes
 
-O usuário autorizou a implementação inicial com um único agente. Outros agentes poderão participar depois. Não iniciar delegação automaticamente. O repositório começou apenas com um README.
+O usuário autorizou desenvolvimento com um único agente agora e colaboração futura. Não iniciar delegação automaticamente. As decisões ainda podem mudar; preservar dados e contratos afetados.
 
-## Entrega inicial — catálogo curricular
+## Implementado
 
-- Implementado: Next.js/TypeScript/Tailwind, catálogo responsivo, busca, filtros, página de disciplina, plano por tópico e API de leitura.
-- Implementado: cinco planos curriculares, 15 módulos e 47 tópicos, com objetivos, pré-requisitos, roteiro, equívocos e critérios; 15 projetos futuros por módulo.
-- Implementado: schema Drizzle/SQLite, migração inicial, seed transacional e adaptadores separados.
-- Verificação: consultar o relatório final da tarefa. Não interpretar a existência de um teste como evidência de que ele já passou.
-- Validação do armazenamento concluída com Drizzle/SQLite: a dependência de engines do Prisma foi removida, sem desativar verificações. Tipos, build, migrações, seed repetido e percursos com banco real passaram.
-- O modo `CATALOG_STORAGE=files` permite revisar o catálogo sem banco. Ele não oferece progresso nem substitui a entrega do banco.
+- Site responsivo, busca, filtros, páginas de disciplina e tópico e API de consulta.
+- Currículo planejado de 13 disciplinas, 49 módulos e 115 tópicos, com apresentações, guias de módulo, objetivos, pré-requisitos, roteiros, equívocos e atividades propostas.
+- Três aulas aprofundadas de Python: Variáveis e tipos, Condicionais e Laços de repetição. Comandos, exemplos completos por linha, casos específicos, revisão de erros de IA e fontes reais.
+- Leitura completa sem exigir respostas; percurso guiado em 10 partes, com reflexão e 24 exercícios nas versões atuais.
+- Correção determinística de quizzes, Parsons com indentação, exemplos com erro e previsão. Respostas abertas são reflexão, sem nota automática de domínio.
+- Drizzle/SQLite, migrações, seed transacional, retomada e idempotência. Gabaritos privados até o momento permitido.
+- Versionamento que preserva aulas e respostas em uso, incluindo retomada da versão anterior de Laços.
+- Fluxo documentado para gerar aulas e exercícios a partir de futuros slides e livros, sem publicar arquivos crus.
 
-## Próximos pacotes
+Resultados executados estão em [VALIDATION.md](VALIDATION.md). As aulas estão em AUTO_CHECKED; o usuário fará a avaliação detalhada depois. A fila em [REVIEW_QUEUE.md](REVIEW_QUEUE.md) não bloqueia as próximas tarefas independentes.
 
-| Ordem | Objetivo | Dependências | Critério de aceite |
-| --- | --- | --- | --- |
-| 0 — concluído | Validar armazenamento SQLite | Adaptador Drizzle | Migração, seed duas vezes, `test:db`, tipos e build passaram; E2E passou com SQLite |
-| 1 | Revisar currículo e escopo do piloto | Plano curricular | Objetivos e pré-requisitos revisados; tópico piloto e equívocos confirmados |
-| 2 | Definir contratos de aula e exercício | 1 | Fixtures válidas e inválidas; DTO público separado dos gabaritos; transições editoriais documentadas |
-| 3 | Escrever a aula-piloto | 2 | Blocos do documento-base, exemplos executáveis verificados em isolamento e revisão humana explícita |
-| 4 | Implementar corretores puros | 2 | Quiz, Parsons, exemplo com erro e previsão, incluindo ordens equivalentes, entradas inválidas e feedback |
-| 5 | Produzir os 12 exercícios | 3, 4 | 4 quizzes, 3 Parsons, 3 exemplos com erro, 2 previsões; objetivos e equívocos rastreáveis |
-| 6 | Persistir tentativas e progresso de aula | 2, 4 | Retomada após recarregar, uma sessão com múltiplas submissões, fechamento consistente e sem atualização duplicada |
-| 7 | Integrar o percurso completo | 3–6 | Escolher tópico, estudar, responder, receber correção e retomar; gabarito ausente do payload inicial |
-| 8 | Revisão espaçada e tutor simulado | 7 | Sessões com itens vencidos/novos; testes do agendamento, níveis de ajuda e vazamento |
-| 9 | IA real e autoria assistida | 8 | Provedor substituível, falhas tratadas, conteúdo inválido bloqueado e revisão editorial |
-| 10 | Expandir conteúdo por módulos | Piloto estável | Cada módulo tem aulas e atividades completas, verificadas e alinhadas ao plano |
+## Próximas entregas
 
-Execução de código do aluno permanece na etapa 5 do documento-base, depois da integração de IA; competências e projetos profissionais seguem como evoluções posteriores. O app móvel é uma frente futura, condicionada a requisitos de acesso e sincronização. O diagrama simplificado da página `/projeto` é uma visão de produto, não uma renumeração das etapas do PDF.
+| Prioridade | Trabalho | Critério de aceite |
+| --- | --- | --- |
+| 1 | Completar fundamentos das demais linguagens iniciais | Aulas desde a base, exemplos próprios da linguagem, casos de revisão de IA e exercícios alinhados; verificações apropriadas |
+| 2 | Aprofundar Dados e funções em Python | Listas/dicionários, funções, escopo e mutabilidade; preservar pré-requisitos, versões e progresso |
+| 3 | Produzir aulas de Web e Requisitos | Exemplos e artefatos adequados à disciplina; explicar comandos ou decisões, critérios e erros comuns |
+| 4 | Incorporar materiais enviados pelo usuário | Mapear fontes e páginas/slides, identificar lacunas, gerar aulas e exercícios autorais; seguir AUTHORING.md |
+| 5 | Ampliar os novos módulos e disciplinas | Cobertura rastreável, sem confundir currículo planejado com conteúdo escrito; manter profundidade |
+| 6 | Revisão espaçada e tutor simulado | Agendamento e níveis de ajuda testados, com critérios de feedback e privacidade |
+| 7 | Integração real de IA | Provedor substituível, falhas tratadas, validação de conteúdo e revisão editorial |
 
-## Questões a resolver no pacote 2
+O material real da faculdade poderá mudar nomes, recortes e a ordem de produção. O desenvolvimento autorizado continua sem aguardar a avaliação pessoal; correções posteriores devem respeitar o histórico.
 
-- Representação de Parsons com indentação e ordens equivalentes.
-- Critérios exatos de correção para exemplos com erro e previsão de saída.
-- Idempotência da submissão e momento de fechamento de `Attempt`.
-- Versionamento de aulas e efeito de uma revisão de conteúdo no progresso existente.
-- Diferença entre conteúdo planejado, rascunho, verificação automática e aprovação humana.
-- Critério de acesso ao feedback; responder incorretamente não deve expor automaticamente todos os gabaritos do tópico.
+Execução de código do aluno, competências e projetos profissionais são evoluções posteriores. O app móvel depende de decisões sobre autenticação, acesso, persistência, estudo offline e sincronização; a API atual é uma base, não uma implementação dessas capacidades.
 
 ## Colaboração futura
 
-Primeiro estabilizar contratos comuns. Depois dividir autoria de conteúdo, regras pedagógicas, API/persistência e interface. Definir um responsável por integração; mudanças de schema, migrações, dependências e contratos públicos precisam de coordenação. Não colocar dois agentes para editar esses arquivos compartilhados ao mesmo tempo.
+Antes de dividir trabalho, registrar por tarefa: objetivo, arquivos sob responsabilidade, dependências, contrato de entrada/saída, testes de aceite e limitações. Separar autoria por disciplinas ou módulos; usar AUTHORING.md e o modelo de mapeamento de materiais.
 
-Cada tarefa deve registrar: objetivo, arquivos sob responsabilidade, dependências, contrato de entrada/saída, testes de aceite e limitações. Evitar tarefas vagas como “fazer o backend”. Não criar worktrees sem solicitação explícita; cada tarefa da nuvem já é isolada.
+Definir responsável por integração. Coordenar alterações em schemas, migrações, dependências, lockfile e contratos públicos; não deixar dois agentes editarem esses arquivos simultaneamente. Cada tarefa da nuvem já é isolada; não criar worktrees sem solicitação explícita.
 
-Uma tarefa só está concluída quando o comportamento acordado foi verificado. Bloqueios ambientais, defeitos do produto, testes não executados e recursos futuros devem ser reportados separadamente.
-
-
-## Entrega seguinte — piloto implementado
-
-Os pacotes 2, 4, 5, 6 e 7 têm implementação: contratos, evaluator, 12 exercícios, progresso/tentativas e percurso integrado. O pacote 3 tem aula completa, exemplos executados em isolamento e revisão automática; a aprovação humana não foi presumida. Os testes e limitações estão em docs/VALIDATION.md.
-
-Próximas tarefas: revisão do currículo e da aula com o usuário; melhorias decorrentes do uso; produção das aulas de variáveis/tipos e condicionais que antecedem o piloto; depois revisão espaçada e tutor simulado. Não ampliar para provedores reais de IA ou execução do código do aluno antes de estabilizar esse ciclo.
+Uma tarefa termina quando o comportamento acordado foi verificado. Relatar separadamente bloqueios ambientais, defeitos do produto, testes não executados e recursos futuros. Nunca atribuir aprovação humana a uma verificação automática.

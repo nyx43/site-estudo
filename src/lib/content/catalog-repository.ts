@@ -9,10 +9,12 @@ export function createFileCatalogRepository(): CatalogRepository {
       id: subject.slug, slug: subject.slug, name: subject.name, description: subject.description,
       category: subject.category, accent: subject.accent, version: subject.version,
       learningOutcomes: subject.learningOutcomes,
+      ...(subject.overview ? { overview: subject.overview } : {}),
       modules: subject.modules.map((curriculumModule) => ({
         id: `${subject.slug}.${curriculumModule.slug}`,
         slug: curriculumModule.slug, title: curriculumModule.title, description: curriculumModule.description,
         project: curriculumModule.project,
+        ...(curriculumModule.guide ? { guide: curriculumModule.guide } : {}),
         topics: curriculumModule.topics.map((topic) => ({ id: `${subject.slug}.${topic.slug}`, ...topic })),
       })),
     }));

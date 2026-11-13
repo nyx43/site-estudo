@@ -1,0 +1,10 @@
+{
+  "id": "python-functions",
+  "title": "Referência oficial de Python — funções e tipos embutidos",
+  "kind": "OFFICIAL_DOCUMENTATION",
+  "author": "Python Software Foundation e colaboradores",
+  "edition": "Python 3.12",
+  "url": "https://docs.python.org/3.12/library/functions.html",
+  "checkedAt": "2026-11-13",
+  "note": "Conferência técnica no texto oficial correspondente do repositório CPython, branch 3.12. As aulas são explicações autorais; a referência não representa aprovação pedagógica da aula."
+}

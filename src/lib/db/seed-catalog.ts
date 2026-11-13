@@ -12,12 +12,14 @@ export async function seedCatalog(db: Database, input: unknown[]) {
         id: subject.slug, slug: subject.slug, name: subject.name, description: subject.description,
         category: subject.category, accent: subject.accent, version: subject.version,
         learningOutcomes: subject.learningOutcomes, orderIndex: subject.orderIndex,
+        overview: subject.overview ?? null,
       };
       await tx.insert(subjects).values(data).onConflictDoUpdate({ target: subjects.id, set: data });
       for (const [moduleIndex, item] of subject.modules.entries()) {
         const moduleData = {
           id: `${subject.slug}.${item.slug}`, slug: item.slug, title: item.title, description: item.description,
           project: item.project, orderIndex: moduleIndex, subjectId: subject.slug,
+          guide: item.guide ?? null,
         };
         await tx.insert(modules).values(moduleData).onConflictDoUpdate({ target: modules.id, set: moduleData });
         for (const [topicIndex, topic] of item.topics.entries()) {

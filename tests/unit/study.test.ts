@@ -4,7 +4,7 @@ import { evaluate } from "../../src/lib/pedagogy/evaluator";
 import { StudySeedSchema, type Answer, type Exercise } from "../../src/lib/study/schema";
 import { publicExercise, publicLesson } from "../../src/lib/study/public";
 
-const [seed] = await loadStudy();
+const seed = (await loadStudy()).find((item) => item.lesson.id === "python.lacos-de-repeticao.v1")!;
 function correctAnswer(exercise: Exercise): Answer {
   switch (exercise.type) {
     case "MISCONCEPTION_QUIZ": return { type: exercise.type, optionId: exercise.solution.optionId };

@@ -11,11 +11,12 @@ import { createSqliteStudyRepository } from "../../src/lib/db/study-repository";
 import { createStudyService } from "../../src/lib/study/service";
 import { loadCurriculum } from "../../src/lib/content/load-curriculum";
 import { loadStudy } from "../../src/lib/content/load-study";
-import { attempts, submissions, lessonProgress } from "../../src/lib/db/schema";
+import { attempts, submissions, lessonProgress, exercises, lessons } from "../../src/lib/db/schema";
 import { lessonSteps } from "../../src/lib/study/schema";
 import { createStudyHandlers } from "../../src/lib/http/study-handlers";
 
-const [seed] = await loadStudy();
+const allSeeds = await loadStudy();
+const seed = allSeeds.find((item) => item.lesson.id === "python.lacos-de-repeticao.v1")!;
 const quiz = seed.exercises[0];
 let directory: string;
 let url: string;
@@ -35,6 +36,9 @@ beforeEach(async () => {
   await connection.db.delete(submissions);
   await connection.db.delete(attempts);
   await connection.db.delete(lessonProgress);
+  await connection.db.delete(exercises);
+  await connection.db.delete(lessons);
+  await seedStudy(connection.db, [seed]);
   now = new Date("2026-11-13T18:00:00.000Z");
 });
 afterAll(async () => { connection.client.close(); await rm(directory, { recursive: true, force: true }); });
@@ -162,6 +166,25 @@ describe("estudo persistido", () => {
     await expect(seedStudy(connection.db, [changedExercise])).rejects.toThrow("Exercício em uso");
     expect((await service().exercise(quiz.id))?.attempt?.attemptsCount).toBe(1);
   });
+  it("adiciona uma versão aprofundada sem perder respostas ou tentativas da anterior", async () => {
+    await completeLesson();
+    const attempt = await service().start(quiz.id);
+    await service().submit(attempt.id, randomUUID(), { type: "MISCONCEPTION_QUIZ", optionId: "a" });
+    const updated = allSeeds.find((item) => item.lesson.id === "python.lacos-de-repeticao.v2")!;
+    await seedStudy(connection.db, [updated]);
+    const latest = await service().lesson(seed.lesson.topicId);
+    expect(latest?.lesson.version).toBe(2);
+    expect(latest?.progress.completedAt).toBeNull();
+    expect(latest?.versions.find((item) => item.version === 1)?.hasProgress).toBe(true);
+    const restored = await service().lesson(seed.lesson.topicId, 1);
+    expect(restored?.progress.completedAt).toBeTruthy();
+    expect(restored?.progress.answers[seed.lesson.prequestions[0].id]).toBe("Minha explicação inicial.");
+    expect((await service().exercise(quiz.id))?.attempt?.id).toBe(attempt.id);
+    expect((await service().exercise(quiz.id))?.attempt?.attemptsCount).toBe(1);
+    await seedStudy(connection.db, [seed, updated]);
+    expect((await service().lesson(seed.lesson.topicId, 1))?.progress.completedAt).toBe(restored?.progress.completedAt);
+    expect(await service().lesson(seed.lesson.topicId, 999)).toBeNull();
+  });
 });
 
 describe("HTTP de estudo", () => {
@@ -182,6 +205,13 @@ describe("HTTP de estudo", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).toBe("private, no-store");
     expect((await response.json()).data.lesson.id).toBe(seed.lesson.id);
+  });
+  it("valida a versão solicitada na API", async () => {
+    const handlers = createStudyHandlers(service());
+    expect((await handlers.lesson(seed.lesson.topicId, "1")).status).toBe(200);
+    expect((await handlers.lesson(seed.lesson.topicId, "999")).status).toBe(404);
+    expect((await handlers.lesson(seed.lesson.topicId, "abc")).status).toBe(400);
+    expect((await handlers.lesson(seed.lesson.topicId, "0")).status).toBe(400);
   });
   it("aceita o Host solicitado mesmo quando o servidor usa outro hostname interno", async () => {
     const response = await createStudyHandlers(service()).progress(new Request("http://localhost:3100/api/lessons/x/progress", {

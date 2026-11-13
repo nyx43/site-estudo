@@ -54,7 +54,7 @@ export async function readStudyJson(request: Request): Promise<unknown> {
 
 export function createStudyHandlers(service: Service) {
   return {
-    lesson: (topicId: string) => studyResponse(() => service.lesson(topicId)),
+    lesson: (topicId: string, version?: string) => studyResponse(() => service.lesson(topicId, version === undefined ? undefined : z.coerce.number().int().positive().max(1000000).parse(version))),
     progress: (request: Request, lessonId: string) => studyResponse(async () => service.progress(lessonId, progressChange.parse(await readStudyJson(request)))),
     exercise: (id: string) => studyResponse(() => service.exercise(id)),
     start: (request: Request) => studyResponse(async () => service.start(z.object({ exerciseId: z.string().min(1).max(200) }).strict().parse(await readStudyJson(request)).exerciseId)),

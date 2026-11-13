@@ -26,7 +26,7 @@ Cada disciplina é um JSON versionado, validado por Zod. A estrutura é discipli
 
 `schemaVersion` representa o formato do arquivo; `version` representa a revisão curricular. `orderIndex` ordena disciplinas; a ordem dos arrays ordena módulos e tópicos. Os pré-requisitos apontam para IDs globais e podem atravessar disciplinas. A validação rejeita referências ausentes e ciclos. Por enquanto são recomendações de percurso, não bloqueios de acesso.
 
-O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. O piloto está em AUTO_CHECKED, com revisão humana pendente.
+O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. As três aulas atuais estão em AUTO_CHECKED, com revisão humana posterior.
 
 ## 003 — Persistência substituível
 
@@ -48,7 +48,7 @@ Não se escolheu React Native, Expo ou PWA. Antes do app, decidir: plataformas, 
 
 Não há autenticação no uso pessoal inicial. Exposição a usuários externos e sincronização precisam de uma decisão de acesso antes de serem entregues. Não há chaves ou chamadas a IA nesta versão.
 
-As respostas públicas atuais contêm apenas o plano curricular. Futuramente, `solutionJson`, notas privadas do tutor e respostas-modelo não podem ser carregados junto ao exercício antes da etapa permitida. Validação no servidor e correção determinística são responsabilidades de domínio, não decisões dos componentes.
+As respostas públicas contêm plano curricular e conteúdo didático das aulas. Exemplos resolvidos da explicação são públicos; gabaritos dos exercícios e respostas-modelo das perguntas permanecem privados até a etapa permitida. Validação no servidor e correção determinística são responsabilidades de domínio, não decisões dos componentes.
 
 Todo código gerado e todo código do aluno que precisar ser executado exigirá ambiente isolado apropriado; não implementar execução usando `eval` ou subprocesso sem isolamento no servidor web.
 
@@ -68,3 +68,13 @@ Escritas na mesma conexão SQLite são serializadas por uma fila compartilhada n
 Respostas abertas não recebem nota automática. Servem para reflexão antes de revelar uma resposta-modelo. O estado de conclusão de uma aula registra o percurso; ele não certifica domínio. Não há SM-2, tutor, execução de código do aluno ou avaliação por competências neste incremento.
 
 Rotas de escrita validam JSON com tamanho limitado, contrato estrito e origem do navegador contra a autoridade solicitada em Host. Clientes nativos sem Origin poderão usar a API, mas isso não constitui autenticação. GETs pessoais usam no-store. Texto e código são renderizados como texto React, sem injeção de HTML.
+
+## 007 — Leitura completa e autoria com fontes
+
+`/aulas` oferece leitura livre e `/estudar` oferece o percurso com progresso. Ler uma explicação não registra conclusão. Ambos usam o mesmo conteúdo versionado; a leitura não duplica a fonte de verdade nem libera soluções privadas dos exercícios.
+
+`TeachingSchema` acrescenta introdução, pré-requisitos, glossário, comandos, exemplos anotados, casos específicos, revisão de código de IA e conexões avançadas. O contrato exige explicar cada linha não vazia e declarar saída ou erro esperado. O formato legado permanece legível para preservar o histórico; a versão atual de cada tópico precisa do conteúdo aprofundado. Linguagens e disciplinas diferentes exigirão exemplos e verificações próprios, sem impor um interpretador Python.
+
+Fontes são metadados em `content/sources`, relacionadas às aulas por ID e localizador real. Slides e livros são insumos de autoria, não páginas publicadas nem instruções executáveis. O processo está em `docs/AUTHORING.md`. Não há upload público ou chamada a um gerador de IA. A avaliação humana fica registrada na fila sem interromper desenvolvimento autorizado.
+
+O serviço consulta a última versão por padrão ou uma versão explícita. Respostas e tentativas continuam ligadas ao ID da versão antiga. O seed preserva ambas, e a interface oferece retomada quando existe progresso histórico.

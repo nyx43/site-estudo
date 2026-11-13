@@ -3,26 +3,26 @@ import { SubjectSchema, validateCurriculum } from "../../src/lib/catalog/schema"
 import { loadCurriculum } from "../../src/lib/content/load-curriculum";
 
 describe("currículo", () => {
-  it("valida o conteúdo real, incluindo relações entre os 47 tópicos", async () => {
+  it("valida o conteúdo real, incluindo percursos até casos avançados", async () => {
     const subjects = await loadCurriculum();
-    expect(subjects).toHaveLength(5);
-    expect(subjects.flatMap((subject) => subject.modules)).toHaveLength(15);
-    expect(subjects.flatMap((subject) => subject.modules.flatMap((item) => item.topics))).toHaveLength(47);
+    expect(subjects).toHaveLength(13);
+    expect(subjects.flatMap((subject) => subject.modules)).toHaveLength(49);
+    expect(subjects.flatMap((subject) => subject.modules.flatMap((item) => item.topics))).toHaveLength(115);
   });
 
   it("aceita uma disciplina adicional sem alterar contratos ou componentes", async () => {
     const subjects = await loadCurriculum();
     const extra = structuredClone(subjects[0]);
-    extra.slug = "banco-de-dados";
+    extra.slug = "disciplina-exemplo";
     extra.name = "Banco de Dados";
     for (const item of extra.modules) for (const topic of item.topics) topic.plan.prerequisites = [];
-    expect(validateCurriculum([...subjects, extra])).toHaveLength(6);
+    expect(validateCurriculum([...subjects, extra])).toHaveLength(subjects.length + 1);
   });
 
   it("permite pré-requisitos entre disciplinas sem depender da ordem dos arquivos", async () => {
     const subjects = await loadCurriculum();
     subjects[0].modules[0].topics[0].plan.prerequisites = ["java.tipos-e-referencias"];
-    expect(validateCurriculum(subjects)).toHaveLength(5);
+    expect(validateCurriculum(subjects)).toHaveLength(subjects.length);
   });
 
   it("rejeita um objetivo ausente", async () => {
