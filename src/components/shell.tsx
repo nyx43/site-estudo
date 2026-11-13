@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight, BookOpen, Compass, Layers3, Map, Sprout } from "lucide-react";
+import { ArrowUpRight, BookOpen, Compass, Layers3, Map, Moon, Sprout, Sun } from "lucide-react";
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,7 +24,11 @@ export function Shell({ children }: { children: React.ReactNode }) {
       <div className="sidebar-footer"><Compass size={16} /><span>Um projeto em evolução<small>Feito para aprender de verdade.</small></span></div>
     </aside>
     <div className="main-shell">
-      <header className="topbar"><span>Seu espaço de estudos</span><span className="version-pill"><span /> Primeira versão</span></header>
+      <header className="topbar"><span>Seu espaço de estudos</span><div className="topbar-actions"><span className="version-pill"><span /> Primeira versão</span><button className="theme-toggle" type="button" onClick={() => {
+        const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem("estudo-theme", theme); } catch { /* O tema ainda funciona nesta página se o armazenamento estiver indisponível. */ }
+      }}><span className="theme-to-dark"><Moon size={15} /> Modo escuro</span><span className="theme-to-light"><Sun size={15} /> Modo claro</span></button></div></header>
       <main id="conteudo" tabIndex={-1}>{children}</main>
       <footer className="page-footer"><span>estudo. <span>Aprendizado que se constrói.</span></span><span>Engenharia de Software</span></footer>
     </div>

@@ -29,6 +29,13 @@
       "when": 1794591152394,
       "tag": "0003_subject-overviews",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794611218491,
+      "tag": "0004_subject-lifecycle-track",
+      "breakpoints": true
     }
   ]
 }

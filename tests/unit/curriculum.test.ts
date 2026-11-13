@@ -5,9 +5,68 @@ import { loadCurriculum } from "../../src/lib/content/load-curriculum";
 describe("currículo", () => {
   it("valida o conteúdo real, incluindo percursos até casos avançados", async () => {
     const subjects = await loadCurriculum();
-    expect(subjects).toHaveLength(13);
-    expect(subjects.flatMap((subject) => subject.modules)).toHaveLength(49);
-    expect(subjects.flatMap((subject) => subject.modules.flatMap((item) => item.topics))).toHaveLength(115);
+    expect(subjects).toHaveLength(14);
+    expect(subjects.flatMap((subject) => subject.modules)).toHaveLength(52);
+    expect(subjects.flatMap((subject) => subject.modules.flatMap((item) => item.topics))).toHaveLength(121);
+    expect(subjects.map((subject) => subject.slug)).not.toContain("apta");
+  });
+
+  it("organiza o período 26.2 com as cinco disciplinas acadêmicas em desenvolvimento e estados reais nas demais", async () => {
+    const subjects = await loadCurriculum();
+    const inProgress = subjects.filter((subject) => subject.lifecycleStatus === "IN_PROGRESS");
+    const paused = subjects.filter((subject) => subject.lifecycleStatus === "PAUSED");
+    const upcoming = subjects.filter((subject) => subject.lifecycleStatus === "UPCOMING");
+
+    expect(inProgress.map((subject) => subject.slug)).toEqual([
+      "web-dev",
+      "requisitos",
+      "algoritmos",
+      "estruturas-de-dados",
+      "banco-de-dados",
+      "sistemas-operacionais",
+    ]);
+    expect(new Set(inProgress.map((subject) => subject.academicTrack?.courseName))).toEqual(
+      new Set([
+        "Complexidade de Algoritmos e Estrutura de Dados",
+        "Desenvolvimento de Softwares para Web",
+        "Engenharia de Requisitos de Softwares",
+        "Sistemas Operacionais",
+        "Gerenciamento de Banco de Dados",
+      ]),
+    );
+    expect(paused.map((subject) => subject.slug)).toEqual(["python"]);
+    expect(upcoming).toHaveLength(7);
+    expect(subjects.every((subject) => subject.modules.every((mod) => mod.topics.every((t) => t.plan.status === "PLANNED")))).toBe(true);
+  });
+
+  it("rejeita disciplinas correlatas inexistentes, duplicadas ou auto-referenciadas", async () => {
+    const subjects = await loadCurriculum();
+    const missingRelated = structuredClone(subjects);
+    missingRelated[0].academicTrack = {
+      period: "26.2",
+      courseName: "Curso Teste",
+      orderIndex: 1,
+      relatedSubjects: ["inexistente"],
+    };
+    expect(() => validateCurriculum(missingRelated)).toThrow("Disciplina correlata inexistente");
+
+    const selfRelated = structuredClone(subjects);
+    selfRelated[0].academicTrack = {
+      period: "26.2",
+      courseName: "Curso Teste",
+      orderIndex: 1,
+      relatedSubjects: [selfRelated[0].slug],
+    };
+    expect(() => validateCurriculum(selfRelated)).toThrow("Disciplina correlata auto-referenciada");
+
+    const duplicateRelated = structuredClone(subjects);
+    duplicateRelated[0].academicTrack = {
+      period: "26.2",
+      courseName: "Curso Teste",
+      orderIndex: 1,
+      relatedSubjects: ["java", "java"],
+    };
+    expect(() => validateCurriculum(duplicateRelated)).toThrow("Disciplina correlata duplicada");
   });
 
   it("aceita uma disciplina adicional sem alterar contratos ou componentes", async () => {

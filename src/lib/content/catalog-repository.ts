@@ -8,6 +8,8 @@ export function createFileCatalogRepository(): CatalogRepository {
     return definitions.map((subject) => ({
       id: subject.slug, slug: subject.slug, name: subject.name, description: subject.description,
       category: subject.category, accent: subject.accent, version: subject.version,
+      lifecycleStatus: subject.lifecycleStatus,
+      ...(subject.academicTrack ? { academicTrack: subject.academicTrack } : {}),
       learningOutcomes: subject.learningOutcomes,
       ...(subject.overview ? { overview: subject.overview } : {}),
       modules: subject.modules.map((curriculumModule) => ({

@@ -7,6 +7,7 @@
   "description": "Entenda estados, histórico e integração para revisar mudanças com segurança.",
   "category": "PROGRAMMING",
   "accent": "violet",
+  "lifecycleStatus": "UPCOMING",
   "learningOutcomes": [
     "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
     "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."

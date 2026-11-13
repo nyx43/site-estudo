@@ -7,6 +7,17 @@
   "description": "Escolha representações pelas operações e garantias que o problema exige.",
   "category": "PROGRAMMING",
   "accent": "emerald",
+  "lifecycleStatus": "IN_PROGRESS",
+  "academicTrack": {
+    "period": "26.2",
+    "courseName": "Complexidade de Algoritmos e Estrutura de Dados",
+    "orderIndex": 1,
+    "relatedSubjects": [
+      "algoritmos",
+      "python"
+    ],
+    "scopeNote": "Nível 1: integra a frente de Complexidade de Algoritmos e Estrutura de Dados no período 26.2, em conjunto com Algoritmos e apoio prático em Python."
+  },
   "learningOutcomes": [
     "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
     "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."

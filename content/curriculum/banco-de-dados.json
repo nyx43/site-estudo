@@ -7,6 +7,17 @@
   "description": "Do modelo relacional às transações, índices e diagnóstico de consultas.",
   "category": "PROGRAMMING",
   "accent": "amber",
+  "lifecycleStatus": "IN_PROGRESS",
+  "academicTrack": {
+    "period": "26.2",
+    "courseName": "Gerenciamento de Banco de Dados",
+    "orderIndex": 5,
+    "relatedSubjects": [
+      "java",
+      "web-dev"
+    ],
+    "scopeNote": "Nível 1: a pasta atual do semestre contém materiais de revisão OO/Java e Web Services com Spring; a cobertura de SQL e administração aguarda novas fontes."
+  },
   "learningOutcomes": [
     "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
     "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."

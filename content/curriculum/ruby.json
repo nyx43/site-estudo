@@ -6,6 +6,7 @@
   "description": "Objetos, blocos e coleções com foco em leitura e intenção do código.",
   "category": "PROGRAMMING",
   "accent": "rose",
+  "lifecycleStatus": "UPCOMING",
   "learningOutcomes": [
     "Explicar blocos, referências e protocolos usados por coleções Ruby.",
     "Organizar pequenas transformações de dados com composição e testes."

@@ -1,6 +1,6 @@
 # Planejamento curricular
 
-Proposta inicial revisável: 13 disciplinas, 49 módulos e 115 tópicos. Há quatro aulas completas de Python; os demais tópicos representam planejamento. Cada disciplina tem uma apresentação, e cada módulo explica sua base, o conhecimento assumido e os critérios para revisar soluções de IA.
+Proposta inicial revisável: 14 disciplinas, 52 módulos e 121 tópicos. Há quatro aulas completas de Python; os demais tópicos representam planejamento. Cada disciplina tem uma apresentação, estado de andamento (`IN_PROGRESS`, `PAUSED` ou `UPCOMING`) e, quando aplicável, vínculo com o período acadêmico (`26.2`, nível 1). Cada módulo explica sua base, o conhecimento assumido e os critérios para revisar soluções de IA.
 
 A fonte de verdade é `content/curriculum/*.json`. Cada tópico tem objetivos, pré-requisitos, roteiro, equívocos, atividades e critérios. Projetos são propostas futuras. A autoria segue [AUTHORING.md](AUTHORING.md), com avaliação humana registrada para depois em [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 
@@ -417,3 +417,28 @@ Bibliotecas, arquivos e integrações ampliam a superfície de risco.
 
 - **Dependências e integridade** — Origem, versões e verificação.
 - **IA, dados recuperados e confiança** — Prompt injection e validação de resultados.
+
+## Sistemas Operacionais
+
+Compreenda como o kernel gerencia processos, memória, sincronização, sistemas de arquivos e chamadas de sistema.
+
+### História, arquitetura e kernel
+
+Evolução dos sistemas operacionais, filosofia Unix e fronteira entre espaço de usuário e espaço de núcleo.
+
+- **História dos sistemas operacionais e Unix** — Da execução em lote à multiprogramação, tempo compartilhado e tradição Unix.
+- **Arquitetura, modo usuário e kernel** — Níveis de privilégio, interrupções, armadilhas e organização interna do núcleo.
+
+### Processos, threads e sincronização
+
+Representação de processos em execução, escalonamento de CPU e coordenação segura de estado compartilhado.
+
+- **Processos, estados e escalonamento** — Bloco de controle de processo, trocas de contexto e políticas de fila de prontos.
+- **Threads, exclusão mútua e sincronização** — Regiões críticas, condições de corrida, semáforos, mutexes e impasses.
+
+### Sistemas de arquivos e chamadas de sistema
+
+Interface de chamadas de sistema, descritores, organização de diretórios e persistência em arquivos.
+
+- **Chamadas de sistema e interface com processos** — Passagem de parâmetros, tabela de descritores, códigos de erro e fluxo de execução.
+- **Sistemas de arquivos, descritores e permissões** — Metadados (inodes), diretórios, caminhos, controle de acesso e consistência.

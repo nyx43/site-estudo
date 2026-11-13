@@ -1,6 +1,6 @@
 # Estudo ES
 
-Plataforma pessoal de estudos de Engenharia de Software. O catálogo planeja 13 disciplinas, 49 módulos e 115 tópicos. Quatro aulas de Python já têm explicações aprofundadas e 32 exercícios: Variáveis e tipos, Condicionais, Laços de repetição e Listas e dicionários. As demais aulas continuam planejadas; não são conteúdo pronto.
+Plataforma pessoal de estudos de Engenharia de Software. O catálogo organiza 14 disciplinas, 52 módulos e 121 tópicos, agrupando as cinco disciplinas acadêmicas do período 26.2 como **Em desenvolvimento** (profundidade inicial de nível 1), mantendo Python como **Pausada** (com quatro aulas aprofundadas e 32 exercícios ativos) e as demais como **Em breve**. As aulas não redigidas continuam marcadas como planejadas; não são conteúdo pronto.
 
 As aulas completas ficam em `/aulas`, com leitura livre, comandos explicados, exemplos por linha, casos específicos e diagnóstico de erros em código de IA. O percurso guiado salva respostas e progresso. As quatro aulas atuais têm verificação automática (`AUTO_CHECKED`); a avaliação humana ficará para depois, conforme solicitado.
 

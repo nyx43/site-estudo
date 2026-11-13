@@ -28,6 +28,8 @@ Cada disciplina é um JSON versionado, validado por Zod. A estrutura é discipli
 
 O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. As quatro aulas atuais estão em AUTO_CHECKED, com revisão humana posterior.
 
+Cada disciplina possui também `lifecycleStatus` (`IN_PROGRESS`, `PAUSED`, `UPCOMING`) e, opcionalmente, `academicTrack` (`period`, `courseName`, `orderIndex`, `relatedSubjects`, `scopeNote`). Isso permite agrupar as cinco matérias acadêmicas do período `26.2` como **Em desenvolvimento** (inclusive relacionando disciplinas técnicas como `algoritmos` e `estruturas-de-dados` sob a mesma frente acadêmica sem fundir seus IDs persistentes) e exibir as demais como **Pausada** ou **Em breve**, mantendo distinção estrita entre o andamento da disciplina e a disponibilidade real de aulas completas.
+
 ## 003 — Persistência substituível
 
 Drizzle ORM com @libsql/client e SQLite local é o adaptador atual. A escolha inicial de Prisma foi substituída: o ambiente recusava o download separado de engines, impedindo geração de tipos e execução do banco. Drizzle conserva SQLite e as fronteiras existentes, usando pacotes instalados pelo npm. A validação agora inclui banco real, migração, seed repetido, tipos, build e percursos de navegador.

@@ -1,0 +1,581 @@
+#!/usr/bin/env python3
+"""
+orq — orquestrador local de agentes de código.
+
+Conecta os CLIs já autenticados na máquina (agy, codex, copilot, opencode)
+com um contrato de artefatos em .ai/ e papéis fixos:
+
+    arquiteto  -> planeja (não edita)
+    implementador -> executa o plano
+    revisor    -> critica o diff (não edita)
+
+Nenhum agente usa API key: cada um roda na assinatura dele.
+
+Uso:
+    orq status
+    orq init
+    orq ask <agente> "pergunta"
+    orq plan "tarefa"
+    orq impl "tarefa"
+    orq review
+    orq loop "tarefa" [--gate "npm run check"] [--pause]
+
+Agentes: agy | codex | copilot | opencode
+Papéis e modelos: ~/.config/ai-orq/config.json
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import time
+from datetime import datetime
+from pathlib import Path
+
+HOME = Path.home()
+CONFIG_PATH = HOME / ".config" / "ai-orq" / "config.json"
+STATE_DIR = HOME / ".local" / "state" / "ai-orq"
+ART_DIR = ".ai"
+LEDGER = "log/ledger.jsonl"
+
+DEFAULT_CONFIG = {
+    "roles": {
+        "architect": "agy",
+        "implementer": "codex",
+        "reviewer": "agy",
+        "second_opinion": "copilot",
+        "grunt": "opencode",
+    },
+    "models": {
+        "agy": "gemini-4-argon-medium",
+        "codex": "",
+        "copilot": "auto",
+        "opencode": "opencode/deepseek-v4.1-flash-free",
+    },
+    "timeout_seconds": 1800,
+    "gate": "",
+}
+
+AGENT_HINTS = {
+    "agy": "curl -fsSL https://antigravity.google/cli/install.sh | bash",
+    "codex": "npm i -g @openai/codex  (ou symlink do binário do app)",
+    "copilot": "npm i -g @github/copilot",
+    "opencode": "https://opencode.ai",
+}
+
+AGENT_COLORS = {"agy": "Google", "codex": "OpenAI", "copilot": "GitHub", "opencode": "OpenCode/DeepSeek"}
+
+
+# ---------------------------------------------------------------- infraestrutura
+
+def now_iso() -> str:
+    return datetime.now().astimezone().isoformat(timespec="seconds")
+
+
+def load_config() -> dict:
+    cfg = json.loads(json.dumps(DEFAULT_CONFIG))
+    if CONFIG_PATH.exists():
+        try:
+            user = json.loads(CONFIG_PATH.read_text())
+        except json.JSONDecodeError as e:
+            die(f"configuração inválida em {CONFIG_PATH}: {e}")
+        for key, value in user.items():
+            if isinstance(value, dict) and isinstance(cfg.get(key), dict):
+                cfg[key].update(value)
+            else:
+                cfg[key] = value
+    return cfg
+
+
+def die(msg: str, code: int = 1):
+    print(f"orq: {msg}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def repo_root() -> Path:
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            text=True, capture_output=True, check=True,
+        ).stdout.strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        die("execute dentro de um repositório git (ou rode 'git init' antes)")
+    return Path(out)
+
+
+def ensure_artifacts(root: Path) -> Path:
+    art = root / ART_DIR
+    (art / "log").mkdir(parents=True, exist_ok=True)
+    exclude = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "--git-path", "info/exclude"],
+        text=True, capture_output=True,
+    )
+    if exclude.returncode == 0:
+        path = Path(exclude.stdout.strip())
+        if not path.is_absolute():
+            path = (root / path).resolve()
+        if path.exists():
+            text = path.read_text(errors="replace")
+            if f"/{ART_DIR}/" not in text.splitlines():
+                with path.open("a") as fh:
+                    fh.write(f"\n# orq: artefatos locais de orquestração\n/{ART_DIR}/\n")
+    return art
+
+
+def read_text(path: Path, limit: int | None = None) -> str:
+    if not path.exists():
+        return ""
+    text = path.read_text(errors="replace")
+    if limit and len(text) > limit:
+        return text[:limit] + f"\n[...truncado em {limit} caracteres]"
+    return text
+
+
+def ledger(root: Path, entry: dict):
+    art = root / ART_DIR
+    with (art / LEDGER).open("a") as fh:
+        fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+
+def log_run(root: Path, agent: str, prompt: str, out: str, err: str) -> Path:
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+    path = root / ART_DIR / "log" / f"{ts}-{agent}.log"
+    path.write_text(
+        f"# {now_iso()} agente={agent}\n\n## prompt\n{prompt}\n\n## stdout\n{out}\n\n## stderr\n{err}\n"
+    )
+    return path
+
+
+def run_process(cmd: list[str], cwd: Path, timeout: int) -> tuple[int, str, str, float]:
+    started = time.monotonic()
+    try:
+        proc = subprocess.run(cmd, cwd=str(cwd), text=True, capture_output=True, timeout=timeout)
+        code, out, err = proc.returncode, proc.stdout or "", proc.stderr or ""
+    except subprocess.TimeoutExpired as e:
+        code = 124
+        out = (e.stdout or "") if isinstance(e.stdout, str) else ""
+        err = f"timeout após {timeout}s"
+    except FileNotFoundError:
+        die(f"binário '{cmd[0]}' não encontrado no PATH")
+    return code, out, err, time.monotonic() - started
+
+
+# --------------------------------------------------------------------- adapters
+
+def agent_agy(prompt: str, root: Path, write: bool, model: str, effort: str, timeout: int):
+    cmd = ["agy", "-p", prompt, "--output-format", "json",
+           "--mode", "accept-edits" if write else "plan"]
+    if model:
+        cmd += ["--model", model]
+    if effort:
+        cmd += ["--effort", effort]
+    code, out, err, secs = run_process(cmd, root, timeout)
+    text = ""
+    tokens = None
+    if out.strip():
+        try:
+            data = json.loads(out)
+            text = data.get("response") or ""
+            tokens = (data.get("usage") or {}).get("total_tokens")
+            if data.get("status") not in (None, "SUCCESS"):
+                err += f"\nstatus={data.get('status')} erro={data.get('error')}"
+                code = code or 1
+        except json.JSONDecodeError:
+            text = out
+    return code, text, err, secs, {"model": model, "tokens": tokens}
+
+
+def agent_codex(prompt: str, root: Path, write: bool, model: str, effort: str, timeout: int):
+    cmd = ["codex", "exec", "-C", str(root),
+           "-s", "workspace-write" if write else "read-only",
+           "--skip-git-repo-check"]
+    if model:
+        cmd += ["-m", model]
+    if effort:
+        cmd += ["-c", f"model_reasoning_effort={effort}"]
+    cmd.append(prompt)
+    code, out, err, secs = run_process(cmd, root, timeout)
+    match = re.search(r"tokens used\s*\n\s*([\d.,]+)", err or "")
+    tokens = int(re.sub(r"\D", "", match.group(1))) if match else None
+    return code, out.strip(), err, secs, {"model": model, "tokens": tokens}
+
+
+def agent_copilot(prompt: str, root: Path, write: bool, model: str, effort: str, timeout: int):
+    cmd = ["copilot", "-p", prompt, "--silent", "--output-format", "text",
+           "-C", str(root), "--allow-all-tools"]
+    if model and model != "auto":
+        cmd += ["--model", model]
+    if effort:
+        cmd += ["--reasoning-effort", effort]
+    code, out, err, secs = run_process(cmd, root, timeout)
+    return code, out.strip(), err, secs, {"model": model, "tokens": None}
+
+
+def agent_opencode(prompt: str, root: Path, write: bool, model: str, effort: str, timeout: int):
+    import re
+    cmd = ["opencode", "run", "--model", model or "opencode/deepseek-v4.1-flash-free", prompt]
+    code, out, err, secs = run_process(cmd, root, timeout)
+    text = re.sub(r"\x1b\[[0-9;]*m", "", out)
+    text = "\n".join(line for line in text.splitlines() if not line.startswith("> build · "))
+    return code, text.strip(), err, secs, {"model": model, "tokens": None}
+
+
+AGENTS = {
+    "agy": agent_agy,
+    "codex": agent_codex,
+    "copilot": agent_copilot,
+    "opencode": agent_opencode,
+}
+
+WRITE_CAPABLE = {"agy", "codex", "copilot", "opencode"}
+
+
+def invoke(agent: str, prompt: str, root: Path, write: bool, model: str, effort: str, timeout: int):
+    cfg = load_config()
+    candidates = list(dict.fromkeys([agent] + cfg.get("fallback_agents", ["codex", "agy", "copilot", "opencode"])))
+    quota_pattern = re.compile(r"rate.limit|quota|usage.limit|usage cap|insufficient.quota|too many requests|\b429\b|limite de (uso|cota)", re.I)
+    previous = ""
+    for index, current in enumerate(candidates):
+        if current not in AGENTS or shutil.which(current) is None:
+            print(f"  ! {current}: indisponível", file=sys.stderr)
+            continue
+        selected_model = model if index == 0 else cfg["models"].get(current, "")
+        continuation = prompt
+        if previous:
+            continuation += ("\n\nUma tentativa anterior foi interrompida por limite de uso. "
+                "Inspecione git status, alterações existentes e artefatos antes de continuar. "
+                "Preserve mudanças anteriores e evite repetir operações já concluídas. "
+                "Resumo parcial da tentativa anterior (pode estar incompleto):\n" + previous[-6000:])
+        print(f"  → {current} ({AGENT_COLORS[current]}){' [escrita]' if write else ' [leitura]'}", file=sys.stderr)
+        code, output, err, secs, meta = AGENTS[current](continuation, root, write, selected_model, effort if index == 0 else "", timeout)
+        log_path = log_run(root, current, continuation, output, err)
+        ledger(root, {"ts": now_iso(), "agent": current, "model": meta.get("model"), "write": write,
+                      "exit": code, "seconds": round(secs, 1), "tokens": meta.get("tokens"),
+                      "log": str(log_path.relative_to(root))})
+        quota = bool(quota_pattern.search(err + "\n" + output))
+        if quota:
+            previous = output
+            print(f"  ! {current}: indício de limite de uso; tentando próximo agente.", file=sys.stderr)
+            continue
+        if code != 0:
+            die(f"{current} falhou (exit {code}); veja {log_path}. Nenhuma troca automática para erro não identificado como limite.", code)
+        if not output.strip():
+            die(f"{current} retornou resposta vazia; veja {log_path}.")
+        return output
+    die("Nenhum agente disponível concluiu a tarefa. Consulte .ai/log/ledger.jsonl.")
+
+
+# ------------------------------------------------------------------- comandos
+
+def build_prompt(root: Path, task: str, role: str) -> str:
+    art = root / ART_DIR
+    brief = read_text(art / "brief.md", 8000) or "(brief.md ainda não existe)"
+    plan = read_text(art / "plan.md", 12000)
+    diff = read_text(art / "diff.patch", 30000)
+
+    if role == "architect":
+        return f"""Você é o ARQUITETO neste repositório.
+
+Leia AGENTS.md, README, docs/ e o código relevante. O brief abaixo é o contrato:
+
+<brief>
+{brief}
+</brief>
+
+Tarefa: {task}
+
+Entregue um plano em passos pequenos e verificáveis. Para cada passo: arquivos
+afetados, o que muda, critério de teste e riscos. Aponte o que NÃO está no escopo.
+Não edite nenhum arquivo. Responda em português, em markdown.
+
+Responda com o plano completo no corpo da mensagem. Não salve o plano em arquivo
+do seu diretório interno e não responda com links para artefatos: o texto da sua
+resposta é o que será entregue ao implementador."""
+
+    if role == "implementer":
+        return f"""Você é o IMPLEMENTADOR neste repositório.
+
+O arquiteto produziu este plano:
+
+<plan>
+{plan or '(sem plano; trabalhe somente na tarefa abaixo)'}
+</plan>
+
+Tarefa: {task}
+
+Implemente exatamente o plano. Passos pequenos. Rode os testes e o lint que
+existirem. Não refatore nada fora do escopo, não altere lockfile nem migrações
+sem autorização. Se o plano estiver errado, pare e explique em vez de improvisar.
+Responda em português, com um resumo do que mudou e dos comandos executados."""
+
+    return f"""Você é o REVISOR neste repositório.
+
+<brief>
+{brief}
+</brief>
+
+<plan>
+{plan}
+</plan>
+
+<diff>
+{diff or '(diff vazio — verifique arquivos não rastreados em .ai/status.txt)'}
+</diff>
+
+Revise o diff contra o brief e o plano. Procure: bugs, casos de borda, contratos
+quebrados, testes ausentes, perda de dados e violações das regras do AGENTS.md.
+Liste os achados por severidade com arquivo:linha e diga o que está correto.
+Não edite nenhum arquivo. Responda em português, em markdown."""
+
+
+def write_artifact(root: Path, name: str, content: str, header: str):
+    path = root / ART_DIR / name
+    path.write_text(f"<!-- {header} · {now_iso()} -->\n\n{content.strip()}\n")
+    return path
+
+
+def cmd_init(args, cfg):
+    root = repo_root()
+    art = ensure_artifacts(root)
+    brief = art / "brief.md"
+    if not brief.exists():
+        brief.write_text(f"""<!-- brief do projeto · edite à vontade · {now_iso()} -->
+
+# Objetivo
+
+(uma frase: o que este projeto entrega)
+
+# Stack e comandos
+
+- linguagem/framework:
+- rodar: ``
+- testes: ``
+- lint/check: ``
+
+# Restrições
+
+- o que não pode mudar (dados, contratos, arquivos)
+- o que está fora do escopo
+
+# Pronto quando
+
+- [ ] critério 1
+- [ ] critério 2
+""")
+    print(f"artefatos: {art}")
+    print(f"brief:     {brief}")
+    print("próximo:   edite o brief e rode  orq plan \"sua tarefa\"")
+
+
+def cmd_status(args, cfg):
+    root = repo_root()
+    art = ensure_artifacts(root)
+    print(f"repo:  {root}")
+    print(f"arte:  {art}\n")
+    print(f"{'agente':10} {'binário':10} {'versão':24} situação")
+    print("-" * 78)
+    for name in AGENTS:
+        path = shutil.which(name)
+        if not path:
+            print(f"{name:10} {'ausente':10} {'-':24} instale: {AGENT_HINTS[name]}")
+            continue
+        version = "-"
+        try:
+            out = subprocess.run([name, "--version"], text=True, capture_output=True, timeout=15)
+            version = (out.stdout or out.stderr).strip().splitlines()[0][:24]
+        except Exception:
+            pass
+        detail = "pronto"
+        if name == "codex":
+            st = subprocess.run([name, "login", "status"], text=True, capture_output=True, timeout=20)
+            detail = (st.stdout or st.stderr).strip().splitlines()[0] if (st.stdout or st.stderr) else "?"
+        if name == "opencode":
+            detail = f"modelo: {cfg['models'].get('opencode') or '(padrão)'}"
+        if name == "agy":
+            detail = "login em cache" if (HOME / ".gemini" / "antigravity-cli").exists() else "sem login?"
+        print(f"{name:10} {Path(path).name:10} {version:24} {detail}")
+
+    print("\npapéis:")
+    for role, agent in cfg["roles"].items():
+        model = cfg["models"].get(agent) or "(padrão)"
+        print(f"  {role:14} -> {agent:9} modelo={model}")
+    print(f"\ngate do loop: {cfg['gate'] or '(nenhum)'}   timeout: {cfg['timeout_seconds']}s")
+    if (art / "plan.md").exists():
+        print(f"plano atual: {art / 'plan.md'}")
+    if (art / "review.md").exists():
+        print(f"última revisão: {art / 'review.md'}")
+
+
+def resolve(cfg, role, override):
+    agent = override or cfg["roles"].get(role) or DEFAULT_CONFIG["roles"][role]
+    model = cfg["models"].get(agent, "")
+    return agent, model
+
+
+def cmd_ask(args, cfg):
+    root = repo_root()
+    ensure_artifacts(root)
+    text = invoke(args.agent, args.prompt, root, args.write,
+                  args.model or cfg["models"].get(args.agent, ""), args.effort, args.timeout)
+    print(text)
+
+
+def cmd_plan(args, cfg):
+    root = repo_root()
+    ensure_artifacts(root)
+    agent, model = resolve(cfg, "architect", args.agent)
+    text = invoke(agent, build_prompt(root, args.task, "architect"), root, False,
+                  args.model or model, args.effort, args.timeout)
+    path = write_artifact(root, "plan.md", text, f"arquiteto: {agent}")
+    print(f"\nplano salvo em {path.relative_to(root)} ({len(text.splitlines())} linhas)")
+    print(text[:1500] + ("\n[...]" if len(text) > 1500 else ""))
+
+
+def cmd_impl(args, cfg):
+    root = repo_root()
+    ensure_artifacts(root)
+    agent, model = resolve(cfg, "implementer", args.agent)
+    text = invoke(agent, build_prompt(root, args.task, "implementer"), root, True,
+                  args.model or model, args.effort, args.timeout)
+    status = subprocess.run(["git", "-C", str(root), "status", "--short"],
+                            text=True, capture_output=True).stdout.strip()
+    write_artifact(root, "impl.md", text, f"implementador: {agent}")
+    print(f"\nresumo salvo em {ART_DIR}/impl.md")
+    print(status or "(nenhuma mudança no working tree)")
+    print("\n" + text[:1200] + ("\n[...]" if len(text) > 1200 else ""))
+
+
+def collect_diff(root: Path) -> str:
+    diff = subprocess.run(["git", "-C", str(root), "diff", "HEAD"],
+                          text=True, capture_output=True).stdout
+    untracked = subprocess.run(["git", "-C", str(root), "ls-files", "--others", "--exclude-standard"],
+                               text=True, capture_output=True).stdout.strip()
+    status = subprocess.run(["git", "-C", str(root), "status", "--short"],
+                            text=True, capture_output=True).stdout
+    (root / ART_DIR / "status.txt").write_text(status + ("\n# não rastreados:\n" + untracked if untracked else ""))
+    return diff + ("\n# arquivos não rastreados (leia no disco):\n" + untracked if untracked else "")
+
+
+def cmd_review(args, cfg):
+    root = repo_root()
+    art = ensure_artifacts(root)
+    diff = collect_diff(root)
+    if not diff.strip():
+        die("diff vazio — nada para revisar (rode 'orq impl' antes)")
+    (art / "diff.patch").write_text(diff)
+    agent, model = resolve(cfg, "reviewer", args.agent)
+    text = invoke(agent, build_prompt(root, args.task or "revisar o diff atual", "reviewer"),
+                  root, False, args.model or model, args.effort, args.timeout)
+    path = write_artifact(root, "review.md", text, f"revisor: {agent}")
+    write_artifact(root, f"review-{agent}.md", text, f"revisor: {agent}")
+    print(f"\nrevisão salva em {path.relative_to(root)}")
+    print(text)
+
+
+def cmd_loop(args, cfg):
+    import copy
+    root = repo_root()
+    ensure_artifacts(root)
+    plan_args = copy.copy(args)
+    plan_args.model = args.model_architect or args.model
+    impl_args = copy.copy(args)
+    impl_args.model = args.model_implementer
+    review_args = copy.copy(args)
+    review_args.model = args.model_reviewer
+    print("== 1/3 arquiteto ==")
+    cmd_plan(plan_args, cfg)
+    if args.pause:
+        input("\nEnter para implementar (Ctrl+C cancela) ")
+    print("\n== 2/3 implementador ==")
+    cmd_impl(impl_args, cfg)
+    gate = args.gate or cfg.get("gate")
+    if gate:
+        print(f"\n== gate: {gate} ==")
+        code = subprocess.run(gate, shell=True, cwd=str(root)).returncode
+        if code != 0:
+            die(f"gate falhou (exit {code}); revise antes de continuar", code)
+        print("gate ok")
+    if args.pause:
+        input("\nEnter para revisar (Ctrl+C cancela) ")
+    print("\n== 3/3 revisor ==")
+    cmd_review(review_args, cfg)
+    art = root / ART_DIR
+    print(f"\nfim. artefatos: {art}/plan.md, impl.md, diff.patch, review.md, log/ledger.jsonl")
+
+
+def cmd_handoff(args, cfg):
+    root = repo_root()
+    art = root / ART_DIR
+    for name in ("brief.md", "plan.md", "impl.md", "review.md"):
+        path = art / name
+        print(f"\n===== {name} =====")
+        print(read_text(path) if path.exists() else "(não existe)")
+    print("\n===== ledger =====")
+    print(read_text(art / LEDGER) or "(vazio)")
+
+
+# ----------------------------------------------------------------------- main
+
+def main():
+    parser = argparse.ArgumentParser(prog="orq", description="orquestrador local de agentes")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("init", help="cria .ai/brief.md e o exclui do git")
+    p.set_defaults(fn=cmd_init)
+
+    p = sub.add_parser("status", help="mostra agentes, logins, papéis e modelos")
+    p.set_defaults(fn=cmd_status)
+
+    p = sub.add_parser("ask", help="one-shot em um agente")
+    p.add_argument("agent", choices=list(AGENTS))
+    p.add_argument("prompt")
+    p.add_argument("--write", action="store_true", help="permite editar arquivos")
+    p.add_argument("--model", default="")
+    p.add_argument("--effort", default="")
+    p.add_argument("--timeout", type=int, default=0)
+    p.set_defaults(fn=cmd_ask)
+
+    def common(p):
+        p.add_argument("task", nargs="?", default="")
+        p.add_argument("--agent", default="", help="sobrescreve o papel")
+        p.add_argument("--model", default="")
+        p.add_argument("--effort", default="")
+        p.add_argument("--timeout", type=int, default=0)
+
+    p = sub.add_parser("plan", help="arquiteto escreve .ai/plan.md")
+    common(p)
+    p.set_defaults(fn=cmd_plan)
+
+    p = sub.add_parser("impl", help="implementador executa o plano")
+    common(p)
+    p.set_defaults(fn=cmd_impl)
+
+    p = sub.add_parser("review", help="revisor critica o diff")
+    common(p)
+    p.set_defaults(fn=cmd_review)
+
+    p = sub.add_parser("loop", help="plan -> impl -> gate -> review")
+    common(p)
+    p.add_argument("--gate", default="", help='comando de verificação, ex: "npm run check"')
+    p.add_argument("--pause", action="store_true", help="pede Enter entre etapas")
+    p.add_argument("--model-architect", default="")
+    p.add_argument("--model-implementer", default="")
+    p.add_argument("--model-reviewer", default="")
+    p.set_defaults(fn=cmd_loop)
+
+    p = sub.add_parser("handoff", help="imprime brief, plano, impl, review e ledger")
+    p.set_defaults(fn=cmd_handoff)
+
+    args = parser.parse_args()
+    cfg = load_config()
+    if getattr(args, "timeout", 0) == 0:
+        args.timeout = int(cfg.get("timeout_seconds") or 1800)
+    args.fn(args, cfg)
+
+
+if __name__ == "__main__":
+    main()

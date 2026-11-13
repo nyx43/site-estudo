@@ -6,6 +6,13 @@
   "description": "Da estrutura de uma página às interações e contratos que conectam a web.",
   "category": "PROGRAMMING",
   "accent": "blue",
+  "lifecycleStatus": "IN_PROGRESS",
+  "academicTrack": {
+    "period": "26.2",
+    "courseName": "Desenvolvimento de Softwares para Web",
+    "orderIndex": 2,
+    "scopeNote": "Nível 1: arquitetura cliente-servidor, HTTP, HTML/CSS, JS/TS, React/Next e APIs conforme ementa inicial do semestre."
+  },
   "learningOutcomes": [
     "Construir interfaces semânticas, responsivas e utilizáveis por teclado.",
     "Explicar requisições e estado assíncrono, reconhecendo riscos comuns de segurança."

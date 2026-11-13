@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createCatalogService } from "../../src/lib/catalog/service";
 import { createFileCatalogRepository } from "../../src/lib/content/catalog-repository";
-import { filterSubjects } from "../../src/lib/catalog/filter";
+import { filterSubjects, getAcademicPeriodGroups, groupSubjectsByLifecycle } from "../../src/lib/catalog/filter";
 import { createCatalogHandlers } from "../../src/lib/http/catalog-handlers";
 import type { CatalogRepository } from "../../src/lib/catalog/types";
 
@@ -19,17 +19,42 @@ describe("catálogo e busca", () => {
     expect(await service.findSubject("ausente")).toBeNull();
     expect(await service.findTopic("ausente.topico")).toBeNull();
   });
-  it("busca nomes e tópicos sem depender de acento ou caixa", async () => {
+  it("busca nomes, nomes acadêmicos 26.2 e tópicos sem depender de acento ou caixa", async () => {
     const subjects = await service.listSubjects();
     expect(filterSubjects(subjects, "ANALISE DE REQUISITOS", "ALL").map((item) => item.slug)).toEqual(["requisitos"]);
     expect(filterSubjects(subjects, "laços", "ALL").map((item) => item.slug)).toEqual(["python"]);
+    expect(filterSubjects(subjects, "Complexidade de Algoritmos e Estrutura de Dados", "ALL").map((item) => item.slug)).toEqual([
+      "algoritmos",
+      "estruturas-de-dados",
+    ]);
+    expect(filterSubjects(subjects, "Sistemas Operacionais", "ALL").map((item) => item.slug)).toEqual(["sistemas-operacionais"]);
   });
-  it("combina categoria e termos e aceita busca vazia", async () => {
+  it("combina categoria, estado de andamento e termos e aceita busca vazia", async () => {
     const subjects = await service.listSubjects();
     expect(filterSubjects(subjects, "   ", "ALL")).toHaveLength(subjects.length);
     expect(filterSubjects(subjects, "", "PROGRAMMING")).toHaveLength(subjects.filter((item) => item.category === "PROGRAMMING").length);
+    expect(filterSubjects(subjects, "", "ALL", "IN_PROGRESS")).toHaveLength(6);
+    expect(filterSubjects(subjects, "", "ALL", "PAUSED").map((item) => item.slug)).toEqual(["python"]);
+    expect(filterSubjects(subjects, "", "ALL", "UPCOMING")).toHaveLength(7);
     expect(filterSubjects(subjects, "python", "THEORETICAL")).toHaveLength(0);
     expect(filterSubjects(subjects, "contratos segurança", "PROGRAMMING").map((item) => item.slug)).toContain("web-dev");
+  });
+  it("agrupa as cinco disciplinas acadêmicas do período 26.2 na ordem configurada", async () => {
+    const subjects = await service.listSubjects();
+    const groups = getAcademicPeriodGroups(subjects, "26.2");
+    expect(groups.map((group) => group.courseName)).toEqual([
+      "Complexidade de Algoritmos e Estrutura de Dados",
+      "Desenvolvimento de Softwares para Web",
+      "Engenharia de Requisitos de Softwares",
+      "Sistemas Operacionais",
+      "Gerenciamento de Banco de Dados",
+    ]);
+    expect(groups[0].subjects.map((item) => item.slug)).toEqual(["algoritmos", "estruturas-de-dados"]);
+    expect(groups[0].relatedSubjectSlugs).toContain("python");
+    const byLifecycle = groupSubjectsByLifecycle(subjects);
+    expect(byLifecycle.IN_PROGRESS).toHaveLength(6);
+    expect(byLifecycle.PAUSED).toHaveLength(1);
+    expect(byLifecycle.UPCOMING).toHaveLength(7);
   });
 });
 

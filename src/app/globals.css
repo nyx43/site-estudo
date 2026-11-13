@@ -396,3 +396,83 @@ button:disabled { opacity: .55; }
 @media(max-width: 1200px) { .lesson-library-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .full-lesson-layout { grid-template-columns: 155px minmax(0,1fr); gap: 16px; } .command-entry { padding: 17px; } .explained-example { padding: 17px; } }
 @media(max-width: 950px) { .full-lesson-layout { grid-template-columns: minmax(0,1fr); } .article-nav { position: static; padding: 17px; } .article-nav ul { display: flex; gap: 10px; overflow-x: auto; padding: 9px 0; } .article-nav li { flex-shrink: 0; } .article-nav li + li { margin-top: 0; } .article-nav a { white-space: nowrap; border: 1px solid #dae5cd; border-radius: 4px; padding: 8px; } }
 @media(max-width: 700px) { .lesson-library-grid { grid-template-columns: minmax(0,1fr); } .lesson-library-card { padding: 23px; } .subject-overview p { font-size: 14px; } .module-guide { padding: 20px 18px; } .module-guide p { font-size: 13px; } .full-article-content { padding: 22px 17px; } .command-entry { padding: 17px 12px; } .explained-example { padding: 16px 12px; } .line-explanations > li { grid-template-columns: minmax(0,1fr); gap: 5px; } .line-explanations p { font-size: 13px; } .full-article-content h2 { font-size: 23px; } .full-article-content > section { padding-bottom: 24px; margin-bottom: 24px; } .article-practice-cta { padding: 19px; } .full-lesson-page .detail-header h1 { font-size: 35px; } .syntax-reference { font-size: 11px; } }
+
+/* O tema é aplicado no elemento raiz antes da primeira pintura. */
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.theme-toggle { border: 1px solid #d4ded1; border-radius: 6px; background: #fff; color: #385340; padding: 7px 10px; font-size: 11px; }
+.theme-toggle:hover { background: #edf3e9; }
+.theme-toggle span { display: inline-flex; align-items: center; gap: 6px; }
+.theme-toggle .theme-to-light, [data-theme="dark"] .theme-toggle .theme-to-dark { display: none; }
+[data-theme="dark"] .theme-toggle .theme-to-light { display: inline-flex; }
+[data-theme="dark"] { color-scheme: dark; --ink: #e0ebe1; --muted: #a7b9ab; --green: #a6d6ae; --border: #34473a; --paper: #111d17; }
+[data-theme="dark"] body { background: var(--paper); }
+[data-theme="dark"] ::selection { background: #476b4c; color: #fff; }
+[data-theme="dark"] .topbar { background: #18261e; color: #bdccbd; }
+[data-theme="dark"] .version-pill, [data-theme="dark"] .theme-toggle { background: #24362a; color: #d7e5d5; border-color: #405746; }
+[data-theme="dark"] .theme-toggle:hover { background: #344d3a; }
+[data-theme="dark"] .skip-link { background: #25372b; }
+[data-theme="dark"] .hero, [data-theme="dark"] .next-chapter, [data-theme="dark"] .study-banner, [data-theme="dark"] .notice, [data-theme="dark"] .study-outline, [data-theme="dark"] .article-nav, [data-theme="dark"] .article-practice-cta { background: #203328; border-color: #405744; }
+[data-theme="dark"] .learning-card, [data-theme="dark"] .subject-card, [data-theme="dark"] .module-card, [data-theme="dark"] .plan-panel, [data-theme="dark"] .lesson-library-card, [data-theme="dark"] .lesson-reader, [data-theme="dark"] .exercise-panel, [data-theme="dark"] .command-entry { background: #1c2b22; border-color: #3a4d3d; }
+[data-theme="dark"] .module-header, [data-theme="dark"] .module-guide, [data-theme="dark"] .module-project, [data-theme="dark"] .question-card, [data-theme="dark"] .misconception-panel, [data-theme="dark"] .refutation, [data-theme="dark"] .advanced-connection { background: #25362a; border-color: #415543; }
+[data-theme="dark"] .filter-tabs, [data-theme="dark"] .status-pill, [data-theme="dark"] .activity-type, [data-theme="dark"] .learning-objectives, [data-theme="dark"] .model-answer, [data-theme="dark"] .question-recap, [data-theme="dark"] .lesson-glossary dl > div, [data-theme="dark"] .syntax-reference, [data-theme="dark"] .explained-example, [data-theme="dark"] .requirement-callout, [data-theme="dark"] .version-notice, [data-theme="dark"] .available-block, [data-theme="dark"] .ordered-code, [data-theme="dark"] .choice-letter, [data-theme="dark"] .table-scroll th { background: #2b4030; border-color: #4b624c; color: #d6e6d4; }
+[data-theme="dark"] .filter-tabs button.selected, [data-theme="dark"] .search-field, [data-theme="dark"] .button.secondary, [data-theme="dark"] .study-outline .practice-tab:not(.selected), [data-theme="dark"] .exercise-selector button:not(.selected), [data-theme="dark"] .block-tools button, [data-theme="dark"] .block-tools select, [data-theme="dark"] textarea { background: #17271d; border-color: #49604c; color: #e0ebe1; }
+[data-theme="dark"] .search-field input { color: #e0ebe1; }
+[data-theme="dark"] .filter-tabs button, [data-theme="dark"] .filter-tabs button:hover, [data-theme="dark"] .search-field input::placeholder, [data-theme="dark"] textarea::placeholder { color: #b7c9b6; }
+[data-theme="dark"] .study-outline li button:not(:disabled):hover, [data-theme="dark"] .study-outline li button.current-step, [data-theme="dark"] .choice-list > label.selected-choice { background: #37513a; color: #e2f1df; border-color: #759678; }
+[data-theme="dark"] .accent-emerald { --accent: #8bd4ad; --accent-bg: #264638; --accent-border: #3c6b50; }
+[data-theme="dark"] .accent-amber { --accent: #eac184; --accent-bg: #4a3b27; --accent-border: #735d3c; }
+[data-theme="dark"] .accent-rose { --accent: #e6a7ad; --accent-bg: #4a3034; --accent-border: #754b50; }
+[data-theme="dark"] .accent-blue { --accent: #a2c9ea; --accent-bg: #293e4d; --accent-border: #456378; }
+[data-theme="dark"] .accent-violet { --accent: #cdb1e8; --accent-bg: #3d334a; --accent-border: #625072; }
+[data-theme="dark"] .step-icon, [data-theme="dark"] .next-chapter-icon, [data-theme="dark"] .roadmap-marker { background: #38503a; border-color: #536e50; color: #c1ddad; }
+[data-theme="dark"] .hero h1 em, [data-theme="dark"] .catalog-summary > div strong, [data-theme="dark"] .summary-note strong, [data-theme="dark"] .card-bottom, [data-theme="dark"] .text-link, [data-theme="dark"] .back-link, [data-theme="dark"] .full-article-content a:not(.button), [data-theme="dark"] .article-nav a, [data-theme="dark"] .full-article-content h4, [data-theme="dark"] .lesson-reader h4, [data-theme="dark"] .lesson-glossary dt, [data-theme="dark"] .question-card > label, [data-theme="dark"] .model-answer > strong { color: #b5d9ae; }
+[data-theme="dark"] .hero-copy > p, [data-theme="dark"] .learning-card-top, [data-theme="dark"] .learning-step p, [data-theme="dark"] .learning-card-note, [data-theme="dark"] .catalog-summary > div span, [data-theme="dark"] .summary-note, [data-theme="dark"] .section-heading p, [data-theme="dark"] .count-label, [data-theme="dark"] .subject-category, [data-theme="dark"] .subject-card > p, [data-theme="dark"] .card-meta, [data-theme="dark"] .catalog-footnote, [data-theme="dark"] .next-chapter p, [data-theme="dark"] .detail-header > p, [data-theme="dark"] .detail-meta, [data-theme="dark"] .module-header p, [data-theme="dark"] .topic-list p, [data-theme="dark"] .topic-status, [data-theme="dark"] .plan-panel p, [data-theme="dark"] .plan-panel li, [data-theme="dark"] .roadmap-item p, [data-theme="dark"] .empty-state p, [data-theme="dark"] .study-banner p, [data-theme="dark"] .study-header p, [data-theme="dark"] .study-outline > p, [data-theme="dark"] .study-outline li button, [data-theme="dark"] .study-outline > small, [data-theme="dark"] .lesson-reader p, [data-theme="dark"] .lesson-reader > ul li, [data-theme="dark"] .practice-intro p, [data-theme="dark"] .exercise-prompt, [data-theme="dark"] .choice-list > label, [data-theme="dark"] .solution-panel p, [data-theme="dark"] .subject-overview p, [data-theme="dark"] .module-guide p, [data-theme="dark"] .module-guide details, [data-theme="dark"] .lesson-library-card > p, [data-theme="dark"] .full-article-content li, [data-theme="dark"] .command-entry li, [data-theme="dark"] .ai-review-case li, [data-theme="dark"] .table-scroll td { color: #c0d0be; }
+[data-theme="dark"] .breadcrumb, [data-theme="dark"] .subtle-label, [data-theme="dark"] .eyebrow, [data-theme="dark"] .page-footer, [data-theme="dark"] .page-footer > span:first-child, [data-theme="dark"] .page-footer > span:first-child > span, [data-theme="dark"] .reader-topline > span:last-child, [data-theme="dark"] .exercise-heading > span:last-child { color: #b2c6ae; }
+[data-theme="dark"] .outcomes li, [data-theme="dark"] .refutation .misconception-claim, [data-theme="dark"] .refutation h3, [data-theme="dark"] .explained-example .example-takeaway, [data-theme="dark"] .refutation p:last-child { color: #d0e2c7; }
+[data-theme="dark"] .explained-example .example-takeaway, [data-theme="dark"] .refutation p:last-child { background: #38543a; }
+[data-theme="dark"] .exercise-feedback.correct, [data-theme="dark"] .all-complete { background: #274432; border-color: #537b57; color: #d1ebc8; }
+[data-theme="dark"] .exercise-feedback.retry { background: #483d27; border-color: #796744; color: #f2dfb5; }
+[data-theme="dark"] .study-error { background: #4b302b; border-color: #805449; color: #ffd5ca; }
+[data-theme="dark"] .topic-list li + li, [data-theme="dark"] .card-bottom, [data-theme="dark"] .reader-navigation, [data-theme="dark"] .full-article-content > section, [data-theme="dark"] .line-explanations > li, [data-theme="dark"] .solution-panel { border-color: #405344; }
+[data-theme="dark"] .choice-list > label, [data-theme="dark"] .table-scroll th, [data-theme="dark"] .table-scroll td, [data-theme="dark"] .source-list > li, [data-theme="dark"] .prerequisite-list a { border-color: #49604c; }
+@media(max-width: 700px) { .topbar-actions { gap: 7px; } .theme-toggle { font-size: 10px; padding: 6px 8px; } }
+
+/* Agrupamento do período 26.2 e estados de andamento das disciplinas. */
+.period-section { margin-bottom: 34px; padding: 24px; border: 1px solid #dce6d4; border-radius: 10px; background: #f2f6ec; }
+.period-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.period-card { background: #fff; border: 1px solid #dfe7d7; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.period-card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.period-index { font-size: 9px; font-weight: 600; letter-spacing: 1px; color: #5b724f; }
+.period-card h3 { font-size: 15px; font-weight: 600; letter-spacing: -.25px; line-height: 1.35; }
+.period-scope-note { font-size: 11px; color: #6c7b63; line-height: 1.7; flex: 1; }
+.period-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 10px; color: #6f8065; }
+.period-links { display: flex; flex-direction: column; gap: 6px; padding-top: 8px; border-top: 1px solid #ebf0e6; }
+.period-track-link { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 5px; background: #f5f8f1; border: 1px solid #e1ead9; font-size: 11px; font-weight: 500; color: #2f553b; }
+.period-track-link:hover { border-color: #8dab79; background: #eaf1e3; }
+.period-support { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 10px; color: #6e7f64; padding-top: 4px; }
+.period-support a { text-decoration: underline; text-underline-offset: 2px; color: #396144; font-weight: 500; }
+.card-badges { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.lifecycle-pill { display: inline-flex; align-items: center; font-size: 9px; font-weight: 600; border-radius: 20px; padding: 3px 9px; border: 1px solid transparent; white-space: nowrap; }
+.lifecycle-in-progress { background: #e4f2e8; border-color: #badbc4; color: #245c3c; }
+.lifecycle-paused { background: #f8eedb; border-color: #e6d1a7; color: #7d581c; }
+.lifecycle-upcoming { background: #eef1ee; border-color: #d9e0d9; color: #5d6b5f; }
+.subject-track-tag { display: inline-block; margin-top: 6px; font-size: 10px; color: #55704a; font-weight: 500; }
+.card-meta { flex-wrap: wrap; }
+.card-lesson-availability { margin-left: auto; font-weight: 600; color: #48663e; }
+.catalog-toolbar { flex-wrap: wrap; }
+.academic-track-banner { margin-bottom: 24px; padding: 20px 22px; border: 1px solid #dbe5d0; border-left: 4px solid #4c7c59; border-radius: 7px; background: #f4f8ef; display: grid; gap: 8px; }
+.academic-track-banner h2 { font-size: 19px; }
+.academic-track-banner p { font-size: 12px; color: #5f7255; line-height: 1.8; }
+.academic-track-disclaimer { font-size: 11px !important; color: #6c7d62 !important; }
+[data-theme="dark"] .period-section, [data-theme="dark"] .academic-track-banner { background: #1f3126; border-color: #3f5543; }
+[data-theme="dark"] .period-card { background: #18261e; border-color: #364a3a; }
+[data-theme="dark"] .period-links { border-color: #334637; }
+[data-theme="dark"] .period-track-link { background: #23362a; border-color: #3f5745; color: #c7e5c2; }
+[data-theme="dark"] .period-track-link:hover { background: #2d4535; border-color: #628467; }
+[data-theme="dark"] .period-index, [data-theme="dark"] .subject-track-tag, [data-theme="dark"] .card-lesson-availability, [data-theme="dark"] .period-support a { color: #b5d9ae; }
+[data-theme="dark"] .period-scope-note, [data-theme="dark"] .period-meta, [data-theme="dark"] .period-support, [data-theme="dark"] .academic-track-banner p { color: #bfd0bd; }
+[data-theme="dark"] .lifecycle-in-progress { background: #234532; border-color: #467559; color: #bfe8cb; }
+[data-theme="dark"] .lifecycle-paused { background: #463822; border-color: #735c38; color: #f1d49f; }
+[data-theme="dark"] .lifecycle-upcoming { background: #29382d; border-color: #445748; color: #c8d6ca; }
+@media(max-width: 1200px) { .period-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width: 700px) { .period-section { padding: 16px; margin-bottom: 24px; } .period-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; } .period-card { padding: 15px; } .lifecycle-filter-tabs { flex-wrap: wrap; } .lifecycle-filter-tabs button { flex: 1 1 calc(50% - 4px); } .card-lesson-availability { margin-left: 0; } }

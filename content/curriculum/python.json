@@ -6,6 +6,7 @@
   "description": "Do primeiro raciocínio à automação: aprenda a ler, explicar e construir programas em Python.",
   "category": "PROGRAMMING",
   "accent": "emerald",
+  "lifecycleStatus": "PAUSED",
   "learningOutcomes": [
     "Explicar o fluxo de execução e escolher estruturas adequadas para resolver problemas.",
     "Construir automações pequenas, com validação de entradas e testes de comportamento."

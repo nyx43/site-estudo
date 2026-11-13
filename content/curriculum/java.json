@@ -6,6 +6,7 @@
   "description": "Tipos, objetos e contratos para construir programas previsíveis e bem organizados.",
   "category": "PROGRAMMING",
   "accent": "amber",
+  "lifecycleStatus": "UPCOMING",
   "learningOutcomes": [
     "Rastrear valores e referências e explicar contratos entre objetos.",
     "Modelar uma solução com coleções, exceções e testes de comportamento."

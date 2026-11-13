@@ -1,11 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, BookOpen, Check, Flag } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Check, Flag, Layers3 } from "lucide-react";
 import { catalog } from "@/lib/catalog";
+import { SUBJECT_LIFECYCLE_LABELS } from "@/lib/catalog/filter";
+import type { CatalogSubject, SubjectLifecycleStatus } from "@/lib/catalog/types";
 import { getStudyService } from "@/lib/study";
 import { levelLabels } from "@/components/study/teaching-content";
 
 export const dynamic = "force-dynamic";
+
+const lifecycleClassNames: Record<SubjectLifecycleStatus, string> = {
+  IN_PROGRESS: "lifecycle-in-progress",
+  PAUSED: "lifecycle-paused",
+  UPCOMING: "lifecycle-upcoming",
+};
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const subject = await catalog.findSubject((await params).slug);
@@ -15,10 +23,24 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function SubjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const subject = await catalog.findSubject((await params).slug);
   if (!subject) notFound();
+  const allSubjects = await catalog.listSubjects();
+  const subjectBySlug = new Map(allSubjects.map((item) => [item.slug, item]));
   const available = new Set(process.env.CATALOG_STORAGE === "files" ? [] : (await getStudyService().availableLessons()).map((lesson) => lesson.topicId));
+  const totalTopics = subject.modules.flatMap((module) => module.topics);
+  const availableInSubject = totalTopics.filter((topic) => available.has(topic.id)).length;
+  const relatedSubjects = (subject.academicTrack?.relatedSubjects ?? [])
+    .map((relatedSlug) => subjectBySlug.get(relatedSlug))
+    .filter((item): item is CatalogSubject => Boolean(item));
   return <div className={`page-container detail-page accent-${subject.accent}`}>
     <Link href="/" className="back-link"><ArrowLeft size={16} /> Todas as disciplinas</Link>
-    <header className="detail-header"><div className="subject-icon"><BookOpen size={28} /></div><span className="eyebrow">TRILHA DE APRENDIZAGEM</span><h1>{subject.name}</h1><p>{subject.description}</p><div className="detail-meta"><span>{subject.modules.length} módulos</span><span>{subject.modules.flatMap((module) => module.topics).length} tópicos</span><span className="status-pill">Conteúdo planejado</span></div></header>
+    <header className="detail-header"><div className="subject-icon"><BookOpen size={28} /></div><span className="eyebrow">TRILHA DE APRENDIZAGEM</span><h1>{subject.name}</h1><p>{subject.description}</p><div className="detail-meta"><span>{subject.modules.length} módulos</span><span>{totalTopics.length} tópicos</span><span className={`lifecycle-pill ${lifecycleClassNames[subject.lifecycleStatus]}`}>{SUBJECT_LIFECYCLE_LABELS[subject.lifecycleStatus]}</span><span className="status-pill">{availableInSubject > 0 ? `${availableInSubject} ${availableInSubject === 1 ? "aula disponível" : "aulas disponíveis"}` : "Conteúdo planejado"}</span></div></header>
+    {subject.academicTrack && <section className="academic-track-banner" aria-label="Enquadramento no período acadêmico">
+      <span className="eyebrow"><Layers3 size={14} /> PERÍODO {subject.academicTrack.period} · NÍVEL 1</span>
+      <h2>{subject.academicTrack.courseName}</h2>
+      {subject.academicTrack.scopeNote && <p>{subject.academicTrack.scopeNote}</p>}
+      <p className="academic-track-disclaimer">Esta disciplina está <strong>{SUBJECT_LIFECYCLE_LABELS[subject.lifecycleStatus]}</strong> no planejamento do período {subject.academicTrack.period}. Os tópicos permanecem como <strong>Planejado</strong> até que cada aula e bateria de exercícios sejam redigidas.</p>
+      {relatedSubjects.length > 0 && <div className="period-support"><span>Trilhas correlatas no catálogo:</span>{relatedSubjects.map((related) => <Link key={related.slug} href={`/disciplinas/${related.slug}`}>{related.name}</Link>)}</div>}
+    </section>}
     <div className="notice"><BookOpen size={18} /><p>Este é o plano curricular da disciplina. Abra um tópico para explorar os objetivos e acessar a aula quando houver uma versão disponível.</p></div>
     {subject.overview && <section className="subject-overview"><h2>Entenda a disciplina desde a base</h2>{subject.overview.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</section>}
     <section className="outcomes"><span className="eyebrow">O QUE ESTA TRILHA VAI DESENVOLVER</span><ul>{subject.learningOutcomes.map((outcome) => <li key={outcome}><Check size={17} /><span>{outcome}</span></li>)}</ul></section>

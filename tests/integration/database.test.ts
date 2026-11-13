@@ -42,11 +42,18 @@ describe("migração, seed e adaptador SQLite", () => {
     expect(await connection.db.select({ count: count() }).from(topics)).toEqual([{ count: topicCount }]);
   });
 
-  it("entrega o mesmo contrato nos adaptadores SQLite e arquivos", async () => {
+  it("entrega o mesmo contrato nos adaptadores SQLite e arquivos, incluindo agrupamento 26.2 e estados", async () => {
     const database = createSqliteCatalogRepository(connection.db);
     const files = createFileCatalogRepository();
-    expect(await database.listSubjects()).toEqual(await files.listSubjects());
+    const dbSubjects = await database.listSubjects();
+    expect(dbSubjects).toEqual(await files.listSubjects());
+    expect(dbSubjects.filter((item) => item.lifecycleStatus === "IN_PROGRESS")).toHaveLength(6);
+    expect(dbSubjects.find((item) => item.slug === "sistemas-operacionais")?.academicTrack?.courseName).toBe("Sistemas Operacionais");
+    expect(dbSubjects.find((item) => item.slug === "python")?.lifecycleStatus).toBe("PAUSED");
     expect(await database.findTopic("python.lacos-de-repeticao")).toEqual(await files.findTopic("python.lacos-de-repeticao"));
+    expect(await database.findTopic("sistemas-operacionais.modo-usuario-e-kernel")).toEqual(
+      await files.findTopic("sistemas-operacionais.modo-usuario-e-kernel"),
+    );
     expect(await database.findSubject("ausente")).toBeNull();
     expect(await database.findTopic("python.ausente")).toBeNull();
   });

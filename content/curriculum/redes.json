@@ -7,6 +7,7 @@
   "description": "Acompanhe uma comunicação por suas camadas, nomes, conexões e falhas.",
   "category": "THEORETICAL",
   "accent": "emerald",
+  "lifecycleStatus": "UPCOMING",
   "learningOutcomes": [
     "Explicar as decisões centrais da disciplina a partir de seus fundamentos.",
     "Revisar uma solução assistida por IA usando contratos, exemplos e evidências de comportamento."

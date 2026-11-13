@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
-import type { SubjectDefinition, TopicPlan, ModuleGuide } from "../catalog/schema";
+import type { AcademicTrack, SubjectDefinition, TopicPlan, ModuleGuide } from "../catalog/schema";
 import type { Exercise, Lesson, Answer } from "../study/schema";
 import type { LessonProgress } from "../study/progress";
 import { sql } from "drizzle-orm";
@@ -8,6 +8,8 @@ import { sql } from "drizzle-orm";
 export const subjects = sqliteTable("Subject", {
   id: text().primaryKey(), slug: text().notNull().unique(), name: text().notNull(),
   description: text().notNull(), category: text().notNull(), accent: text().notNull(),
+  lifecycleStatus: text().notNull().default("UPCOMING"),
+  academicTrack: text({ mode: "json" }).$type<AcademicTrack>(),
   orderIndex: integer().notNull(), version: integer().notNull(),
   learningOutcomes: text({ mode: "json" }).$type<string[]>().notNull(),
   overview: text({ mode: "json" }).$type<string[]>(),

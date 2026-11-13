@@ -11,6 +11,8 @@ export async function seedCatalog(db: Database, input: unknown[]) {
       const data = {
         id: subject.slug, slug: subject.slug, name: subject.name, description: subject.description,
         category: subject.category, accent: subject.accent, version: subject.version,
+        lifecycleStatus: subject.lifecycleStatus,
+        academicTrack: subject.academicTrack ?? null,
         learningOutcomes: subject.learningOutcomes, orderIndex: subject.orderIndex,
         overview: subject.overview ?? null,
       };

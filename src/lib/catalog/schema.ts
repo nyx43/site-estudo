@@ -32,6 +32,18 @@ export const TopicSchema = z.object({
   plan: TopicPlanSchema,
 }).strict();
 
+export const SubjectLifecycleStatusSchema = z.enum(["IN_PROGRESS", "PAUSED", "UPCOMING"]);
+export type SubjectLifecycleStatus = z.infer<typeof SubjectLifecycleStatusSchema>;
+
+export const AcademicTrackSchema = z.object({
+  period: text,
+  courseName: text,
+  orderIndex: z.number().int().nonnegative(),
+  relatedSubjects: z.array(slug).optional(),
+  scopeNote: text.optional(),
+}).strict();
+export type AcademicTrack = z.infer<typeof AcademicTrackSchema>;
+
 export const SubjectSchema = z.object({
   schemaVersion: z.literal(1),
   version: z.number().int().positive(),
@@ -41,6 +53,8 @@ export const SubjectSchema = z.object({
   description: text,
   category: z.enum(["PROGRAMMING", "THEORETICAL"]),
   accent: z.enum(["emerald", "amber", "rose", "blue", "violet"]),
+  lifecycleStatus: SubjectLifecycleStatusSchema.default("UPCOMING"),
+  academicTrack: AcademicTrackSchema.optional(),
   learningOutcomes: z.array(text).min(2),
   overview: z.array(text).min(2).optional(),
   modules: z.array(z.object({
@@ -81,6 +95,21 @@ export function validateCurriculum(input: unknown[]): SubjectDefinition[] {
         if (topicIds.has(id)) throw new Error(`Tópico duplicado: ${id}`);
         topicIds.add(id);
         graph.set(id, topic.plan.prerequisites);
+      }
+    }
+  }
+
+  for (const subject of subjects) {
+    const related = subject.academicTrack?.relatedSubjects ?? [];
+    if (new Set(related).size !== related.length) {
+      throw new Error(`Disciplina correlata duplicada: ${subject.slug}`);
+    }
+    for (const relatedSlug of related) {
+      if (relatedSlug === subject.slug) {
+        throw new Error(`Disciplina correlata auto-referenciada: ${subject.slug}`);
+      }
+      if (!ids.has(relatedSlug)) {
+        throw new Error(`Disciplina correlata inexistente: ${subject.slug} → ${relatedSlug}`);
       }
     }
   }

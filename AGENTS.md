@@ -28,6 +28,8 @@ Leia `README.md`, `docs/ARCHITECTURE.md` e a tarefa atual. O documento mestre v2
 
 Rode `npm run check` e os percursos afetados em `npm run test:e2e`. Se houver bloqueio externo, execute as verificações independentes e reporte exatamente o que não pôde ser validado; não desabilite testes nem ignore erros de build.
 
+Leia `proxima ordem.md` ao retomar o projeto. Ao encerrar cada tarefa, atualize esse arquivo com o que foi feito, os testes, as pendências e um comando pronto para copiar e colar no terminal para a próxima ordem. Aguarde a solicitação do usuário para executar essa ordem.
+
 Atualize documentação quando comandos ou contratos mudarem. Não inicie agentes adicionais nesta fase sem autorização. Quando a colaboração começar, delimite arquivos e dependências e coordene alterações de contratos, lockfile e migrações.
 
 Use o checkout existente em tarefas da nuvem. Não crie worktree sem pedido explícito. Não descarte mudanças locais de outras pessoas.

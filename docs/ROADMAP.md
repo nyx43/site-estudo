@@ -4,28 +4,30 @@ O usuário autorizou desenvolvimento com um único agente agora e colaboração 
 
 ## Implementado
 
-- Site responsivo, busca, filtros, páginas de disciplina e tópico e API de consulta.
-- Currículo planejado de 13 disciplinas, 49 módulos e 115 tópicos, com apresentações, guias de módulo, objetivos, pré-requisitos, roteiros, equívocos e atividades propostas.
+- Site responsivo, busca, filtros por categoria e estado de andamento, páginas de disciplina e tópico, alternância de tema claro/escuro e API de consulta.
+- Currículo planejado de 14 disciplinas, 52 módulos e 121 tópicos, com apresentações, guias de módulo, objetivos, pré-requisitos, roteiros, equívocos e atividades propostas.
+- Organização do período **26.2 (Nível 1)** orientada por dados (`lifecycleStatus` e `academicTrack`), destacando as cinco disciplinas acadêmicas (*Complexidade de Algoritmos e Estrutura de Dados*, *Desenvolvimento de Softwares para Web*, *Engenharia de Requisitos de Softwares*, *Sistemas Operacionais* e *Gerenciamento de Banco de Dados*) como **Em desenvolvimento**, *Python* como **Pausada** (preservando acesso integral às aulas) e as demais sete disciplinas como **Em breve**, sem incluir *APTA* e diferenciando currículo planejado de aulas disponíveis.
+- Inventário preliminar das 68 entradas do Google Drive em [INVENTARIO_26_2.md](INVENTARIO_26_2.md) com desambiguação por ID/timestamp e registro explícito dos arquivos que ainda pendem de acesso/leitura local sem inventar localizadores.
 - Quatro aulas aprofundadas de Python: Variáveis e tipos, Condicionais, Laços de repetição e Listas e dicionários. Comandos, exemplos completos por linha, casos específicos, revisão de erros de IA e fontes reais.
-- Leitura completa sem exigir respostas; percurso guiado em 10 partes, com reflexão e 32 exercícios nas versões atuais.
+- Leitura completa sem exigir respostas; percurso guiado em 10 partes, com reflexão e 32 exercícios nas versões atuais (44 no histórico).
 - Correção determinística de quizzes, Parsons com indentação, exemplos com erro e previsão. Respostas abertas são reflexão, sem nota automática de domínio.
-- Drizzle/SQLite, migrações, seed transacional, retomada e idempotência. Gabaritos privados até o momento permitido.
+- Drizzle/SQLite, migrações aditivas (`0000` a `0004`), seed transacional, retomada e idempotência. Gabaritos privados até o momento permitido.
 - Versionamento que preserva aulas e respostas em uso, incluindo retomada da versão anterior de Laços.
 - Fluxo documentado para gerar aulas e exercícios a partir de futuros slides e livros, sem publicar arquivos crus.
 
-Resultados executados estão em [VALIDATION.md](VALIDATION.md). As aulas estão em AUTO_CHECKED; o usuário fará a avaliação detalhada depois. A fila em [REVIEW_QUEUE.md](REVIEW_QUEUE.md) não bloqueia as próximas tarefas independentes.
+Resultados executados estão em [VALIDATION.md](VALIDATION.md) e [proxima ordem.md](../proxima%20ordem.md). As aulas estão em AUTO_CHECKED; o usuário fará a avaliação detalhada depois. A fila em [REVIEW_QUEUE.md](REVIEW_QUEUE.md) não bloqueia as próximas tarefas independentes.
 
 ## Próximas entregas
 
+> **Diretriz de priorização (atualizada em 13/11/2026):** Não produzir dezenas de aulas antes de estabelecer a experiência de estudo com TTS por bloco e o laboratório de programação real. A análise dos materiais do período 26.2 pode avançar em paralelo desde que os arquivos brutos estejam efetivamente acessíveis.
+
 | Prioridade | Trabalho | Critério de aceite |
 | --- | --- | --- |
-| 1 | Completar fundamentos das demais linguagens iniciais | Aulas desde a base, exemplos próprios da linguagem, casos de revisão de IA e exercícios alinhados; verificações apropriadas |
-| 2 | Aprofundar Dados e funções em Python | Listas/dicionários entregues; próximas aulas: funções, escopo e mutabilidade; preservar pré-requisitos, versões e progresso |
-| 3 | Produzir aulas de Web e Requisitos | Exemplos e artefatos adequados à disciplina; explicar comandos ou decisões, critérios e erros comuns |
-| 4 | Incorporar materiais enviados pelo usuário | Mapear fontes e páginas/slides, identificar lacunas, gerar aulas e exercícios autorais; seguir AUTHORING.md |
-| 5 | Ampliar os novos módulos e disciplinas | Cobertura rastreável, sem confundir currículo planejado com conteúdo escrito; manter profundidade |
-| 6 | Revisão espaçada e tutor simulado | Agendamento e níveis de ajuda testados, com critérios de feedback e privacidade |
-| 7 | Integração real de IA | Provedor substituível, falhas tratadas, validação de conteúdo e revisão editorial |
+| 1 | **Fase 1 — Experiência de estudo e TTS por bloco** | Melhorar navegação por seções, posição atual, acessibilidade por teclado e retomada confiável (sem confundir leitura com domínio); implementar TTS local sob demanda por bloco (reproduzir, pausar, retomar, parar, voz/velocidade persistidas localmente e fallback claro quando indisponível, sem serviço remoto). |
+| 2 | **Fase 2 — Laboratório de programação real (piloto em Python)** | Editor acessível na aula de Laços com execução isolada verificada (sem rede, sem acesso ao checkout/banco/home, limites de tempo/CPU/memória/processos/saída, falha fechada se isolamento não estiver disponível), salvamento de rascunho e testes determinísticos/adversariais. |
+| 3 | **Leitura efetiva e análise das fontes de 26.2 (em paralelo quando acessíveis)** | Ler os arquivos brutos das 5 pastas do Drive quando disponíveis localmente/por conector, completar localizadores reais (páginas/slides/seções) em `docs/INVENTARIO_26_2.md`, inspecionar estaticamente ZIPs/planilha/imagens sem executar código e esclarecer lacuna de SQL em Banco de Dados. |
+| 4 | **Fase 3 — Primeiras aulas completas das cinco disciplinas de 26.2 (em lotes)** | Após TTS e laboratório, produzir uma primeira fatia completa por disciplina do período 26.2 com fontes e localizadores reais verificados, evoluindo do nível 1 para camadas mais profundas sem quebrar IDs ou histórico. |
+| 5 | **Fase 4 — Revisão espaçada, progresso e expansão modular** | Organizar histórico e revisão por dificuldade sem converter leitura em domínio; expandir laboratório e projetos integradores mantendo arquitetura local, modular e de baixo custo. |
 
 O material real da faculdade poderá mudar nomes, recortes e a ordem de produção. O desenvolvimento autorizado continua sem aguardar a avaliação pessoal; correções posteriores devem respeitar o histórico.
 

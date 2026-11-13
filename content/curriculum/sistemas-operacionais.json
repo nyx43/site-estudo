@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "orderIndex": 13,
+  "slug": "sistemas-operacionais",
+  "name": "Sistemas Operacionais",
+  "description": "Compreenda como o kernel gerencia processos, memória, sincronização, sistemas de arquivos e chamadas de sistema.",
+  "category": "THEORETICAL",
+  "accent": "amber",
+  "lifecycleStatus": "IN_PROGRESS",
+  "academicTrack": {
+    "period": "26.2",
+    "courseName": "Sistemas Operacionais",
+    "orderIndex": 4,
+    "scopeNote": "Nível 1: plano inicial baseado nos tópicos confirmados (história e Unix, arquitetura e kernel, processos e sincronização, arquivos e chamadas de sistema)."
+  },
+  "learningOutcomes": [
+    "Explicar o papel do kernel, a separação entre modo usuário e modo núcleo e o ciclo de vida de processos e threads.",
+    "Revisar diagnósticos e soluções assistidas por IA envolvendo concorrência, chamadas de sistema e manipulação de arquivos."
+  ],
+  "modules": [
+    {
+      "slug": "arquitetura-e-nucleo",
+      "title": "História, arquitetura e kernel",
+      "description": "Evolução dos sistemas operacionais, filosofia Unix e fronteira entre espaço de usuário e espaço de núcleo.",
+      "guide": {
+        "level": "FOUNDATION",
+        "introduction": [
+          "Um sistema operacional intermedia o acesso aos recursos físicos e oferece abstrações previsíveis para os programas. Compreender sua evolução ajuda a explicar por que processos, arquivos e permissões funcionam como contratos de isolamento.",
+          "A separação entre modo usuário e modo núcleo impede que uma aplicação defeituosa comprometa todo o sistema. Cada transição exige uma interface controlada e tem custo observável."
+        ],
+        "assumedKnowledge": [],
+        "aiReviewChecklist": [
+          "Verificar se a explicação distingue programa em espaço de usuário de rotina executada no kernel.",
+          "Conferir se comandos e abstrações Unix são descritos pelo comportamento real e não por analogias vagas.",
+          "Explicitar quais recursos físicos estão sendo mediados em cada operação."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "historia-e-evolucao-unix",
+          "title": "História dos sistemas operacionais e Unix",
+          "summary": "Da execução em lote à multiprogramação, tempo compartilhado e tradição Unix.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar a evolução histórica dos sistemas operacionais aos problemas de utilização e isolamento de hardware.",
+              "Explicar os princípios de composição e representação uniforme na família Unix."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Sistemas em lote, multiprogramação e tempo compartilhado",
+              "Origem do Unix e composição de ferramentas pequenas",
+              "Papel do sistema operacional como gerenciador de recursos e máquina estendida"
+            ],
+            "misconceptions": [
+              "O sistema operacional é apenas a interface gráfica exibida ao usuário."
+            ],
+            "activities": [
+              {
+                "type": "MISCONCEPTION_QUIZ",
+                "description": "Distinguir responsabilidades do kernel de utilitários de espaço de usuário."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o problema resolvido por multiprogramação e tempo compartilhado.",
+              "Distingue kernel, shell e aplicações."
+            ]
+          }
+        },
+        {
+          "slug": "modo-usuario-e-kernel",
+          "title": "Arquitetura, modo usuário e kernel",
+          "summary": "Níveis de privilégio, interrupções, armadilhas e organização interna do núcleo.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Diferenciar execução em modo usuário e modo supervisionado (kernel).",
+              "Comparar arquiteturas monolíticas, em camadas e baseadas em microkernel."
+            ],
+            "prerequisites": [
+              "sistemas-operacionais.historia-e-evolucao-unix"
+            ],
+            "lessonOutline": [
+              "Modos de proteção da CPU e instruções privilegiadas",
+              "Interrupções de hardware, exceções e traps",
+              "Organização monolítica, modular e microkernel"
+            ],
+            "misconceptions": [
+              "Qualquer função de biblioteca padrão executa diretamente em modo kernel sem transição de contexto."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Analisar uma descrição incorreta de acesso direto a dispositivo por aplicação comum."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica por que instruções de E/S e gerência de memória são restritas ao núcleo.",
+              "Descreve o caminho de uma trap até o retorno ao espaço de usuário."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Mapear as fronteiras entre aplicação, biblioteca C/runtime e kernel em uma operação simples de leitura e escrita.",
+        "deliverables": [
+          "Diagrama textual das camadas envolvidas",
+          "Lista de verificações de privilégio e transição de modo"
+        ],
+        "acceptanceCriteria": [
+          "Separa claramente chamadas de função em espaço de usuário de transições para o kernel."
+        ]
+      }
+    },
+    {
+      "slug": "processos-e-sincronizacao",
+      "title": "Processos, threads e sincronização",
+      "description": "Representação de processos em execução, escalonamento de CPU e coordenação segura de estado compartilhado.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "Um processo reúne espaço de endereçamento, descritores e estado de execução; threads compartilham esse espaço e exigem coordenação explícita quando alteram dados comuns.",
+          "Sem sincronização adequada, a ordem de entrelaçamento entre fluxos produz condições de corrida difíceis de reproduzir em testes superficiais."
+        ],
+        "assumedKnowledge": [
+          "Modos de execução e interrupções (sistemas-operacionais.modo-usuario-e-kernel)."
+        ],
+        "aiReviewChecklist": [
+          "Identificar qual recurso ou variável é compartilhado entre fluxos concorrentes.",
+          "Verificar condições de exclusão mútua, progresso e risco de impasse (deadlock).",
+          "Construir um entrelaçamento concreto que demonstre a falha antes de aceitar uma trava proposta."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "processos-e-escalonamento",
+          "title": "Processos, estados e escalonamento",
+          "summary": "Bloco de controle de processo, trocas de contexto e políticas de fila de prontos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear transições entre estados novo, pronto, executando, bloqueado e terminado.",
+              "Avaliar compromissos entre tempo de resposta, vazão e justiça no escalonamento."
+            ],
+            "prerequisites": [
+              "sistemas-operacionais.modo-usuario-e-kernel"
+            ],
+            "lessonOutline": [
+              "Imagem do processo, PCB e troca de contexto",
+              "Operações de criação, espera e término de processos",
+              "Critérios e políticas básicas de escalonamento"
+            ],
+            "misconceptions": [
+              "Um processo bloqueado aguardando entrada/saída continua consumindo ciclos de CPU em espera ocupada."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Ordenar as etapas de uma troca de contexto provocada por bloqueio de leitura."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue bloqueio por E/S de preempção por fatia de tempo.",
+              "Explica o custo de salvar e restaurar contexto."
+            ]
+          }
+        },
+        {
+          "slug": "concorrencia-e-sincronizacao",
+          "title": "Threads, exclusão mútua e sincronização",
+          "summary": "Regiões críticas, condições de corrida, semáforos, mutexes e impasses.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Diagnosticar condições de corrida em atualizações concorrentes.",
+              "Aplicar mecanismos de sincronização evitando espera ocupada desnecessária e deadlock."
+            ],
+            "prerequisites": [
+              "sistemas-operacionais.processos-e-escalonamento"
+            ],
+            "lessonOutline": [
+              "Threads e compartilhamento de espaço de endereçamento",
+              "Região crítica, atomicidade e exclusão mútua",
+              "Mutexes, semáforos e condições para ocorrência de deadlock"
+            ],
+            "misconceptions": [
+              "Operações compostas de leitura-modificação-escrita em linguagens de alto nível são atômicas por padrão."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Encontrar o entrelaçamento que perde atualizações ou trava duas threads em ordem inversa de bloqueio."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Mostra a sequência de passos que viola a invariante sem sincronização.",
+              "Relaciona a correção às condições de exclusão mútua e prevenção de impasse."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Analisar um cenário produtor-consumidor com fila limitada e especificar as invariantes de sincronização.",
+        "deliverables": [
+          "Rastreamento de um entrelaçamento com falha",
+          "Regras de sincronização para fila vazia e fila cheia"
+        ],
+        "acceptanceCriteria": [
+          "Garante ausência de perda ou duplicação de itens nos limites da fila."
+        ]
+      }
+    },
+    {
+      "slug": "arquivos-e-chamadas-de-sistema",
+      "title": "Sistemas de arquivos e chamadas de sistema",
+      "description": "Interface de chamadas de sistema, descritores, organização de diretórios e persistência em arquivos.",
+      "guide": {
+        "level": "INTERMEDIATE",
+        "introduction": [
+          "As chamadas de sistema formam o contrato explícito pelo qual um processo solicita criação de processos, comunicação e operações sobre arquivos ao kernel.",
+          "Sistemas de arquivos organizam blocos de armazenamento em nomes, metadados e permissões. Entender descritores, buffers e códigos de retorno evita perda silenciosa de dados."
+        ],
+        "assumedKnowledge": [
+          "Processos e transição entre modo usuário e kernel (sistemas-operacionais.processos-e-escalonamento)."
+        ],
+        "aiReviewChecklist": [
+          "Conferir tratamento de erros e valores de retorno das chamadas de sistema.",
+          "Verificar fechamento de descritores e visibilidade de gravações em buffer.",
+          "Avaliar permissões e resolução de caminhos relativos ou simbólicos."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "chamadas-de-sistema",
+          "title": "Chamadas de sistema e interface com processos",
+          "summary": "Passagem de parâmetros, tabela de descritores, códigos de erro e fluxo de execução.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar como parâmetros e resultados cruzam a fronteira entre processo e kernel.",
+              "Interpretar descritores de recursos e códigos de erro retornados pelo sistema."
+            ],
+            "prerequisites": [
+              "sistemas-operacionais.processos-e-escalonamento"
+            ],
+            "lessonOutline": [
+              "Wrapper na biblioteca padrão vs. instrução de chamada de sistema",
+              "Tabela de descritores por processo e fluxos padrão (stdin, stdout, stderr)",
+              "Tratamento de falhas, sinais e leituras/escritas parciais"
+            ],
+            "misconceptions": [
+              "Toda chamada de leitura ou escrita transfere exatamente o número máximo de bytes solicitado em uma única operação."
+            ],
+            "activities": [
+              {
+                "type": "MISCONCEPTION_QUIZ",
+                "description": "Identificar o comportamento correto diante de leituras parciais e códigos de erro de sistema."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue biblioteca de usuário de chamada de sistema ao kernel.",
+              "Verifica retorno e possibilidade de operação parcial."
+            ]
+          }
+        },
+        {
+          "slug": "sistemas-de-arquivos",
+          "title": "Sistemas de arquivos, descritores e permissões",
+          "summary": "Metadados (inodes), diretórios, caminhos, controle de acesso e consistência.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar nomes de diretório, metadados de arquivo e blocos de dados.",
+              "Avaliar permissões de acesso e efeitos de operações concorrentes ou interrompidas sobre arquivos."
+            ],
+            "prerequisites": [
+              "sistemas-operacionais.chamadas-de-sistema"
+            ],
+            "lessonOutline": [
+              "Abstração de arquivo, metadados e estrutura de diretórios",
+              "Descritores abertos, posição de leitura/escrita e compartilhamento",
+              "Permissões de acesso, links e garantias de persistência"
+            ],
+            "misconceptions": [
+              "O nome de um arquivo é o próprio arquivo, e apagar um caminho sempre destrói os dados imediatamente mesmo com descritor aberto."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Explicar o que acontece quando um processo mantém um arquivo aberto enquanto outro processo remove ou substitui seu caminho no diretório."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Separa entrada de diretório, estrutura de metadados e conteúdo.",
+              "Avalia permissões e ciclo de vida de descritores abertos."
+            ]
+          }
+        }
+      ],
+      "project": {
+        "brief": "Planejar um utilitário seguro de atualização de arquivo de configuração que evite truncamento em caso de falha.",
+        "deliverables": [
+          "Sequência de chamadas de sistema necessárias",
+          "Análise do que ocorre se o processo falhar em cada passo"
+        ],
+        "acceptanceCriteria": [
+          "Explicita como preservar o arquivo anterior íntegro até que o novo conteúdo esteja gravado."
+        ]
+      }
+    }
+  ],
+  "overview": [
+    "Sistemas Operacionais estuda a camada que transforma hardware em abstrações utilizáveis e isoladas: processos, threads, espaço de endereçamento, arquivos e chamadas de sistema.",
+    "No nível 1 do período 26.2, o percurso conecta a evolução histórica e a tradição Unix à arquitetura do kernel, ao escalonamento e sincronização de processos e à operação segura sobre sistemas de arquivos."
+  ]
+}

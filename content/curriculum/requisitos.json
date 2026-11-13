@@ -6,6 +6,13 @@
   "description": "Transforme necessidades em decisões claras, critérios testáveis e escopo compreensível.",
   "category": "THEORETICAL",
   "accent": "violet",
+  "lifecycleStatus": "IN_PROGRESS",
+  "academicTrack": {
+    "period": "26.2",
+    "courseName": "Engenharia de Requisitos de Softwares",
+    "orderIndex": 3,
+    "scopeNote": "Nível 1: problema e stakeholders, elicitação, casos de uso, histórias INVEST, especificação IEEE e prototipagem."
+  },
   "learningOutcomes": [
     "Distinguir necessidade, requisito e solução e tornar afirmações verificáveis.",
     "Investigar, priorizar e rastrear requisitos ao longo de mudanças do projeto."
