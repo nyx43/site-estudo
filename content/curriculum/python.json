@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "slug": "python",
+  "name": "Python",
+  "description": "Do primeiro raciocínio à automação: aprenda a ler, explicar e construir programas em Python.",
+  "category": "PROGRAMMING",
+  "accent": "emerald",
+  "learningOutcomes": [
+    "Explicar o fluxo de execução e escolher estruturas adequadas para resolver problemas.",
+    "Construir automações pequenas, com validação de entradas e testes de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "fundamentos",
+      "title": "Fundamentos e fluxo",
+      "description": "Valores, decisões e repetição como ferramentas para expressar um algoritmo.",
+      "project": {
+        "brief": "Planejar um resumo de despesas a partir de uma lista de valores fictícios.",
+        "deliverables": [
+          "Algoritmo explicado",
+          "Casos de entrada e saída"
+        ],
+        "acceptanceCriteria": [
+          "Trata lista vazia e limites de classificação."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "variaveis-e-tipos",
+          "title": "Variáveis e tipos",
+          "summary": "Entenda nomes, valores, conversões e operações antes de combinar instruções.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever o tipo e o valor de expressões simples.",
+              "Distinguir atribuição, comparação e conversão explícita."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Valores, nomes e atribuição",
+              "Inteiros, decimais, booleanos e strings",
+              "Conversão e leitura de mensagens de erro"
+            ],
+            "misconceptions": [
+              "Atribuir um nome não transforma automaticamente texto numérico em número."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar por que somar texto recebido de uma entrada não produz uma soma numérica."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Prevê o resultado de expressões com tipos diferentes.",
+              "Explica a conversão necessária e uma entrada inválida."
+            ]
+          }
+        },
+        {
+          "slug": "condicionais",
+          "title": "Condicionais",
+          "summary": "Transforme regras em decisões com condições e caminhos alternativos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Construir uma tabela de decisão com casos de fronteira.",
+              "Explicar a diferença entre if independentes e uma cadeia if/elif."
+            ],
+            "prerequisites": [
+              "python.variaveis-e-tipos"
+            ],
+            "lessonOutline": [
+              "Comparações e operadores lógicos",
+              "Caminhos exclusivos e independentes",
+              "Limites inclusivos e casos não cobertos"
+            ],
+            "misconceptions": [
+              "Duas instruções if não são sempre equivalentes a if e elif."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Corrigir uma classificação de faixas que trata incorretamente o valor de fronteira."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Classifica valores abaixo, acima e exatamente no limite.",
+              "Justifica a ordem das condições."
+            ]
+          }
+        },
+        {
+          "slug": "lacos-de-repeticao",
+          "title": "Laços de repetição",
+          "summary": "Acompanhe cada iteração, escolha entre for e while e evite erros de limite.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever a saída de laços com range e acumuladores.",
+              "Diagnosticar limite incorreto, reinicialização e falta de atualização."
+            ],
+            "prerequisites": [
+              "python.condicionais"
+            ],
+            "lessonOutline": [
+              "Problema da repetição e tabela de execução",
+              "for, while e condição de parada",
+              "Acumulador e limites de range"
+            ],
+            "misconceptions": [
+              "O limite final de range não é incluído; reiniciar o acumulador dentro do laço perde resultados anteriores."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Piloto: 4 quizzes, 3 Parsons, 3 exemplos com erro e 2 previsões, todos alinhados à aula."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a saída e o estado do acumulador a cada volta.",
+              "Identifica uma condição que impede ou prolonga indevidamente a execução."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "dados-e-funcoes",
+      "title": "Dados e funções",
+      "description": "Organize coleções e decomponha soluções com responsabilidades claras.",
+      "project": {
+        "brief": "Especificar um agrupador de gastos por categoria.",
+        "deliverables": [
+          "Funções com entradas e saídas",
+          "Exemplos de testes"
+        ],
+        "acceptanceCriteria": [
+          "O total agrupado corresponde aos registros e não altera a entrada."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "listas-e-dicionarios",
+          "title": "Listas e dicionários",
+          "summary": "Escolha entre sequências e associações e percorra dados estruturados.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher coleção pelo padrão de acesso necessário.",
+              "Prever leitura, atualização e iteração em coleções."
+            ],
+            "prerequisites": [
+              "python.lacos-de-repeticao"
+            ],
+            "lessonOutline": [
+              "Índices e limites",
+              "Chaves, valores e ausência de chave",
+              "Percursos e agregação"
+            ],
+            "misconceptions": [
+              "Iterar diretamente sobre um dicionário entrega chaves, não pares automaticamente."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Ordenar os passos para contar ocorrências de palavras."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Trata coleção vazia e chave ausente.",
+              "Explica a escolha entre lista e dicionário."
+            ]
+          }
+        },
+        {
+          "slug": "funcoes",
+          "title": "Funções",
+          "summary": "Separe entradas, processamento e resultados sem depender de variáveis globais.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir parâmetros e retorno para uma responsabilidade.",
+              "Distinguir efeito colateral de valor retornado."
+            ],
+            "prerequisites": [
+              "python.listas-e-dicionarios"
+            ],
+            "lessonOutline": [
+              "Contrato da função",
+              "Parâmetros e chamadas",
+              "return, print e efeitos colaterais"
+            ],
+            "misconceptions": [
+              "Imprimir um resultado não equivale a retorná-lo."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Corrigir uma função cujo resultado impresso é usado como se fosse retorno."
+              }
+            ],
+            "acceptanceCriteria": [
+              "O chamador recebe o valor esperado.",
+              "Testa duas entradas sem depender de estado global."
+            ]
+          }
+        },
+        {
+          "slug": "escopo-e-mutabilidade",
+          "title": "Escopo, mutabilidade e referências",
+          "summary": "Rastreie nomes e objetos para entender alterações inesperadas.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever alterações em objetos compartilhados.",
+              "Distinguir nome local, reatribuição e mutação."
+            ],
+            "prerequisites": [
+              "python.funcoes"
+            ],
+            "lessonOutline": [
+              "Escopo local e resolução de nomes",
+              "Referências e aliasing",
+              "Cópia rasa e argumentos padrão mutáveis"
+            ],
+            "misconceptions": [
+              "Copiar uma referência não cria uma coleção independente."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever duas chamadas de uma função com argumento padrão mutável."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Desenha quais nomes apontam para o mesmo objeto.",
+              "Propõe uma correção sem estado compartilhado acidental."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "programas-robustos",
+      "title": "Programas robustos",
+      "description": "Arquivos, modelagem e testes para automações que lidam com falhas.",
+      "project": {
+        "brief": "Preparar um processador de CSV com dados sintéticos, inspirado no Apêndice E.",
+        "deliverables": [
+          "Brief e critérios",
+          "Plano de testes e tratamento de falhas"
+        ],
+        "acceptanceCriteria": [
+          "Distingue registros inválidos de falhas que impedem abrir o arquivo."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "arquivos-e-excecoes",
+          "title": "Arquivos e exceções",
+          "summary": "Leia e grave dados com fechamento adequado e tratamento específico de erros.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar o ciclo de vida de um arquivo aberto com with.",
+              "Escolher exceções específicas e mensagens úteis."
+            ],
+            "prerequisites": [
+              "python.funcoes"
+            ],
+            "lessonOutline": [
+              "Caminhos e codificação",
+              "Leitura, escrita e contexto",
+              "Validação e exceções específicas"
+            ],
+            "misconceptions": [
+              "Capturar qualquer exceção e continuar pode esconder defeitos do programa."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar o erro em um leitor que engole arquivo ausente e dados inválidos."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue arquivo ausente, vazio e malformado.",
+              "Preserva o fechamento do recurso."
+            ]
+          }
+        },
+        {
+          "slug": "classes-e-objetos",
+          "title": "Classes e objetos",
+          "summary": "Modele estado e comportamento quando uma abstração justificar a classe.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir classe, instância e atributo.",
+              "Escolher entre função e objeto para uma responsabilidade."
+            ],
+            "prerequisites": [
+              "python.escopo-e-mutabilidade"
+            ],
+            "lessonOutline": [
+              "Estado e comportamento",
+              "Inicialização e métodos",
+              "Composição e invariantes"
+            ],
+            "misconceptions": [
+              "Um atributo de classe mutável pode ser compartilhado entre instâncias."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar por que duas instâncias compartilham uma lista."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica estado por instância e estado compartilhado.",
+              "Preserva uma invariante em um método."
+            ]
+          }
+        },
+        {
+          "slug": "testes-e-automacao",
+          "title": "Testes e automação",
+          "summary": "Verifique comportamento com dados pequenos e resultados reproduzíveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Derivar casos de teste de critérios de aceitação.",
+              "Separar processamento puro de leitura e escrita."
+            ],
+            "prerequisites": [
+              "python.arquivos-e-excecoes"
+            ],
+            "lessonOutline": [
+              "Casos de sucesso, limite e falha",
+              "Funções testáveis e arquivos temporários",
+              "Relatório de resultados reproduzível"
+            ],
+            "misconceptions": [
+              "Um exemplo que funciona não demonstra que os casos de fronteira estão corretos."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Planejar testes para um resumo de vendas com registros duplicados e inválidos."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Especifica entradas e resultados esperados.",
+              "Usa somente dados fictícios e identifica limites da solução."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "orderIndex": 0
+}

@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "slug": "ruby",
+  "name": "Ruby",
+  "description": "Objetos, blocos e coleções com foco em leitura e intenção do código.",
+  "category": "PROGRAMMING",
+  "accent": "rose",
+  "learningOutcomes": [
+    "Explicar blocos, referências e protocolos usados por coleções Ruby.",
+    "Organizar pequenas transformações de dados com composição e testes."
+  ],
+  "modules": [
+    {
+      "slug": "fundamentos",
+      "title": "Fundamentos e blocos",
+      "description": "Valores, controle de fluxo e funções passadas como comportamento.",
+      "project": {
+        "brief": "Descrever um filtro de registros com regras configuráveis.",
+        "deliverables": [
+          "Casos de entrada e saída",
+          "Explicação do fluxo"
+        ],
+        "acceptanceCriteria": [
+          "Distingue transformação de dados e efeitos colaterais."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "objetos-e-valores",
+          "title": "Objetos e valores",
+          "summary": "Reconheça objetos, referências e regras de verdade da linguagem.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever condições com nil, false, zero e string vazia.",
+              "Distinguir reatribuição de alteração de objeto."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Objetos e mensagens",
+              "Truthiness de nil e false",
+              "Referências e mutação"
+            ],
+            "misconceptions": [
+              "Em Ruby, 0 e string vazia são truthy."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever quais ramos executam para uma coleção de valores."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Classifica todos os valores pela regra de Ruby.",
+              "Explica uma diferença sem importar regras de outra linguagem."
+            ]
+          }
+        },
+        {
+          "slug": "metodos-e-fluxo",
+          "title": "Métodos e fluxo",
+          "summary": "Leia retorno implícito, parâmetros e condições sem ambiguidades.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Determinar o retorno de um método.",
+              "Expressar uma decisão com caminhos cobertos."
+            ],
+            "prerequisites": [
+              "ruby.objetos-e-valores"
+            ],
+            "lessonOutline": [
+              "Definição e parâmetros",
+              "Última expressão e return",
+              "Condições e guard clauses"
+            ],
+            "misconceptions": [
+              "A última expressão pode retornar um valor diferente do que o nome do método sugere."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um método que termina com uma impressão acidental."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o retorno efetivo.",
+              "Preserva os casos de fronteira após a correção."
+            ]
+          }
+        },
+        {
+          "slug": "blocos-e-iteradores",
+          "title": "Blocos e iteradores",
+          "summary": "Entenda yield, parâmetros do bloco e iteração sobre coleções.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear chamadas de um bloco por um iterador.",
+              "Distinguir each de uma transformação com map."
+            ],
+            "prerequisites": [
+              "ruby.metodos-e-fluxo"
+            ],
+            "lessonOutline": [
+              "Bloco e parâmetros",
+              "yield e iteração",
+              "each versus map"
+            ],
+            "misconceptions": [
+              "each normalmente retorna o receptor, não uma nova lista transformada."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Escolher e ordenar uma transformação que devolve os valores calculados."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o retorno do iterador usado.",
+              "Prevê quantas vezes o bloco é chamado."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "colecoes",
+      "title": "Coleções expressivas",
+      "description": "Chaves, valores e pipelines com semântica explícita.",
+      "project": {
+        "brief": "Planejar um resumo de pedidos agrupados por categoria.",
+        "deliverables": [
+          "Transformações explicadas",
+          "Casos com dados ausentes"
+        ],
+        "acceptanceCriteria": [
+          "O agrupamento preserva os registros e produz totais verificáveis."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "simbolos-e-strings",
+          "title": "Símbolos e strings",
+          "summary": "Escolha representações para identificadores e textos sem conversões acidentais.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir chaves Symbol e String.",
+              "Explicar quando uma representação comunica intenção."
+            ],
+            "prerequisites": [
+              "ruby.objetos-e-valores"
+            ],
+            "lessonOutline": [
+              "Literais e identidade",
+              "Texto mutável e identificadores",
+              "Conversões em fronteiras de dados"
+            ],
+            "misconceptions": [
+              ":nome e \"nome\" são chaves diferentes em um Hash comum."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar por que uma chave importada de JSON não é encontrada."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Localiza a diferença de tipo da chave.",
+              "Define uma conversão explícita na entrada."
+            ]
+          }
+        },
+        {
+          "slug": "hashes-e-arrays",
+          "title": "Hashes e arrays",
+          "summary": "Modele sequências e associações e trate ausências de forma explícita.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher estrutura pelo acesso necessário.",
+              "Explicar chaves ausentes e valores padrão."
+            ],
+            "prerequisites": [
+              "ruby.simbolos-e-strings"
+            ],
+            "lessonOutline": [
+              "Arrays e índices",
+              "Hash e busca",
+              "Defaults e mutabilidade compartilhada"
+            ],
+            "misconceptions": [
+              "Um mesmo objeto mutável usado como default pode ser compartilhado entre chaves."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar listas compartilhadas num agrupamento com Hash.new."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica qual objeto foi compartilhado.",
+              "Define listas independentes por chave."
+            ]
+          }
+        },
+        {
+          "slug": "enumerable",
+          "title": "Enumerable",
+          "summary": "Combine seleção, transformação e redução com retorno previsível.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher map, select e reduce pelo resultado desejado.",
+              "Rastrear um pipeline sem executar o código."
+            ],
+            "prerequisites": [
+              "ruby.blocos-e-iteradores",
+              "ruby.hashes-e-arrays"
+            ],
+            "lessonOutline": [
+              "Contrato de each",
+              "Seleção e transformação",
+              "Acumulação e identidade"
+            ],
+            "misconceptions": [
+              "select filtra os elementos originais; não retorna os valores calculados no bloco."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever um pipeline de seleção e soma de pedidos."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o resultado intermediário de cada etapa.",
+              "Trata coleção vazia com identidade adequada."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "design-e-testes",
+      "title": "Design e testes",
+      "description": "Organize comportamento sem dependências escondidas.",
+      "project": {
+        "brief": "Projetar um normalizador de registros fictícios.",
+        "deliverables": [
+          "Contratos de transformação",
+          "Plano de testes"
+        ],
+        "acceptanceCriteria": [
+          "Casos inválidos recebem resultado explícito."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "classes",
+          "title": "Classes e estado",
+          "summary": "Modele objetos pequenos com invariantes e interfaces claras.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Separar estado de classe e de instância.",
+              "Projetar métodos que preservem invariantes."
+            ],
+            "prerequisites": [
+              "ruby.metodos-e-fluxo"
+            ],
+            "lessonOutline": [
+              "initialize e atributos",
+              "Visibilidade e operações",
+              "Estado compartilhado"
+            ],
+            "misconceptions": [
+              "Variável de classe e variável de instância não têm o mesmo compartilhamento."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um contador que mistura dados de instâncias."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica a origem do estado compartilhado.",
+              "Mantém instâncias independentes quando necessário."
+            ]
+          }
+        },
+        {
+          "slug": "modulos-e-mixins",
+          "title": "Módulos e mixins",
+          "summary": "Compartilhe capacidades e compreenda a busca por métodos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir namespace, include e extend.",
+              "Prever resolução de um método com mixins."
+            ],
+            "prerequisites": [
+              "ruby.classes"
+            ],
+            "lessonOutline": [
+              "Namespace",
+              "Métodos de instância e de objeto",
+              "Ordem de busca e composição"
+            ],
+            "misconceptions": [
+              "include e extend não acrescentam métodos no mesmo lugar."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever onde um método estará disponível depois da composição."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica a cadeia de busca relevante.",
+              "Escolhe composição conforme o consumidor."
+            ]
+          }
+        },
+        {
+          "slug": "convencoes-e-testes",
+          "title": "Convenções e testes",
+          "summary": "Interprete convenções e verifique comportamento com exemplos pequenos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar convenções ?, ! e nomes em snake_case.",
+              "Criar casos de teste que detectem mutações indevidas."
+            ],
+            "prerequisites": [
+              "ruby.enumerable",
+              "ruby.modulos-e-mixins"
+            ],
+            "lessonOutline": [
+              "Convenções de nomes",
+              "Exceções e efeitos colaterais",
+              "Testes de entrada, saída e estado"
+            ],
+            "misconceptions": [
+              "O sufixo ! é uma convenção, não uma garantia automática de mutação ou perigo."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Especificar testes para duas versões de uma normalização de texto."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Verifica retorno e alteração da entrada separadamente.",
+              "Documenta os casos em que a operação falha."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "orderIndex": 2
+}

@@ -1,0 +1,364 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "slug": "requisitos",
+  "name": "Análise de Requisitos",
+  "description": "Transforme necessidades em decisões claras, critérios testáveis e escopo compreensível.",
+  "category": "THEORETICAL",
+  "accent": "violet",
+  "learningOutcomes": [
+    "Distinguir necessidade, requisito e solução e tornar afirmações verificáveis.",
+    "Investigar, priorizar e rastrear requisitos ao longo de mudanças do projeto."
+  ],
+  "modules": [
+    {
+      "slug": "necessidades",
+      "title": "Entender necessidades",
+      "description": "Contexto, fontes e classificação antes de escolher uma solução.",
+      "project": {
+        "brief": "Investigar o problema de agendamento de uma biblioteca fictícia.",
+        "deliverables": [
+          "Mapa de interessados",
+          "Roteiro de entrevista"
+        ],
+        "acceptanceCriteria": [
+          "Separa fatos, hipóteses e decisões pendentes."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "problema-e-stakeholders",
+          "title": "Problema e stakeholders",
+          "summary": "Identifique quem é afetado, o contexto e o resultado desejado.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir problema, objetivo e solução proposta.",
+              "Mapear interessados com necessidades potencialmente conflitantes."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Contexto e fronteiras do problema",
+              "Interessados e objetivos",
+              "Fatos, hipóteses e restrições"
+            ],
+            "misconceptions": [
+              "O pedido de uma funcionalidade não explica sozinho a necessidade que a originou."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Separar problema e solução num pedido de aplicativo de reservas."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Expressa o problema sem impor uma tecnologia.",
+              "Identifica quem precisa validar a necessidade."
+            ]
+          }
+        },
+        {
+          "slug": "elicitacao",
+          "title": "Elicitação",
+          "summary": "Escolha técnicas para descobrir necessidades e investigar divergências.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Criar perguntas abertas sem induzir resposta.",
+              "Escolher entrevista, observação ou análise documental conforme a lacuna."
+            ],
+            "prerequisites": [
+              "requisitos.problema-e-stakeholders"
+            ],
+            "lessonOutline": [
+              "Fontes e técnicas",
+              "Perguntas e evidências",
+              "Registro e validação das descobertas"
+            ],
+            "misconceptions": [
+              "Uma resposta em entrevista não confirma que o processo real acontece daquela forma."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um roteiro com perguntas indutivas e lacunas de contexto."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Cada pergunta tem um objetivo de investigação.",
+              "Registra como uma hipótese será confirmada."
+            ]
+          }
+        },
+        {
+          "slug": "funcionais-e-nao-funcionais",
+          "title": "Funcionais e não funcionais",
+          "summary": "Diferencie comportamento, qualidade e restrições de uma solução.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Classificar requisitos com justificativa.",
+              "Transformar uma qualidade vaga em condição mensurável."
+            ],
+            "prerequisites": [
+              "requisitos.problema-e-stakeholders"
+            ],
+            "lessonOutline": [
+              "Comportamentos observáveis",
+              "Atributos de qualidade",
+              "Restrições e condições de medição"
+            ],
+            "misconceptions": [
+              "Uma frase com a palavra segurança não é automaticamente um requisito bem definido."
+            ],
+            "activities": [
+              {
+                "type": "MISCONCEPTION_QUIZ",
+                "description": "Classificar e corrigir requisitos de uma reserva online."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Justifica a classificação pelo conteúdo do requisito.",
+              "Define condições e limites de uma medida de qualidade."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "especificacao",
+      "title": "Especificar e validar",
+      "description": "Escrita clara, histórias e critérios que permitem verificar o resultado.",
+      "project": {
+        "brief": "Especificar o fluxo de reserva e cancelamento.",
+        "deliverables": [
+          "Histórias e critérios",
+          "Fluxos alternativos"
+        ],
+        "acceptanceCriteria": [
+          "As exceções relevantes estão representadas em exemplos."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "ambiguidade-e-vagueza",
+          "title": "Ambiguidade e vagueza",
+          "summary": "Encontre interpretações concorrentes e termos sem critério verificável.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar quantificadores e termos vagos.",
+              "Reescrever uma regra sem inventar decisões do interessado."
+            ],
+            "prerequisites": [
+              "requisitos.funcionais-e-nao-funcionais"
+            ],
+            "lessonOutline": [
+              "Interpretações concorrentes",
+              "Limites e condições ausentes",
+              "Perguntas de esclarecimento"
+            ],
+            "misconceptions": [
+              "Trocar rápido por um número inventado não valida o requisito com o interessado."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma regra que promete acesso fácil e resposta rápida."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Aponta pelo menos duas interpretações plausíveis.",
+              "Distingue esclarecimento necessário de decisão já confirmada."
+            ]
+          }
+        },
+        {
+          "slug": "historias-de-usuario",
+          "title": "Histórias de usuário e INVEST",
+          "summary": "Use histórias como convite à conversa, com valor e recorte verificáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar papel, necessidade e benefício.",
+              "Avaliar uma história com INVEST sem tratar o acrônimo como garantia."
+            ],
+            "prerequisites": [
+              "requisitos.elicitacao"
+            ],
+            "lessonOutline": [
+              "Papel, necessidade e valor",
+              "INVEST e recorte vertical",
+              "Conversa e confirmação"
+            ],
+            "misconceptions": [
+              "Preencher um template não torna uma história valiosa ou independente."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Dividir uma história grande mantendo valor observável em cada parte."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Cada recorte entrega um resultado compreensível.",
+              "As dependências são explicitadas."
+            ]
+          }
+        },
+        {
+          "slug": "criterios-de-aceitacao",
+          "title": "Critérios de aceitação",
+          "summary": "Transforme regras em exemplos que podem aprovar ou reprovar uma entrega.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Derivar casos de sucesso, limite e falha.",
+              "Escrever resultado esperado observável."
+            ],
+            "prerequisites": [
+              "requisitos.ambiguidade-e-vagueza",
+              "requisitos.historias-de-usuario"
+            ],
+            "lessonOutline": [
+              "Regra e exemplo concreto",
+              "Dado, quando e então",
+              "Limites, exceções e verificabilidade"
+            ],
+            "misconceptions": [
+              "Um critério que repete a história sem resultado observável não permite decidir aceite."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Completar critérios para conflito de horário e cancelamento de reserva."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Um terceiro consegue decidir se o caso passou.",
+              "Inclui as condições de fronteira relevantes."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "gestao-e-mudanca",
+      "title": "Gestão e mudança",
+      "description": "Priorize, rastreie impactos e valide alterações sem perder o objetivo.",
+      "project": {
+        "brief": "Planejar uma mudança nas regras de reserva da biblioteca.",
+        "deliverables": [
+          "Análise de impacto",
+          "Escopo priorizado e critérios revisados"
+        ],
+        "acceptanceCriteria": [
+          "A mudança é rastreada até regras, testes e interessados afetados."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "priorizacao",
+          "title": "Priorização e MoSCoW",
+          "summary": "Negocie valor, risco e dependências com critérios explícitos.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Justificar prioridades com valor, risco e restrições.",
+              "Distinguir Must, Should, Could e Won’t neste recorte."
+            ],
+            "prerequisites": [
+              "requisitos.criterios-de-aceitacao"
+            ],
+            "lessonOutline": [
+              "Critérios de decisão",
+              "MoSCoW e capacidade",
+              "Dependências e negociação"
+            ],
+            "misconceptions": [
+              "Se tudo é Must, a classificação não ajuda a negociar um recorte."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Priorizar um lançamento com capacidade limitada e justificar o que fica de fora."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explicita o critério que sustenta cada prioridade.",
+              "Reconhece dependências que impedem um recorte inviável."
+            ]
+          }
+        },
+        {
+          "slug": "casos-de-uso",
+          "title": "Casos de uso",
+          "summary": "Descreva objetivos de atores, fluxo principal e alternativas relevantes.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir fronteira do sistema e objetivo do ator.",
+              "Modelar fluxos alternativos sem confundir detalhe visual com regra."
+            ],
+            "prerequisites": [
+              "requisitos.criterios-de-aceitacao"
+            ],
+            "lessonOutline": [
+              "Atores e objetivos",
+              "Pré-condições e fluxo principal",
+              "Alternativas e pós-condições"
+            ],
+            "misconceptions": [
+              "Cada clique da interface não precisa ser um caso de uso separado."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um fluxo de reserva que não cobre indisponibilidade."
+              }
+            ],
+            "acceptanceCriteria": [
+              "O objetivo e o resultado final são identificáveis.",
+              "As alternativas preservam regras e resultados definidos."
+            ]
+          }
+        },
+        {
+          "slug": "rastreabilidade-e-validacao",
+          "title": "Rastreabilidade e validação",
+          "summary": "Conecte necessidade, requisito, implementação e teste para avaliar mudanças.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Construir vínculos entre necessidade, regra e critério.",
+              "Identificar impactos e evidências necessárias para validar uma mudança."
+            ],
+            "prerequisites": [
+              "requisitos.priorizacao",
+              "requisitos.casos-de-uso"
+            ],
+            "lessonOutline": [
+              "Origem e destino dos requisitos",
+              "Matriz de rastreabilidade enxuta",
+              "Mudança, impacto e validação"
+            ],
+            "misconceptions": [
+              "Ter um requisito documentado não demonstra que ele foi implementado ou validado."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Analisar quais critérios mudam ao alterar a política de cancelamento."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Rastreia a alteração até os testes e interessados afetados.",
+              "Distingue evidência de implementação de confirmação da necessidade."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "orderIndex": 4
+}

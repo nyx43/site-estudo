@@ -1,0 +1,363 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "slug": "java",
+  "name": "Java",
+  "description": "Tipos, objetos e contratos para construir programas previsíveis e bem organizados.",
+  "category": "PROGRAMMING",
+  "accent": "amber",
+  "learningOutcomes": [
+    "Rastrear valores e referências e explicar contratos entre objetos.",
+    "Modelar uma solução com coleções, exceções e testes de comportamento."
+  ],
+  "modules": [
+    {
+      "slug": "linguagem",
+      "title": "Linguagem e execução",
+      "description": "Fundamentos da linguagem, controle de fluxo e semântica de valores.",
+      "project": {
+        "brief": "Planejar um classificador de inscrições com regras explícitas.",
+        "deliverables": [
+          "Tabela de decisão",
+          "Casos de teste"
+        ],
+        "acceptanceCriteria": [
+          "Os valores de fronteira têm resultado definido."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "tipos-e-referencias",
+          "title": "Tipos primitivos e referências",
+          "summary": "Diferencie valores primitivos, referências, igualdade e ausência de objeto.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever atribuições de primitivos e referências.",
+              "Distinguir ==, equals e acesso a null."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Tipos e conversões",
+              "Identidade e igualdade",
+              "Null e desreferenciação"
+            ],
+            "misconceptions": [
+              "== não compara o conteúdo de todos os objetos."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Escolher a comparação correta de duas strings com mesmo conteúdo."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica identidade e igualdade de conteúdo.",
+              "Identifica um acesso que pode causar NullPointerException."
+            ]
+          }
+        },
+        {
+          "slug": "controle-de-fluxo",
+          "title": "Controle de fluxo",
+          "summary": "Expresse decisões e repetições com condições verificáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Rastrear mudanças de estado num laço.",
+              "Cobrir limites de decisões e percursos."
+            ],
+            "prerequisites": [
+              "java.tipos-e-referencias"
+            ],
+            "lessonOutline": [
+              "Condições e curto-circuito",
+              "for e while",
+              "Limites e término"
+            ],
+            "misconceptions": [
+              "Usar <= no tamanho de um array acessa uma posição inexistente."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Corrigir um percurso que ultrapassa o último índice."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o último índice válido.",
+              "Trata array vazio sem acesso inválido."
+            ]
+          }
+        },
+        {
+          "slug": "metodos-e-passagem-por-valor",
+          "title": "Métodos e passagem por valor",
+          "summary": "Entenda o que uma chamada pode modificar no chamador.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever reatribuição e mutação em chamadas.",
+              "Definir parâmetros e retorno com tipos adequados."
+            ],
+            "prerequisites": [
+              "java.tipos-e-referencias"
+            ],
+            "lessonOutline": [
+              "Assinaturas e retorno",
+              "Cópia do valor da referência",
+              "Mutação versus reatribuição"
+            ],
+            "misconceptions": [
+              "Java sempre passa por valor, inclusive quando o valor é uma referência."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever o estado após um método alterar um objeto e reatribuir seu parâmetro."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue os dois efeitos da chamada.",
+              "Explica por que reatribuir o parâmetro não troca a variável do chamador."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "objetos",
+      "title": "Objetos e contratos",
+      "description": "Invariantes, composição e polimorfismo com responsabilidades explícitas.",
+      "project": {
+        "brief": "Modelar um catálogo de empréstimos com regras de disponibilidade.",
+        "deliverables": [
+          "Modelo de classes",
+          "Contratos e exemplos de uso"
+        ],
+        "acceptanceCriteria": [
+          "Estado inválido não pode ser criado pelos métodos públicos."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "classes-e-encapsulamento",
+          "title": "Classes e encapsulamento",
+          "summary": "Proteja invariantes em vez de apenas expor atributos por getters e setters.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Definir uma invariante de uma classe.",
+              "Projetar operações que preservem estado válido."
+            ],
+            "prerequisites": [
+              "java.metodos-e-passagem-por-valor"
+            ],
+            "lessonOutline": [
+              "Construtores e inicialização",
+              "Visibilidade e operações públicas",
+              "Invariantes e estado inválido"
+            ],
+            "misconceptions": [
+              "Criar setters para todos os campos não garante encapsulamento."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma conta que permite saldo inválido por um setter."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Identifica o caminho que viola a regra.",
+              "Propõe uma operação com responsabilidade clara."
+            ]
+          }
+        },
+        {
+          "slug": "heranca-e-polimorfismo",
+          "title": "Herança e polimorfismo",
+          "summary": "Reconheça substituição de tipos e quando preferir composição.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever qual implementação de método será chamada.",
+              "Distinguir herança de uma relação de composição."
+            ],
+            "prerequisites": [
+              "java.classes-e-encapsulamento"
+            ],
+            "lessonOutline": [
+              "Subtipos e sobrescrita",
+              "Despacho dinâmico",
+              "Composição e substituição"
+            ],
+            "misconceptions": [
+              "O tipo declarado da variável não escolhe sozinho o método sobrescrito em tempo de execução."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever chamadas em referências de supertipo com instâncias diferentes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Explica o despacho dinâmico.",
+              "Reconhece um caso em que herança quebra a substituição."
+            ]
+          }
+        },
+        {
+          "slug": "interfaces",
+          "title": "Interfaces",
+          "summary": "Defina capacidades e reduza dependências de implementações concretas.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Extrair um contrato mínimo para uma capacidade.",
+              "Substituir uma implementação sem alterar o consumidor."
+            ],
+            "prerequisites": [
+              "java.heranca-e-polimorfismo"
+            ],
+            "lessonOutline": [
+              "Contrato e implementação",
+              "Dependência por interface",
+              "Implementações falsas para testes"
+            ],
+            "misconceptions": [
+              "Uma interface não obriga o consumidor a conhecer a classe concreta."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Reorganizar uma notificação para aceitar dois canais por contrato."
+              }
+            ],
+            "acceptanceCriteria": [
+              "O consumidor depende somente da capacidade necessária.",
+              "Uma implementação alternativa satisfaz os mesmos casos."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "colecoes-e-qualidade",
+      "title": "Coleções e qualidade",
+      "description": "Escolha estruturas e verifique falhas sem perder segurança de tipos.",
+      "project": {
+        "brief": "Planejar um gerenciador de tarefas em memória.",
+        "deliverables": [
+          "Modelo e operações",
+          "Testes de duplicatas e falhas"
+        ],
+        "acceptanceCriteria": [
+          "As operações preservam a regra de identidade das tarefas."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "colecoes",
+          "title": "Coleções",
+          "summary": "Escolha List, Set ou Map pelas operações e regras do problema.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Selecionar coleção para ordem, unicidade ou associação.",
+              "Explicar a relação entre equals e hashCode."
+            ],
+            "prerequisites": [
+              "java.interfaces"
+            ],
+            "lessonOutline": [
+              "List e acesso sequencial",
+              "Set e unicidade",
+              "Map e identidade de chaves"
+            ],
+            "misconceptions": [
+              "Um Set depende do contrato de igualdade, não apenas dos atributos que parecem iguais."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar duplicatas inesperadas em um conjunto de objetos."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Justifica a coleção escolhida.",
+              "Relaciona igualdade e hash no comportamento observado."
+            ]
+          }
+        },
+        {
+          "slug": "excecoes-e-recursos",
+          "title": "Exceções e recursos",
+          "summary": "Trate falhas no nível adequado e feche recursos com segurança.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir falhas recuperáveis e erros de programação.",
+              "Explicar try-with-resources e propagação."
+            ],
+            "prerequisites": [
+              "java.classes-e-encapsulamento"
+            ],
+            "lessonOutline": [
+              "Checked e unchecked",
+              "Captura específica e contexto",
+              "Fechamento de recursos"
+            ],
+            "misconceptions": [
+              "Capturar Exception sem ação útil pode transformar falha em resultado falso."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar um leitor que retorna sucesso depois de falhar."
+              }
+            ],
+            "acceptanceCriteria": [
+              "A falha preserva contexto para diagnóstico.",
+              "O recurso fecha tanto no sucesso quanto na falha."
+            ]
+          }
+        },
+        {
+          "slug": "generics-e-testes",
+          "title": "Generics e testes",
+          "summary": "Preserve tipos nas coleções e teste contratos observáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Identificar uma conversão insegura evitável com generics.",
+              "Derivar testes de um contrato de coleção."
+            ],
+            "prerequisites": [
+              "java.colecoes",
+              "java.excecoes-e-recursos"
+            ],
+            "lessonOutline": [
+              "Parâmetros de tipo",
+              "Segurança de compilação e limites",
+              "Testes de contrato e casos de fronteira"
+            ],
+            "misconceptions": [
+              "Uma coleção sem parâmetro de tipo adia erros que poderiam aparecer na compilação."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Definir testes para um repositório de tarefas tipado."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Evita casts desnecessários no consumidor.",
+              "Cobre busca ausente, duplicação e atualização."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "orderIndex": 1
+}

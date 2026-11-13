@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "slug": "web-dev",
+  "name": "Desenvolvimento Web",
+  "description": "Da estrutura de uma página às interações e contratos que conectam a web.",
+  "category": "PROGRAMMING",
+  "accent": "blue",
+  "learningOutcomes": [
+    "Construir interfaces semânticas, responsivas e utilizáveis por teclado.",
+    "Explicar requisições e estado assíncrono, reconhecendo riscos comuns de segurança."
+  ],
+  "modules": [
+    {
+      "slug": "estrutura-e-layout",
+      "title": "Estrutura e layout",
+      "description": "Conteúdo semântico, fluxo visual e adaptação a telas diferentes.",
+      "project": {
+        "brief": "Planejar uma página de catálogo acessível.",
+        "deliverables": [
+          "Estrutura HTML",
+          "Layout para celular e desktop"
+        ],
+        "acceptanceCriteria": [
+          "A ordem de leitura permanece compreensível sem estilos."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "html-semantico",
+          "title": "HTML semântico",
+          "summary": "Escolha elementos pela função e preserve uma estrutura compreensível.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Organizar títulos, regiões e conteúdo com significado.",
+              "Distinguir navegação de ação na escolha entre link e botão."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Documento e hierarquia de títulos",
+              "Regiões e elementos semânticos",
+              "Links, botões e listas"
+            ],
+            "misconceptions": [
+              "Uma div clicável não recebe automaticamente o comportamento de um botão."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma navegação construída com elementos sem semântica."
+              }
+            ],
+            "acceptanceCriteria": [
+              "A estrutura expressa a hierarquia do conteúdo.",
+              "Ações e navegação usam controles adequados."
+            ]
+          }
+        },
+        {
+          "slug": "css-box-model",
+          "title": "CSS e box model",
+          "summary": "Entenda cascata, herança e dimensões antes de ajustar layouts.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Calcular dimensões com padding e borda.",
+              "Explicar qual regra vence na cascata."
+            ],
+            "prerequisites": [
+              "web-dev.html-semantico"
+            ],
+            "lessonOutline": [
+              "Cascata e especificidade",
+              "Conteúdo, padding, borda e margem",
+              "box-sizing e overflow"
+            ],
+            "misconceptions": [
+              "width não inclui sempre padding e borda; isso depende de box-sizing."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar um cartão que excede a largura do contêiner."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Calcula a dimensão final do elemento.",
+              "Resolve a causa do overflow sem esconder conteúdo."
+            ]
+          }
+        },
+        {
+          "slug": "flex-grid-e-responsividade",
+          "title": "Flex, Grid e responsividade",
+          "summary": "Escolha um modelo de layout e preserve legibilidade em diferentes telas.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir distribuição unidimensional e bidimensional.",
+              "Definir comportamento de quebra com base no conteúdo."
+            ],
+            "prerequisites": [
+              "web-dev.css-box-model"
+            ],
+            "lessonOutline": [
+              "Eixos e alinhamento no Flex",
+              "Trilhas e posicionamento no Grid",
+              "Layouts fluidos e media queries"
+            ],
+            "misconceptions": [
+              "align-items não representa sempre alinhamento vertical: depende do eixo."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Adaptar um catálogo a uma coluna sem mudar a ordem de leitura."
+              }
+            ],
+            "acceptanceCriteria": [
+              "O conteúdo não exige rolagem horizontal em tela estreita.",
+              "A ordem visual não contradiz a ordem do documento."
+            ]
+          }
+        },
+        {
+          "slug": "formularios-e-acessibilidade",
+          "title": "Formulários e acessibilidade",
+          "summary": "Conecte rótulos, instruções e erros a controles utilizáveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Associar campos a rótulos e mensagens.",
+              "Verificar navegação por teclado e foco visível."
+            ],
+            "prerequisites": [
+              "web-dev.html-semantico"
+            ],
+            "lessonOutline": [
+              "Label e nomes acessíveis",
+              "Validação e mensagens de erro",
+              "Teclado, foco e contraste"
+            ],
+            "misconceptions": [
+              "Placeholder não substitui o rótulo persistente de um campo."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Identificar problemas num formulário com erros indicados apenas por cor."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Cada controle tem nome acessível.",
+              "Erros podem ser percebidos sem depender de cor."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "interacao",
+      "title": "JavaScript e interação",
+      "description": "Estado, eventos e assincronia no navegador.",
+      "project": {
+        "brief": "Planejar busca e filtros de um catálogo.",
+        "deliverables": [
+          "Estados da interface",
+          "Regras de filtragem"
+        ],
+        "acceptanceCriteria": [
+          "Busca vazia, nenhum resultado e filtros combinados têm comportamento definido."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "javascript-fundamentos",
+          "title": "JavaScript: valores e funções",
+          "summary": "Entenda referências, funções e comparações usadas na interface.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Prever coerções e comparações simples.",
+              "Distinguir reatribuição de mutação em arrays e objetos."
+            ],
+            "prerequisites": [],
+            "lessonOutline": [
+              "Tipos e igualdade estrita",
+              "Funções e escopo",
+              "Objetos, arrays e referências"
+            ],
+            "misconceptions": [
+              "const impede reatribuição do nome, mas não torna o objeto imutável."
+            ],
+            "activities": [
+              {
+                "type": "PRIMM_PREDICT",
+                "description": "Prever o efeito de alterar um array declarado com const."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue identidade e conteúdo.",
+              "Explica qual operação altera o objeto original."
+            ]
+          }
+        },
+        {
+          "slug": "dom-e-eventos",
+          "title": "DOM e eventos",
+          "summary": "Transforme interações em alterações de estado compreensíveis.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Localizar elementos e responder a eventos.",
+              "Explicar propagação e comportamento padrão."
+            ],
+            "prerequisites": [
+              "web-dev.javascript-fundamentos",
+              "web-dev.formularios-e-acessibilidade"
+            ],
+            "lessonOutline": [
+              "Árvore DOM e seletores",
+              "Listeners e propagação",
+              "Estado e atualização da interface"
+            ],
+            "misconceptions": [
+              "preventDefault e stopPropagation resolvem problemas diferentes."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Corrigir um formulário que recarrega a página ao aplicar um filtro."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Preserva o comportamento de teclado.",
+              "Distingue submissão do formulário e propagação do evento."
+            ]
+          }
+        },
+        {
+          "slug": "assincrono-e-fetch",
+          "title": "Assíncrono e fetch",
+          "summary": "Trate espera, falhas e respostas fora de ordem.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Explicar promises e a suspensão de await.",
+              "Modelar carregamento, sucesso e falha numa requisição."
+            ],
+            "prerequisites": [
+              "web-dev.dom-e-eventos"
+            ],
+            "lessonOutline": [
+              "Promises e await",
+              "HTTP versus falha de rede",
+              "Cancelamento e respostas obsoletas"
+            ],
+            "misconceptions": [
+              "fetch não rejeita automaticamente uma resposta HTTP 404."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Diagnosticar uma busca que exibe resultado antigo após digitação rápida."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Verifica status HTTP antes de usar o conteúdo.",
+              "Impede que uma resposta antiga substitua a busca atual."
+            ]
+          }
+        },
+        {
+          "slug": "estado-e-componentes",
+          "title": "Estado e componentes",
+          "summary": "Separe dados, derivação e apresentação para facilitar mudanças.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher a fonte de verdade de um estado.",
+              "Separar regra de filtragem de renderização."
+            ],
+            "prerequisites": [
+              "web-dev.dom-e-eventos"
+            ],
+            "lessonOutline": [
+              "Estado mínimo e dados derivados",
+              "Composição e propriedades",
+              "Estados vazios e falhas"
+            ],
+            "misconceptions": [
+              "Guardar simultaneamente dados e todas as suas derivações pode criar inconsistências."
+            ],
+            "activities": [
+              {
+                "type": "PARSONS",
+                "description": "Reorganizar um filtro duplicado em dois componentes."
+              }
+            ],
+            "acceptanceCriteria": [
+              "A mesma regra produz o mesmo resultado em consumidores distintos.",
+              "Há estados explícitos para carregamento e ausência de resultados."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "slug": "contratos-e-qualidade",
+      "title": "Contratos e qualidade",
+      "description": "Conecte cliente e servidor com validação e verificação de comportamento.",
+      "project": {
+        "brief": "Especificar uma pequena aplicação de tarefas com API simulada.",
+        "deliverables": [
+          "Contrato HTTP",
+          "Plano de testes de interface e API"
+        ],
+        "acceptanceCriteria": [
+          "Falhas e entradas inválidas têm respostas documentadas."
+        ]
+      },
+      "topics": [
+        {
+          "slug": "http-e-rest",
+          "title": "HTTP e REST",
+          "summary": "Leia requisições e defina recursos, métodos e códigos de resposta.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Relacionar métodos HTTP a operações e propriedades.",
+              "Interpretar status, cabeçalhos e corpo."
+            ],
+            "prerequisites": [
+              "web-dev.javascript-fundamentos"
+            ],
+            "lessonOutline": [
+              "Recursos e representações",
+              "Métodos e idempotência",
+              "Status e contratos de erro"
+            ],
+            "misconceptions": [
+              "Uma resposta 200 não torna correta uma operação cujo corpo descreve falha."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar contratos de criação, consulta e recurso ausente."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Distingue ausência de recurso e falha interna.",
+              "Explica a repetição de uma operação idempotente."
+            ]
+          }
+        },
+        {
+          "slug": "validacao-e-seguranca",
+          "title": "Validação e segurança básica",
+          "summary": "Reconheça fronteiras de confiança e riscos de renderização e requisições.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Distinguir validação no cliente e no servidor.",
+              "Identificar vetores básicos de XSS e CSRF."
+            ],
+            "prerequisites": [
+              "web-dev.http-e-rest"
+            ],
+            "lessonOutline": [
+              "Entradas não confiáveis",
+              "Renderização de texto e HTML",
+              "Sessões, cookies e requisições autenticadas"
+            ],
+            "misconceptions": [
+              "Validar somente no navegador não protege o servidor contra requisições diretas."
+            ],
+            "activities": [
+              {
+                "type": "ERRONEOUS_EXAMPLE",
+                "description": "Revisar uma API que aceita conteúdo e o injeta como HTML."
+              }
+            ],
+            "acceptanceCriteria": [
+              "A validação ocorre na fronteira do servidor.",
+              "Distingue risco de conteúdo injetado de requisição forjada."
+            ]
+          }
+        },
+        {
+          "slug": "testes-web",
+          "title": "Testes de aplicações web",
+          "summary": "Verifique regras, contratos e percursos de uso sem depender de detalhes visuais.",
+          "plan": {
+            "status": "PLANNED",
+            "objectives": [
+              "Escolher teste unitário, de integração ou de percurso.",
+              "Derivar casos de interação a partir de critérios de aceitação."
+            ],
+            "prerequisites": [
+              "web-dev.estado-e-componentes",
+              "web-dev.validacao-e-seguranca"
+            ],
+            "lessonOutline": [
+              "Regras puras e testes unitários",
+              "API e banco em testes de integração",
+              "Percursos com teclado e viewport móvel"
+            ],
+            "misconceptions": [
+              "Um teste que verifica apenas a existência de um botão não confirma a ação esperada."
+            ],
+            "activities": [
+              {
+                "type": "TRANSFER_CHALLENGE",
+                "description": "Definir testes para busca, filtros, erro de rede e navegação."
+              }
+            ],
+            "acceptanceCriteria": [
+              "Asserções verificam comportamento observável.",
+              "Os testes detectam pelo menos uma falha plausível do percurso."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "orderIndex": 3
+}
