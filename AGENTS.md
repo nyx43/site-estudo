@@ -16,7 +16,7 @@ Leia `README.md`, `docs/ARCHITECTURE.md` e a tarefa atual. O documento mestre v2
 
 - TypeScript estrito, sem `any` explícito ou supressão de erros para fazer uma checagem passar.
 - Componentes tratam apresentação e interação. Correção, revisão e seleção pedagógica ficam em `src/lib` com testes independentes de React.
-- Contratos públicos não exportam modelos Prisma, gabaritos ou notas privadas do tutor.
+- Contratos públicos não exportam modelos do banco, gabaritos ou notas privadas do tutor.
 - Disciplinas são dados. Não adicionar listas de slugs ou páginas especiais para cadastrar novas áreas.
 - Valide conteúdo com Zod e verifique referências e ciclos. Não confunda um plano `PLANNED` com aula revisada.
 - Alterou schema do banco: inclua migração, seed e testes de integração correspondentes. Nunca apague dados para contornar uma migração.
@@ -26,7 +26,7 @@ Leia `README.md`, `docs/ARCHITECTURE.md` e a tarefa atual. O documento mestre v2
 
 ## Verificação e entrega
 
-Rode `npm run check` e os percursos afetados em `npm run test:e2e`. O cliente Prisma precisa ser gerado antes da checagem de tipos. Se houver bloqueio externo, execute as verificações independentes e reporte exatamente o que não pôde ser validado; não desabilite testes nem ignore erros de build.
+Rode `npm run check` e os percursos afetados em `npm run test:e2e`. Se houver bloqueio externo, execute as verificações independentes e reporte exatamente o que não pôde ser validado; não desabilite testes nem ignore erros de build.
 
 Atualize documentação quando comandos ou contratos mudarem. Não inicie agentes adicionais nesta fase sem autorização. Quando a colaboração começar, delimite arquivos e dependências e coordene alterações de contratos, lockfile e migrações.
 

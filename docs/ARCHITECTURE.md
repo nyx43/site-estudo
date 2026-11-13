@@ -4,7 +4,7 @@ Status: primeiro incremento. O objetivo é permitir mudanças de produto sem ree
 
 ## 001 — Uma aplicação, fronteiras pequenas
 
-Next.js reúne site e API. Não há microserviços, monorepositório, barramento de eventos ou sistema de plugins. O serviço de catálogo depende de `CatalogRepository`, não de React, Next.js ou Prisma. A composição escolhe o adaptador; as páginas e rotas usam o serviço.
+Next.js reúne site e API. Não há microserviços, monorepositório, barramento de eventos ou sistema de plugins. O serviço de catálogo depende de `CatalogRepository`, não de React, Next.js ou um ORM. A composição escolhe o adaptador; as páginas e rotas usam o serviço.
 
 ```mermaid
 flowchart LR
@@ -12,7 +12,7 @@ flowchart LR
   Mobile[App futuro] -.-> HTTP[API HTTP]
   HTTP --> Service
   Service --> Port[CatalogRepository]
-  Port --> DB[Adaptador Prisma / SQLite]
+  Port --> DB[Adaptador Drizzle / SQLite]
   Port --> Files[Consulta de arquivos]
 ```
 
@@ -30,7 +30,9 @@ O status `PLANNED` significa somente planejamento. Não usar esse contrato como 
 
 ## 003 — Persistência substituível
 
-Prisma 6.19.3 e SQLite foram escolhidos conforme o documento-base, com versões fixadas no lockfile. Atualizações de versão são tarefas próprias, com migração e testes. O banco tem tabelas relacionais para disciplina, módulo e tópico; campos pedagógicos ainda variáveis ficam em JSON validado, sem criar agora tabelas para funcionalidades futuras.
+Drizzle ORM com @libsql/client e SQLite local é o adaptador atual. A escolha inicial de Prisma foi substituída: o ambiente recusava o download separado de engines, impedindo geração de tipos e execução do banco. Drizzle conserva SQLite e as fronteiras existentes, usando pacotes instalados pelo npm. A validação agora inclui banco real, migração, seed repetido, tipos, build e percursos de navegador.
+
+O schema TypeScript está em src/lib/db/schema.ts, e as migrações geradas em db/migrations. O catálogo ainda não tinha progresso real na troca; não houve reset ou descarte de dados de estudo. As migrações antigas permanecem no histórico Git, não como uma segunda cadeia executável.
 
 Migrações são versionadas. O seed é aditivo, transacional e repetível: atualiza pelo ID e não apaga dados locais. Uma futura remoção ou mudança de identificador exige análise de impacto e migração explícita. Não usar exclusão e recriação como mecanismo de atualização.
 
@@ -38,7 +40,7 @@ IDs do catálogo são legíveis e derivados de slugs. Após existir progresso, t
 
 ## 004 — Site agora, aplicativo depois
 
-Contratos públicos são serializáveis e não exportam modelos Prisma. Regras de correção e revisão, quando implementadas, devem ser funções puras em `src/lib/pedagogy`. A interface móvel poderá consumir a API e, quando fizer sentido, compartilhar contratos e regras TypeScript. Componentes DOM e CSS não são considerados compartilháveis automaticamente.
+Contratos públicos são serializáveis e não exportam modelos do banco. Regras de correção e revisão, quando implementadas, devem ser funções puras em `src/lib/pedagogy`. A interface móvel poderá consumir a API e, quando fizer sentido, compartilhar contratos e regras TypeScript. Componentes DOM e CSS não são considerados compartilháveis automaticamente.
 
 Não se escolheu React Native, Expo ou PWA. Antes do app, decidir: plataformas, estudo offline, autenticação, serviço remoto, armazenamento persistente e resolução de conflitos. A existência de uma API hoje não significa que sincronização já esteja resolvida. SQLite local é adequado ao começo; hospedagem com disco efêmero exige outra estratégia de persistência.
 

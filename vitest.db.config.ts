@@ -1,6 +1,7 @@
-import { defineConfig, mergeConfig } from "vitest/config";
-import base from "./vitest.config";
+import { defineConfig } from "vitest/config";
+import { fileURLToPath } from "node:url";
 
-export default mergeConfig(base, defineConfig({
+export default defineConfig({
+  resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
   test: { include: ["tests/integration/**/*.test.ts"], fileParallelism: false, testTimeout: 30000 },
-}));
+});

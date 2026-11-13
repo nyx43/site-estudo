@@ -11,15 +11,14 @@ Requisitos: Node.js 24 e npm. Versões exatas das dependências estão no `packa
 ```bash
 npm ci
 cp .env.example .env # somente se .env ainda não existir
-npm run db:generate
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-O Prisma precisa de acesso a `binaries.prisma.sh`, além de `registry.npmjs.org`. Não desative verificações TLS ou de checksum. No ambiente da nuvem, se o diretório de cache padrão do npm não for gravável, use `npm --cache /workspace/.cache/npm ci`.
+Drizzle com SQLite local é instalado pelo npm, sem download adicional de engines. Não desative verificações TLS ou de checksum. No ambiente da nuvem, se o diretório de cache padrão do npm não for gravável, use `npm --cache /workspace/.cache/npm ci`.
 
-`DATABASE_URL="file:./dev.db"` é relativo ao schema: o banco fica em `prisma/dev.db`, ignorado pelo Git. Nunca use `migrate reset` para atualizar um banco com progresso real.
+`DATABASE_URL="file:./data/estudo.db"` é relativo à raiz do projeto. O arquivo do banco é ignorado pelo Git. Nunca redefina o banco para contornar uma migração.
 
 ### Consulta do currículo sem banco
 
@@ -28,7 +27,7 @@ npm ci
 CATALOG_STORAGE=files npm run dev
 ```
 
-Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente de leitura para autoria e revisão do plano curricular. Não salva progresso nem substitui os testes do SQLite. O modo padrão é `prisma`; uma falha de banco não aciona fallback automático.
+Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente de leitura para autoria e revisão do plano curricular. Não salva progresso nem substitui os testes do SQLite. O modo padrão é `sqlite`; uma falha de banco não aciona fallback automático.
 
 ## Verificar
 
@@ -36,14 +35,14 @@ Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente
 | --- | --- |
 | `npm run content:validate` | Contratos, duplicatas, referências e ciclos de pré-requisitos |
 | `npm run lint` | Regras estáticas |
-| `npm run typecheck` | TypeScript estrito; requer o cliente Prisma gerado |
+| `npm run typecheck` | TypeScript estrito e tipos de rotas Next |
 | `npm test` | Contratos, currículo, busca, serviço e tratamento de erros da API |
 | `npm run test:db` | Migração real, seed repetível e equivalência entre adaptadores; usa SQLite temporário |
 | `npm run build` | Build de produção e tipos |
 | `npm run test:e2e` | Navegação, busca, filtros e API em Chromium desktop e móvel |
 | `npm run check` | Currículo, lint, tipos, testes unitários, banco e build |
 
-Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o navegador instalado por `npx playwright install chromium`. Também é possível definir `CHROMIUM_PATH`. Os testes E2E iniciam um servidor no modo de arquivos por padrão; para testar o banco, use `CATALOG_STORAGE=prisma npm run test:e2e` depois de migrar e popular o banco. Não execute um servidor no mesmo diretório de build durante `npm run build`.
+Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o navegador instalado por `npx playwright install chromium`. Também é possível definir `CHROMIUM_PATH`. Os testes E2E iniciam um servidor no modo de arquivos por padrão; para testar o banco, use `CATALOG_STORAGE=sqlite npm run test:e2e` depois de migrar e popular o banco. Não execute um servidor no mesmo diretório de build durante `npm run build`.
 
 ## Conteúdo e arquitetura
 
@@ -51,18 +50,18 @@ Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o nave
 content/curriculum/        Planejamento curricular das disciplinas
 src/lib/catalog/          Contratos, porta do repositório, serviço e busca
 src/lib/content/          Leitura, validação e consulta de arquivos
-src/lib/db/               Adaptador Prisma e seed transacional
+src/lib/db/               Adaptador Drizzle/SQLite e seed transacional
 src/lib/http/             Contratos HTTP e tratamento de falhas
 src/app/                  Páginas e rotas finas
 src/components/           Apresentação e interação
-prisma/                   Schema e migrações
+db/migrations/            Migrações SQL versionadas
 tests/                    Unidades, integração de banco e percursos
 docs/                     Decisões, currículo e backlog
 ```
 
 API de leitura: `GET /api/subjects`, `GET /api/subjects/[slug]` e `GET /api/topics/[id]`. Respostas de sucesso usam `{ data, meta: { version: 1 } }`; falhas usam `{ error: { code, message } }`, com 404 para recurso ausente e 503 para indisponibilidade. Identificadores de tópicos seguem `disciplina.slug-do-topico`.
 
-Para adicionar uma disciplina, crie um JSON compatível com `SubjectSchema`, valide o currículo e rode o seed. Não é necessário criar páginas específicas. O seed atualiza registros conhecidos em transação e preserva registros locais ausentes dos arquivos; remoções e renomeações exigem uma migração de conteúdo deliberada.
+Para alterar o banco, edite `src/lib/db/schema.ts`, gere uma migração com `npm run db:generate -- --name descricao` e revise o SQL antes de aplicá-lo. Para adicionar uma disciplina, crie um JSON compatível com `SubjectSchema`, valide o currículo e rode o seed. Não é necessário criar páginas específicas. O seed atualiza registros conhecidos em transação e preserva registros locais ausentes dos arquivos; remoções e renomeações exigem uma migração de conteúdo deliberada.
 
 - [Plano e backlog](docs/ROADMAP.md)
 - [Arquitetura e decisões revisáveis](docs/ARCHITECTURE.md)

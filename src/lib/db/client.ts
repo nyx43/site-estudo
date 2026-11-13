@@ -1,7 +1,22 @@
-import { PrismaClient } from "@prisma/client";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { mkdirSync } from "node:fs";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import * as schema from "./schema";
 
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+export function createDatabase(url = process.env.DATABASE_URL ?? "file:./data/estudo.db") {
+  if (!url.startsWith("file:")) throw new Error("Esta versão usa SQLite local: DATABASE_URL deve começar com file:.");
+  const filename = path.resolve(url.slice(5));
+  mkdirSync(path.dirname(filename), { recursive: true });
+  const client = createClient({ url: pathToFileURL(filename).href });
+  return { db: drizzle(client, { schema }), client };
+}
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+export type Database = ReturnType<typeof createDatabase>["db"];
+const globalForDb = globalThis as unknown as { studyDatabase?: ReturnType<typeof createDatabase> };
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+export function getDatabase() {
+  globalForDb.studyDatabase ??= createDatabase();
+  return globalForDb.studyDatabase.db;
+}

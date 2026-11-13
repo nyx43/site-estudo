@@ -4,13 +4,13 @@ import { createCatalogService } from "./service";
 // Composition root. Only this file chooses the persistence adapter.
 async function resolveRepository() {
   if (process.env.CATALOG_STORAGE === "files") return createFileCatalogRepository();
-  if (process.env.CATALOG_STORAGE && process.env.CATALOG_STORAGE !== "prisma") {
-    throw new Error("CATALOG_STORAGE deve ser prisma ou files.");
+  if (process.env.CATALOG_STORAGE && process.env.CATALOG_STORAGE !== "sqlite") {
+    throw new Error("CATALOG_STORAGE deve ser sqlite ou files.");
   }
-  const [{ prisma }, { createPrismaCatalogRepository }] = await Promise.all([
+  const [{ getDatabase }, { createSqliteCatalogRepository }] = await Promise.all([
     import("../db/client"), import("../db/catalog-repository"),
   ]);
-  return createPrismaCatalogRepository(prisma);
+  return createSqliteCatalogRepository(getDatabase());
 }
 
 export const catalog = createCatalogService({

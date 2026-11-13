@@ -6,16 +6,16 @@ O usuário autorizou a implementação inicial com um único agente. Outros agen
 
 - Implementado: Next.js/TypeScript/Tailwind, catálogo responsivo, busca, filtros, página de disciplina, plano por tópico e API de leitura.
 - Implementado: cinco planos curriculares, 15 módulos e 47 tópicos, com objetivos, pré-requisitos, roteiro, equívocos e critérios; 15 projetos futuros por módulo.
-- Implementado: schema Prisma, migração inicial, seed transacional e adaptadores separados.
+- Implementado: schema Drizzle/SQLite, migração inicial, seed transacional e adaptadores separados.
 - Verificação: consultar o relatório final da tarefa. Não interpretar a existência de um teste como evidência de que ele já passou.
-- Bloqueio observado nesta tarefa: o download verificado dos engines do Prisma recebeu 403 da política de rede em `binaries.prisma.sh`. O domínio foi proposto nas configurações. Até aplicar a liberação e executar os comandos pendentes, o banco e o build completo não estão validados.
+- Validação do armazenamento concluída com Drizzle/SQLite: a dependência de engines do Prisma foi removida, sem desativar verificações. Tipos, build, migrações, seed repetido e percursos com banco real passaram.
 - O modo `CATALOG_STORAGE=files` permite revisar o catálogo sem Prisma. Ele não oferece progresso nem substitui a entrega do banco.
 
 ## Próximos pacotes
 
 | Ordem | Objetivo | Dependências | Critério de aceite |
 | --- | --- | --- | --- |
-| 0 | Concluir validação do armazenamento | Liberação do domínio | `db:generate`, `db:migrate`, seed duas vezes, `test:db`, tipos e build passam; E2E passa com Prisma |
+| 0 — concluído | Validar armazenamento SQLite | Adaptador Drizzle | Migração, seed duas vezes, `test:db`, tipos e build passaram; E2E passou com SQLite |
 | 1 | Revisar currículo e escopo do piloto | Plano curricular | Objetivos e pré-requisitos revisados; tópico piloto e equívocos confirmados |
 | 2 | Definir contratos de aula e exercício | 1 | Fixtures válidas e inválidas; DTO público separado dos gabaritos; transições editoriais documentadas |
 | 3 | Escrever a aula-piloto | 2 | Blocos do documento-base, exemplos executáveis verificados em isolamento e revisão humana explícita |
