@@ -228,3 +228,7 @@ Produzir primeiro uma aula completa segundo o documento-base. Depois, 4 quizzes,
 ## Referências e limites
 
 O plano parte do Documento Mestre v2.3 fornecido pelo usuário e incorpora módulos e a futura expansão mobile discutidos nesta conversa. Não reproduz integralmente o PDF. Alegações de eficácia científica não foram verificadas nesta implementação; não apresentar o plano como avaliação científica nem inferir domínio a partir da mera leitura de uma aula.
+
+## Estado do piloto
+
+A aula de laços e seus 12 exercícios estão implementados como piloto em revisão. Os exemplos de código passaram pela verificação isolada; isso não substitui revisão humana da aula. As demais entradas deste documento continuam sendo planos curriculares.

@@ -15,7 +15,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
       </Link>
       <div className="nav-label">SEU ESPAÇO DE APRENDIZADO</div>
       <nav>
-        <Link href="/" className={`nav-item ${pathname === "/" || pathname.startsWith("/disciplinas") ? "active" : ""}`} aria-current={pathname === "/" || pathname.startsWith("/disciplinas") ? "page" : undefined}><BookOpen size={19} /> Disciplinas <span className="nav-active-dot" /></Link>
+        <Link href="/" className={`nav-item ${pathname === "/" || pathname.startsWith("/disciplinas") || pathname.startsWith("/estudar") ? "active" : ""}`} aria-current={pathname === "/" || pathname.startsWith("/disciplinas") || pathname.startsWith("/estudar") ? "page" : undefined}><BookOpen size={19} /> Disciplinas <span className="nav-active-dot" /></Link>
         <Link href="/projeto" className={`nav-item ${pathname === "/projeto" ? "active" : ""}`} aria-current={pathname === "/projeto" ? "page" : undefined}><Map size={19} /> O caminho do projeto</Link>
       </nav>
       <div className="sidebar-note"><span className="note-icon"><Sprout size={21} /></span><strong>Uma base de cada vez.</strong><p>Entender o conceito.<br />Praticar com intenção.<br />Voltar para consolidar.</p><Link href="/projeto">Conheça a proposta <ArrowUpRight size={15} /></Link></div>

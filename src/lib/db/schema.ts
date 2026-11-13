@@ -1,6 +1,9 @@
 import { relations } from "drizzle-orm";
 import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import type { SubjectDefinition, TopicPlan } from "../catalog/schema";
+import type { Exercise, Lesson, Answer } from "../study/schema";
+import type { LessonProgress } from "../study/progress";
+import { sql } from "drizzle-orm";
 
 export const subjects = sqliteTable("Subject", {
   id: text().primaryKey(), slug: text().notNull().unique(), name: text().notNull(),
@@ -28,3 +31,30 @@ export const moduleRelations = relations(modules, ({ one, many }) => ({
   subject: one(subjects, { fields: [modules.subjectId], references: [subjects.id] }), topics: many(topics),
 }));
 export const topicRelations = relations(topics, ({ one }) => ({ module: one(modules, { fields: [topics.moduleId], references: [modules.id] }) }));
+
+export const lessons = sqliteTable("Lesson", {
+  id: text().primaryKey(), topicId: text().notNull().references(() => topics.id, { onDelete: "restrict" }),
+  version: integer().notNull(), definition: text({ mode: "json" }).$type<Lesson>().notNull(),
+}, (table) => [uniqueIndex("Lesson_topic_version").on(table.topicId, table.version)]);
+
+export const exercises = sqliteTable("Exercise", {
+  id: text().primaryKey(), lessonId: text().notNull().references(() => lessons.id, { onDelete: "restrict" }),
+  orderIndex: integer().notNull(), definition: text({ mode: "json" }).$type<Exercise>().notNull(),
+}, (table) => [index("Exercise_lesson_order").on(table.lessonId, table.orderIndex)]);
+
+export const lessonProgress = sqliteTable("LessonProgress", {
+  lessonId: text().primaryKey().references(() => lessons.id, { onDelete: "restrict" }),
+  progress: text({ mode: "json" }).$type<LessonProgress>().notNull(),
+});
+
+export const attempts = sqliteTable("Attempt", {
+  id: text().primaryKey(), exerciseId: text().notNull().references(() => exercises.id, { onDelete: "restrict" }),
+  createdAt: text().notNull(), closedAt: text(), isCorrect: integer({ mode: "boolean" }).notNull().default(false),
+  gaveUp: integer({ mode: "boolean" }).notNull().default(false),
+}, (table) => [uniqueIndex("Attempt_one_open").on(table.exerciseId).where(sql`${table.closedAt} IS NULL`), index("Attempt_exercise_created").on(table.exerciseId, table.createdAt)]);
+
+export const submissions = sqliteTable("Submission", {
+  requestId: text().primaryKey(), attemptId: text().notNull().references(() => attempts.id, { onDelete: "restrict" }),
+  answer: text({ mode: "json" }).$type<Answer>().notNull(), isCorrect: integer({ mode: "boolean" }).notNull(),
+  feedback: text().notNull(), createdAt: text().notNull(),
+}, (table) => [index("Submission_attempt_created").on(table.attemptId, table.createdAt)]);

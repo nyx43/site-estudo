@@ -20,7 +20,8 @@
     "db:seed": "tsx scripts/seed.ts",
     "content:validate": "tsx scripts/validate-curriculum.ts",
     "check": "npm run content:validate && npm run lint && npm run typecheck && npm test && npm run test:db && npm run build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify:examples": "tsx scripts/verify-examples.ts"
   },
   "dependencies": {
     "@libsql/client": "0.18.0",

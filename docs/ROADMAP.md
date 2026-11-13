@@ -9,7 +9,7 @@ O usuário autorizou a implementação inicial com um único agente. Outros agen
 - Implementado: schema Drizzle/SQLite, migração inicial, seed transacional e adaptadores separados.
 - Verificação: consultar o relatório final da tarefa. Não interpretar a existência de um teste como evidência de que ele já passou.
 - Validação do armazenamento concluída com Drizzle/SQLite: a dependência de engines do Prisma foi removida, sem desativar verificações. Tipos, build, migrações, seed repetido e percursos com banco real passaram.
-- O modo `CATALOG_STORAGE=files` permite revisar o catálogo sem Prisma. Ele não oferece progresso nem substitui a entrega do banco.
+- O modo `CATALOG_STORAGE=files` permite revisar o catálogo sem banco. Ele não oferece progresso nem substitui a entrega do banco.
 
 ## Próximos pacotes
 
@@ -45,3 +45,10 @@ Primeiro estabilizar contratos comuns. Depois dividir autoria de conteúdo, regr
 Cada tarefa deve registrar: objetivo, arquivos sob responsabilidade, dependências, contrato de entrada/saída, testes de aceite e limitações. Evitar tarefas vagas como “fazer o backend”. Não criar worktrees sem solicitação explícita; cada tarefa da nuvem já é isolada.
 
 Uma tarefa só está concluída quando o comportamento acordado foi verificado. Bloqueios ambientais, defeitos do produto, testes não executados e recursos futuros devem ser reportados separadamente.
+
+
+## Entrega seguinte — piloto implementado
+
+Os pacotes 2, 4, 5, 6 e 7 têm implementação: contratos, evaluator, 12 exercícios, progresso/tentativas e percurso integrado. O pacote 3 tem aula completa, exemplos executados em isolamento e revisão automática; a aprovação humana não foi presumida. Os testes e limitações estão em docs/VALIDATION.md.
+
+Próximas tarefas: revisão do currículo e da aula com o usuário; melhorias decorrentes do uso; produção das aulas de variáveis/tipos e condicionais que antecedem o piloto; depois revisão espaçada e tutor simulado. Não ampliar para provedores reais de IA ou execução do código do aluno antes de estabilizar esse ciclo.

@@ -1,11 +1,12 @@
 import { validateCurriculum } from "../catalog/schema";
 import type { Database } from "./client";
 import { subjects, modules, topics } from "./schema";
+import { writeTransaction } from "./transaction";
 
 /** Validate first, then update atomically without deleting local content or progress. */
 export async function seedCatalog(db: Database, input: unknown[]) {
   const definitions = validateCurriculum(input);
-  await db.transaction(async (tx) => {
+  await writeTransaction(db, async (tx) => {
     for (const subject of definitions) {
       const data = {
         id: subject.slug, slug: subject.slug, name: subject.name, description: subject.description,

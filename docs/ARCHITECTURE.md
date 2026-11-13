@@ -26,7 +26,7 @@ Cada disciplina é um JSON versionado, validado por Zod. A estrutura é discipli
 
 `schemaVersion` representa o formato do arquivo; `version` representa a revisão curricular. `orderIndex` ordena disciplinas; a ordem dos arrays ordena módulos e tópicos. Os pré-requisitos apontam para IDs globais e podem atravessar disciplinas. A validação rejeita referências ausentes e ciclos. Por enquanto são recomendações de percurso, não bloqueios de acesso.
 
-O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. Na próxima entrega, `LessonSchema` e `ExerciseSchema` serão contratos próprios, com versões, estados editoriais e dados privados separados.
+O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. O piloto está em AUTO_CHECKED, com revisão humana pendente.
 
 ## 003 — Persistência substituível
 
@@ -36,7 +36,7 @@ O schema TypeScript está em src/lib/db/schema.ts, e as migrações geradas em d
 
 Migrações são versionadas. O seed é aditivo, transacional e repetível: atualiza pelo ID e não apaga dados locais. Uma futura remoção ou mudança de identificador exige análise de impacto e migração explícita. Não usar exclusão e recriação como mecanismo de atualização.
 
-IDs do catálogo são legíveis e derivados de slugs. Após existir progresso, tratá-los como identidades persistentes. Reorganizar um tópico entre módulos preserva seu ID; mudar disciplina ou slug exige migração. O catálogo inicial ainda não armazena tentativas ou progresso.
+IDs do catálogo são legíveis e derivados de slugs. Após existir progresso, tratá-los como identidades persistentes. Reorganizar um tópico entre módulos preserva seu ID; mudar disciplina ou slug exige migração. Aula, progresso, tentativas e submissões já são persistidos em tabelas próprias.
 
 ## 004 — Site agora, aplicativo depois
 
@@ -55,3 +55,16 @@ Todo código gerado e todo código do aluno que precisar ser executado exigirá 
 ## Como mudar uma decisão
 
 Registrar a motivação, os consumidores afetados, a migração de dados necessária e os testes que demonstram a nova regra. Uma decisão inicial pode ser substituída. A estabilidade mais importante é a integridade do conteúdo e do histórico de aprendizagem, não a permanência de uma biblioteca.
+
+
+## 006 — Estudo e integridade do histórico
+
+A aula usa ID versionado; um progresso referencia a versão efetivamente estudada. O seed pode corrigir rascunhos sem uso, mas rejeita mudanças em aulas com progresso ou já verificadas e em exercícios com tentativas. Conteúdo em uso exige uma nova versão e novos IDs de exercícios. O seed não apaga versões anteriores.
+
+O serviço de estudo depende de uma porta de repositório e transações. Há um único Attempt aberto por exercício, garantido por índice parcial. Cada Submission tem uma chave UUID única para idempotência. A correção ignora resultados alegados pelo cliente; o servidor valida a resposta e chama o evaluator puro. Consultar solução registra desistência, sem marcar acerto. Um acerto anterior permanece no progresso mesmo que o aluno comece uma nova prática.
+
+Escritas na mesma conexão SQLite são serializadas por uma fila compartilhada no processo, com transações e restrições no banco. Uma falha não bloqueia as próximas operações. A operação inicial é local, com uma instância do servidor; implantação com múltiplos processos ou nós exige revisar coordenação de escritores e armazenamento.
+
+Respostas abertas não recebem nota automática. Servem para reflexão antes de revelar uma resposta-modelo. O estado de conclusão de uma aula registra o percurso; ele não certifica domínio. Não há SM-2, tutor, execução de código do aluno ou avaliação por competências neste incremento.
+
+Rotas de escrita validam JSON com tamanho limitado, contrato estrito e origem do navegador contra a autoridade solicitada em Host. Clientes nativos sem Origin poderão usar a API, mas isso não constitui autenticação. GETs pessoais usam no-store. Texto e código são renderizados como texto React, sem injeção de HTML.

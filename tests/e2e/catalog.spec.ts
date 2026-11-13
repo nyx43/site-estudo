@@ -27,7 +27,7 @@ test("busca, filtros, currículo e navegação em todas as telas", async ({ page
   await expect(page.getByText("4 quizzes, 3 Parsons", { exact: false })).toBeVisible();
   await page.getByRole("link", { name: "Condicionais Python" }).click();
   await expect(page.getByRole("heading", { name: "Condicionais", exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
   expect(errors).toEqual([]);
 });
 
