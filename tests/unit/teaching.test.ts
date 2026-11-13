@@ -14,10 +14,10 @@ const topicIds = new Set((await loadCurriculum()).flatMap((subject) => subject.m
 const example = current[0].lesson.teaching!.commands[0].examples[0];
 
 describe("autoria aprofundada", () => {
-  it("mantém três aulas aprofundadas e preserva a versão anterior", () => {
-    expect(current.map((seed) => seed.lesson.topicId).sort()).toEqual(["python.condicionais", "python.lacos-de-repeticao", "python.variaveis-e-tipos"]);
+  it("mantém quatro aulas aprofundadas e preserva a versão anterior", () => {
+    expect(current.map((seed) => seed.lesson.topicId).sort()).toEqual(["python.condicionais", "python.lacos-de-repeticao", "python.listas-e-dicionarios", "python.variaveis-e-tipos"]);
     expect(seeds.some((seed) => seed.lesson.id === "python.lacos-de-repeticao.v1")).toBe(true);
-    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(24);
+    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(32);
   });
   it("exige explicação de toda linha não vazia e referências válidas", () => {
     expect(ExplainedExampleSchema.safeParse({ ...example, lineNotes: example.lineNotes.slice(1) }).success).toBe(false);

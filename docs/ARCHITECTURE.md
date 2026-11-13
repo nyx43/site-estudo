@@ -26,7 +26,7 @@ Cada disciplina é um JSON versionado, validado por Zod. A estrutura é discipli
 
 `schemaVersion` representa o formato do arquivo; `version` representa a revisão curricular. `orderIndex` ordena disciplinas; a ordem dos arrays ordena módulos e tópicos. Os pré-requisitos apontam para IDs globais e podem atravessar disciplinas. A validação rejeita referências ausentes e ciclos. Por enquanto são recomendações de percurso, não bloqueios de acesso.
 
-O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. As três aulas atuais estão em AUTO_CHECKED, com revisão humana posterior.
+O status `PLANNED` significa somente planejamento. Não usar esse contrato como schema de uma aula pronta. `LessonSchema` e `ExerciseSchema` são contratos próprios em src/lib/study/schema.ts, com versões e dados privados separados. As quatro aulas atuais estão em AUTO_CHECKED, com revisão humana posterior.
 
 ## 003 — Persistência substituível
 

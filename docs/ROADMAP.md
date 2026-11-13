@@ -6,8 +6,8 @@ O usuário autorizou desenvolvimento com um único agente agora e colaboração 
 
 - Site responsivo, busca, filtros, páginas de disciplina e tópico e API de consulta.
 - Currículo planejado de 13 disciplinas, 49 módulos e 115 tópicos, com apresentações, guias de módulo, objetivos, pré-requisitos, roteiros, equívocos e atividades propostas.
-- Três aulas aprofundadas de Python: Variáveis e tipos, Condicionais e Laços de repetição. Comandos, exemplos completos por linha, casos específicos, revisão de erros de IA e fontes reais.
-- Leitura completa sem exigir respostas; percurso guiado em 10 partes, com reflexão e 24 exercícios nas versões atuais.
+- Quatro aulas aprofundadas de Python: Variáveis e tipos, Condicionais, Laços de repetição e Listas e dicionários. Comandos, exemplos completos por linha, casos específicos, revisão de erros de IA e fontes reais.
+- Leitura completa sem exigir respostas; percurso guiado em 10 partes, com reflexão e 32 exercícios nas versões atuais.
 - Correção determinística de quizzes, Parsons com indentação, exemplos com erro e previsão. Respostas abertas são reflexão, sem nota automática de domínio.
 - Drizzle/SQLite, migrações, seed transacional, retomada e idempotência. Gabaritos privados até o momento permitido.
 - Versionamento que preserva aulas e respostas em uso, incluindo retomada da versão anterior de Laços.
@@ -20,7 +20,7 @@ Resultados executados estão em [VALIDATION.md](VALIDATION.md). As aulas estão 
 | Prioridade | Trabalho | Critério de aceite |
 | --- | --- | --- |
 | 1 | Completar fundamentos das demais linguagens iniciais | Aulas desde a base, exemplos próprios da linguagem, casos de revisão de IA e exercícios alinhados; verificações apropriadas |
-| 2 | Aprofundar Dados e funções em Python | Listas/dicionários, funções, escopo e mutabilidade; preservar pré-requisitos, versões e progresso |
+| 2 | Aprofundar Dados e funções em Python | Listas/dicionários entregues; próximas aulas: funções, escopo e mutabilidade; preservar pré-requisitos, versões e progresso |
 | 3 | Produzir aulas de Web e Requisitos | Exemplos e artefatos adequados à disciplina; explicar comandos ou decisões, critérios e erros comuns |
 | 4 | Incorporar materiais enviados pelo usuário | Mapear fontes e páginas/slides, identificar lacunas, gerar aulas e exercícios autorais; seguir AUTHORING.md |
 | 5 | Ampliar os novos módulos e disciplinas | Cobertura rastreável, sem confundir currículo planejado com conteúdo escrito; manter profundidade |
@@ -38,3 +38,7 @@ Antes de dividir trabalho, registrar por tarefa: objetivo, arquivos sob responsa
 Definir responsável por integração. Coordenar alterações em schemas, migrações, dependências, lockfile e contratos públicos; não deixar dois agentes editarem esses arquivos simultaneamente. Cada tarefa da nuvem já é isolada; não criar worktrees sem solicitação explícita.
 
 Uma tarefa termina quando o comportamento acordado foi verificado. Relatar separadamente bloqueios ambientais, defeitos do produto, testes não executados e recursos futuros. Nunca atribuir aprovação humana a uma verificação automática.
+
+## Frameworks e aplicativo
+
+Django, React e Node.js foram solicitados como expansões futuras. O mapa de pré-requisitos e o critério para começar o app estão em [TECHNOLOGY_TRACKS.md](TECHNOLOGY_TRACKS.md). O aplicativo ainda não começou; consolidar primeiro o ciclo do site, sem exigir terminar todas as disciplinas.

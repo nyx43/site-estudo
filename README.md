@@ -1,8 +1,8 @@
 # Estudo ES
 
-Plataforma pessoal de estudos de Engenharia de Software. O catálogo planeja 13 disciplinas, 49 módulos e 115 tópicos. Três aulas de Python já têm explicações aprofundadas e 24 exercícios: Variáveis e tipos, Condicionais e Laços de repetição. As demais aulas continuam planejadas; não são conteúdo pronto.
+Plataforma pessoal de estudos de Engenharia de Software. O catálogo planeja 13 disciplinas, 49 módulos e 115 tópicos. Quatro aulas de Python já têm explicações aprofundadas e 32 exercícios: Variáveis e tipos, Condicionais, Laços de repetição e Listas e dicionários. As demais aulas continuam planejadas; não são conteúdo pronto.
 
-As aulas completas ficam em `/aulas`, com leitura livre, comandos explicados, exemplos por linha, casos específicos e diagnóstico de erros em código de IA. O percurso guiado salva respostas e progresso. As três aulas atuais têm verificação automática (`AUTO_CHECKED`); a avaliação humana ficará para depois, conforme solicitado.
+As aulas completas ficam em `/aulas`, com leitura livre, comandos explicados, exemplos por linha, casos específicos e diagnóstico de erros em código de IA. O percurso guiado salva respostas e progresso. As quatro aulas atuais têm verificação automática (`AUTO_CHECKED`); a avaliação humana ficará para depois, conforme solicitado.
 
 O projeto começa como site e deve acomodar dezenas de disciplinas e um aplicativo móvel. O conteúdo é dado versionado; regras de negócio e acesso ao banco ficam fora dos componentes.
 
@@ -50,9 +50,9 @@ Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o nave
 
 Depois de migrar e popular o banco, abra `/aulas`. A leitura mostra todo o conteúdo sem perguntas de desbloqueio e não marca partes como concluídas. Cada aula oferece também um percurso guiado de 10 partes, pré-perguntas sem nota, exemplos explicados e autoexplicação. As respostas e partes concluídas ficam salvas no SQLite.
 
-Variáveis e Condicionais têm 6 exercícios cada; Laços tem 12. A prática combina quizzes, ordenação de blocos (Parsons), exemplos com erro e previsão de saída. A correção é determinística no servidor. Uma tentativa pode ter vários envios e fecha ao acertar ou consultar a solução. Reenvios com o mesmo identificador não duplicam registros. A solução fica privada enquanto a tentativa estiver aberta; respostas-modelo das perguntas só são liberadas após o aluno responder, e os palpites são retomados no resumo.
+Variáveis e Condicionais têm 6 exercícios cada; Laços tem 12 e Listas e dicionários tem 8. A prática combina quizzes, ordenação de blocos (Parsons), exemplos com erro e previsão de saída. A correção é determinística no servidor. Uma tentativa pode ter vários envios e fecha ao acertar ou consultar a solução. Reenvios com o mesmo identificador não duplicam registros. A solução fica privada enquanto a tentativa estiver aberta; respostas-modelo das perguntas só são liberadas após o aluno responder, e os palpites são retomados no resumo.
 
-A versão 1 de Laços permanece preservada. A versão 2 aprofunda o conteúdo sem alterar respostas ou tentativas antigas; quem já estudava a v1 pode retomá-la pelo link na aula guiada. Há quatro versões armazenadas e 36 exercícios no histórico, dos quais três versões e 24 exercícios são atuais.
+A versão 1 de Laços permanece preservada. A versão 2 aprofunda o conteúdo sem alterar respostas ou tentativas antigas; quem já estudava a v1 pode retomá-la pelo link na aula guiada. Há cinco versões armazenadas e 44 exercícios no histórico, dos quais quatro versões e 32 exercícios são atuais.
 
 Os programas do aluno não são executados. Os exemplos e gabaritos Python do conteúdo podem ser verificados offline com `npm run verify:examples`, que exige Python 3 e bubblewrap funcional. O comando usa sandbox sem rede ou acesso ao checkout, com limites de tempo, memória, escrita e saída; falha se o isolamento não estiver disponível. No sandbox interno do agente na nuvem, esse comando precisa de uma execução aprovada fora dele para criar o sandbox bubblewrap. O comando não faz parte de `check`, e sua execução deve ser reportada separadamente.
 

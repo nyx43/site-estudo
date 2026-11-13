@@ -1,0 +1,1062 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "python.listas-e-dicionarios.v1",
+    "topicId": "python.listas-e-dicionarios",
+    "version": 1,
+    "title": "Listas e dicionários",
+    "status": "AUTO_CHECKED",
+    "objectives": [
+      "Escolher sequência ou associação de chaves conforme o requisito.",
+      "Rastrear índices, métodos, consultas e alterações em objetos compartilhados.",
+      "Diagnosticar uma contagem incorreta usando entradas repetidas e vazias."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Um projeto recebe muitas tarefas, itens ou registros. Criar um nome diferente para cada entrada não escala e dificulta percorrer, pesquisar e atualizar os dados. Listas e dicionários permitem expressar a organização que o problema realmente exige.",
+        "Vamos partir de sequências pequenas e registros simples, explicando cada operação e seu efeito. Depois veremos referências compartilhadas, ausência de dados e uma contagem incorreta gerada por IA. O objetivo é reconhecer o modelo escolhido e demonstrar se ele cumpre o requisito."
+      ],
+      "prerequisites": [
+        {
+          "topicId": "python.variaveis-e-tipos",
+          "reason": "Reconhecer nomes, valores, tipos e atribuição."
+        },
+        {
+          "topicId": "python.condicionais",
+          "reason": "Tratar ausência e escolher caminhos."
+        },
+        {
+          "topicId": "python.lacos-de-repeticao",
+          "reason": "Percorrer coleções e acompanhar acumuladores."
+        }
+      ],
+      "glossary": [
+        {
+          "term": "Coleção",
+          "meaning": "Objeto que reúne elementos.",
+          "example": "Uma lista de tarefas reúne várias strings."
+        },
+        {
+          "term": "Índice",
+          "meaning": "Posição usada para acessar uma sequência.",
+          "example": "Em [10, 20], o índice 1 seleciona 20."
+        },
+        {
+          "term": "Chave",
+          "meaning": "Identificador usado para consultar um dicionário.",
+          "example": "Em {\"pontos\": 5}, a chave é \"pontos\"."
+        },
+        {
+          "term": "Mutável",
+          "meaning": "Objeto cujo estado pode ser alterado depois da criação.",
+          "example": "append altera uma lista existente."
+        },
+        {
+          "term": "Método",
+          "meaning": "Operação obtida por um atributo do objeto e chamada com parênteses.",
+          "example": "tarefas.append(\"ler\") usa o método append."
+        },
+        {
+          "term": "Referência compartilhada",
+          "meaning": "Dois acessos podem alcançar o mesmo objeto.",
+          "example": "b = a não copia uma lista."
+        },
+        {
+          "term": "Hashable",
+          "meaning": "Objeto compatível com a regra de hash e igualdade necessária às chaves.",
+          "example": "Uma string pode ser chave; uma lista não."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Listas, índices, fatias e len",
+          "kind": "SYNTAX",
+          "syntax": "lista = [a, b]; lista[0]; lista[inicio:fim]; len(lista)",
+          "explanation": "Uma lista é uma sequência mutável. Índices leem posições; fatias criam uma nova lista externa e aceitam limites além do tamanho. len conta elementos.",
+          "whenToUse": "Representar uma sequência em que ordem e repetições importam.",
+          "pitfalls": [
+            "O último índice não negativo é len(lista) - 1 apenas quando há elementos.",
+            "Fatia não inclui o limite final; lista[-1] também falha quando a lista está vazia."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-posicoes",
+              "title": "Posições começam em zero",
+              "purpose": "Ler elementos, medir a lista e criar uma fatia.",
+              "code": "nomes = [\"Ana\", \"Bia\", \"Caio\"]\nprint(nomes[0], nomes[-1])\nprint(len(nomes))\nprint(nomes[1:3])",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Os colchetes criam uma lista de três strings, preservando a ordem escrita. As vírgulas separam os elementos."
+                },
+                {
+                  "line": 2,
+                  "explanation": "O índice 0 lê o primeiro elemento. -1 lê o último, contando do fim; nenhum deles altera a lista."
+                },
+                {
+                  "line": 3,
+                  "explanation": "len é uma função que devolve a quantidade de elementos, não o último índice. Aqui os índices não negativos válidos são 0, 1 e 2."
+                },
+                {
+                  "line": 4,
+                  "explanation": "A fatia começa no índice 1 e termina antes do 3. Produz uma nova lista com Bia e Caio."
+                }
+              ],
+              "takeaway": "Índice seleciona um elemento; fatia seleciona uma sequência. O limite final da fatia fica de fora.",
+              "expectedOutput": "Ana Caio\n3\n['Bia', 'Caio']"
+            }
+          ]
+        },
+        {
+          "name": "append e extend",
+          "kind": "CONCEPT",
+          "syntax": "lista.append(item); lista.extend(iteravel)",
+          "explanation": "Métodos são operações acessadas pelo ponto em um objeto. append inclui um único objeto; extend inclui os elementos fornecidos por um iterável. Ambos modificam a lista e devolvem None.",
+          "whenToUse": "Acumular resultados ou reunir sequências.",
+          "pitfalls": [
+            "append([1, 2]) acrescenta uma lista como um item; extend([1, 2]) acrescenta dois itens.",
+            "extend(\"oi\") acrescenta duas strings de um caractere, não uma palavra inteira."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-adicionar",
+              "title": "Um item ou vários itens",
+              "purpose": "Comparar append e extend sem misturar a lista com o retorno do método.",
+              "code": "tarefas = [\"ler\"]\nretorno = tarefas.append(\"praticar\")\ntarefas.extend([\"revisar\", \"testar\"])\nprint(tarefas)\nprint(retorno)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria uma lista com uma tarefa."
+                },
+                {
+                  "line": 2,
+                  "explanation": "O ponto acessa um método do objeto. append modifica a lista acrescentando uma string inteira e devolve None, que é associado a retorno."
+                },
+                {
+                  "line": 3,
+                  "explanation": "extend percorre o argumento e acrescenta cada um de seus dois elementos. Não cria uma lista aninhada neste caso."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Mostra o estado após as duas alterações, mantendo a ordem de inclusão."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Mostra None: o método append não devolve a lista alterada."
+                }
+              ],
+              "takeaway": "Não faça tarefas = tarefas.append(...). Isso substituiria o nome tarefas por None.",
+              "expectedOutput": "['ler', 'praticar', 'revisar', 'testar']\nNone"
+            }
+          ]
+        },
+        {
+          "name": "Atribuição por índice, pop e remove",
+          "kind": "SYNTAX",
+          "syntax": "lista[indice] = valor; lista.pop(); lista.remove(valor)",
+          "explanation": "Atribuição por índice substitui uma posição existente. pop retira e devolve um elemento; remove retira a primeira ocorrência de um valor e devolve None.",
+          "whenToUse": "Editar uma sequência quando o requisito pede alteração.",
+          "pitfalls": [
+            "Atribuir ao índice len(lista) não acrescenta um elemento: use append.",
+            "Não remova elementos da lista que está percorrendo sem analisar o efeito nos índices."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-editar",
+              "title": "Alterar, retirar e remover",
+              "purpose": "Separar posição de valor e observar o retorno de pop.",
+              "code": "itens = [10, 20, 30]\nitens[1] = 25\nretirado = itens.pop()\nitens.remove(10)\nprint(itens, retirado)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria três inteiros em uma lista mutável."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Troca o elemento no índice 1. A lista agora contém 10, 25 e 30."
+                },
+                {
+                  "line": 3,
+                  "explanation": "pop sem índice retira e devolve o último elemento, 30; restam 10 e 25."
+                },
+                {
+                  "line": 4,
+                  "explanation": "remove procura o primeiro elemento igual ao valor 10 e o retira. Não interpreta 10 como índice."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Mostra a lista restante e o valor retirado anteriormente."
+                }
+              ],
+              "takeaway": "pop em uma lista vazia gera IndexError; remove de um valor ausente gera ValueError. Defina como tratar essas situações.",
+              "expectedOutput": "[25] 30"
+            }
+          ]
+        },
+        {
+          "name": "Dicionário, consulta e pertinência",
+          "kind": "SYNTAX",
+          "syntax": "dados = {chave: valor}; dados[chave]; chave in dados",
+          "explanation": "Um dicionário associa chaves únicas a valores. As chaves precisam ser hashable: devem permitir um hash estável e igualdade consistente. Strings e inteiros são exemplos usuais; listas não podem ser chaves.",
+          "whenToUse": "Nomear campos de um registro ou encontrar um valor por identificador.",
+          "pitfalls": [
+            "Reatribuir a mesma chave substitui o valor, não cria outro par.",
+            "in testa chaves. Para testar valores, existe dados.values().",
+            "Dicionários preservam ordem de inserção; isso não os torna automaticamente ordenados por chave."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-mapa",
+              "title": "Chaves nomeiam os dados",
+              "purpose": "Construir um registro e atualizar um campo.",
+              "code": "aluno = {\"nome\": \"Lia\", \"pontos\": 0}\naluno[\"pontos\"] = 5\nprint(aluno[\"nome\"], aluno[\"pontos\"])\nprint(\"pontos\" in aluno, 5 in aluno)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "As chaves externas criam um dicionário. Cada par associa uma chave a um valor usando dois-pontos. As duas chaves são strings."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Atualiza a chave existente pontos. Se a chave não existisse, a atribuição acrescentaria um par."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Consulta valores pelas chaves, sem depender de uma posição numérica."
+                },
+                {
+                  "line": 4,
+                  "explanation": "in aplicado a um dicionário procura chaves. A chave pontos existe; o número 5 é um valor, não uma chave neste registro."
+                }
+              ],
+              "takeaway": "Um dicionário não é uma lista com índices diferentes: ele expressa uma relação entre chaves únicas e valores.",
+              "expectedOutput": "Lia 5\nTrue False"
+            }
+          ]
+        },
+        {
+          "name": "Consulta com get",
+          "kind": "CONCEPT",
+          "syntax": "dados.get(chave, padrao)",
+          "explanation": "get devolve o valor existente ou o padrão informado; sem padrão explícito, devolve None quando a chave está ausente. A consulta não altera o dicionário.",
+          "whenToUse": "Representar uma ausência permitida por contrato, como uma contagem ainda não iniciada.",
+          "pitfalls": [
+            "Zero, False e string vazia podem ser valores válidos. Não os confunda com chave ausente.",
+            "Um padrão silencioso pode esconder dados inválidos se a chave for obrigatória."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-get",
+              "title": "Ausência precisa de uma regra",
+              "purpose": "Consultar uma chave opcional sem confundir falta com zero.",
+              "code": "estoque = {\"lapis\": 0}\nprint(estoque.get(\"lapis\", -1))\nprint(estoque.get(\"caneta\", -1))\nprint(estoque)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Registra um produto conhecido com estoque zero."
+                },
+                {
+                  "line": 2,
+                  "explanation": "get devolve o valor existente, mesmo sendo zero; o padrão -1 só é usado se a chave estiver ausente."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Como caneta não está registrada, get devolve -1. O padrão deve fazer sentido no contrato da aplicação."
+                },
+                {
+                  "line": 4,
+                  "explanation": "A consulta não inseriu caneta no dicionário."
+                }
+              ],
+              "takeaway": "d[chave] gera KeyError se a chave falta. get oferece um padrão, mas pode esconder um campo obrigatório ausente: valide os requisitos antes de usá-lo.",
+              "expectedOutput": "0\n-1\n{'lapis': 0}"
+            }
+          ]
+        },
+        {
+          "name": "items e desempacotamento",
+          "kind": "SYNTAX",
+          "syntax": "for chave, valor in dados.items():",
+          "explanation": "items permite percorrer pares. O desempacotamento associa os dois elementos do par a dois nomes. As vírgulas separam destinos, não fazem uma consulta dupla.",
+          "whenToUse": "Gerar relatórios em que você precisa da chave e do valor.",
+          "pitfalls": [
+            "Não acrescente ou remova chaves do dicionário durante essa iteração.",
+            "A ordem de inserção não é uma regra de prioridade do negócio."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-percorrer",
+              "title": "Percorrer pares de chave e valor",
+              "purpose": "Somar quantidades sem confundir nomes e números.",
+              "code": "estoque = {\"lapis\": 2, \"caneta\": 3}\ntotal = 0\nfor produto, quantidade in estoque.items():\n    print(produto, quantidade)\n    total += quantidade\nprint(total)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria dois pares na ordem de inserção: lapis primeiro e caneta depois."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Inicializa o acumulador antes do laço, inclusive para um estoque vazio."
+                },
+                {
+                  "line": 3,
+                  "explanation": "items fornece pares. A vírgula entre os nomes desempacota cada par em produto e quantidade. O bloco indentado executa para cada par."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Mostra a chave e o valor do par atual."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Acrescenta apenas a quantidade numérica ao total."
+                },
+                {
+                  "line": 6,
+                  "explanation": "Fora do laço, mostra a soma final, 5."
+                }
+              ],
+              "takeaway": "for produto in estoque percorre somente as chaves. items é uma visão dos pares, não uma cópia congelada do dicionário.",
+              "expectedOutput": "lapis 2\ncaneta 3\n5"
+            }
+          ]
+        },
+        {
+          "name": "Atribuição e copy",
+          "kind": "CONCEPT",
+          "syntax": "outro = lista; copia = lista.copy()",
+          "explanation": "Atribuição compartilha a referência ao objeto. copy cria outra estrutura externa, mas compartilha os elementos internos: essa é uma cópia rasa.",
+          "whenToUse": "Separar alterações na lista externa quando isso é suficiente para o contrato.",
+          "pitfalls": [
+            "Listas e dicionários são mutáveis.",
+            "Uma cópia rasa não isola listas ou dicionários aninhados."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-copia",
+              "title": "Compartilhar ou copiar",
+              "purpose": "Comparar atribuição e cópia de uma lista simples.",
+              "code": "original = [1, 2]\nalias = original\ncopia = original.copy()\nalias.append(3)\nprint(original)\nprint(copia)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria a lista original."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Associa outro nome ao mesmo objeto; não cria uma segunda lista."
+                },
+                {
+                  "line": 3,
+                  "explanation": "copy cria uma nova lista externa com referências aos mesmos elementos. Como os elementos são inteiros, esta cópia basta para separar alterações na estrutura externa."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Acrescenta 3 ao objeto também referenciado por original."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Mostra que original foi afetado pela alteração via alias."
+                },
+                {
+                  "line": 6,
+                  "explanation": "A lista externa copia não recebeu o novo elemento."
+                }
+              ],
+              "takeaway": "Cópia rasa separa a estrutura externa, mas não duplica recursivamente objetos mutáveis internos.",
+              "expectedOutput": "[1, 2, 3]\n[1, 2]"
+            }
+          ]
+        },
+        {
+          "name": "sorted e sort",
+          "kind": "CONCEPT",
+          "syntax": "nova = sorted(lista); lista.sort()",
+          "explanation": "sorted devolve uma nova lista. sort é um método que modifica a lista existente e devolve None. Escolha com base em quem pode observar a alteração.",
+          "whenToUse": "Preparar apresentação ou ordenar dados com uma regra explícita.",
+          "pitfalls": [
+            "Evite lista = lista.sort(): o nome passa a apontar para None.",
+            "Ordenação não remove duplicatas."
+          ],
+          "examples": [
+            {
+              "id": "colecoes-ordenar",
+              "title": "Ordenar sem perder o original",
+              "purpose": "Distinguir sorted, sort e seus retornos.",
+              "code": "valores = [3, 1, 2]\nordenados = sorted(valores)\nprint(valores, ordenados)\nretorno = valores.sort()\nprint(valores, retorno)",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria valores fora de ordem."
+                },
+                {
+                  "line": 2,
+                  "explanation": "A função sorted cria uma nova lista ordenada e preserva a lista original."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Confere as duas listas: a original continua 3, 1, 2."
+                },
+                {
+                  "line": 4,
+                  "explanation": "O método sort altera valores no próprio objeto e devolve None."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Mostra a lista agora ordenada e confirma o retorno None."
+                }
+              ],
+              "takeaway": "Elementos precisam ser comparáveis pela regra escolhida. Não prometa ordenar números e strings misturados sem definir uma chave de ordenação.",
+              "expectedOutput": "[3, 1, 2] [1, 2, 3]\n[1, 2, 3] None"
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "colecoes-contagem",
+          "title": "Contar ocorrências",
+          "purpose": "Construir um relatório por categoria, incluindo categorias repetidas.",
+          "code": "categorias = [\"bug\", \"duvida\", \"bug\"]\ncontagens = {}\nfor categoria in categorias:\n    anterior = contagens.get(categoria, 0)\n    contagens[categoria] = anterior + 1\nprint(contagens)",
+          "lineNotes": [
+            {
+              "line": 1,
+              "explanation": "Cada ocorrência é um elemento da lista; repetições são relevantes e devem ser contadas."
+            },
+            {
+              "line": 2,
+              "explanation": "Cria um dicionário vazio. Não há necessidade de adivinhar todas as categorias antes."
+            },
+            {
+              "line": 3,
+              "explanation": "Percorre cada ocorrência da lista, na ordem."
+            },
+            {
+              "line": 4,
+              "explanation": "Lê a contagem anterior ou assume zero somente se a chave não existe."
+            },
+            {
+              "line": 5,
+              "explanation": "Grava a contagem acrescida de um. A segunda ocorrência de bug encontra 1 e grava 2."
+            },
+            {
+              "line": 6,
+              "explanation": "Mostra o relatório. A ordem das chaves segue sua primeira inserção, não uma ordenação alfabética automática."
+            }
+          ],
+          "takeaway": "Esse padrão serve para frequências e agrupamentos simples. Uma lista vazia produz um relatório vazio, sem categoria fictícia.",
+          "expectedOutput": "{'bug': 2, 'duvida': 1}"
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Coleção vazia",
+          "explanation": "Ausência de elementos é uma entrada normal que precisa de comportamento definido. Não confunda uma falha de acesso com um valor padrão.",
+          "example": {
+            "id": "colecoes-vazia",
+            "title": "A lista não tem primeiro item",
+            "purpose": "Observar um acesso que falha em vez de inventar um resultado.",
+            "code": "itens = []\nprint(itens[0])",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Cria uma lista vazia, com comprimento zero."
+              },
+              {
+                "line": 2,
+                "explanation": "A expressão itens[0] gera IndexError antes de print conseguir exibir um valor. Não existe índice válido nessa lista."
+              }
+            ],
+            "takeaway": "Antes de ler o primeiro item, estabeleça uma regra para ausência: por exemplo, if itens escolhe o caminho com elementos.",
+            "expectedError": "IndexError"
+          }
+        },
+        {
+          "title": "Cópia com estruturas internas",
+          "explanation": "Aprofundamento: distinguir o contêiner externo de seus elementos evita alterações inesperadas em dados compartilhados.",
+          "example": {
+            "id": "colecoes-aninhadas",
+            "title": "O limite da cópia rasa",
+            "purpose": "Verificar por que uma lista interna continua compartilhada.",
+            "code": "original = [[1], [2]]\ncopia = original.copy()\ncopia[0].append(9)\nprint(original)\nprint(copia)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Cria uma lista externa com duas listas internas mutáveis."
+              },
+              {
+                "line": 2,
+                "explanation": "Cria outra lista externa, mas mantém referências às mesmas duas listas internas."
+              },
+              {
+                "line": 3,
+                "explanation": "Seleciona a primeira lista interna e a modifica. Essa lista interna é compartilhada."
+              },
+              {
+                "line": 4,
+                "explanation": "O acesso via original encontra a lista interna modificada."
+              },
+              {
+                "line": 5,
+                "explanation": "O acesso via copia mostra o mesmo conteúdo interno."
+              }
+            ],
+            "takeaway": "Não use copy como promessa de independência completa. Cópia profunda e modelagem de dados exigem uma análise própria.",
+            "expectedOutput": "[[1, 9], [2]]\n[[1, 9], [2]]"
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "Frequência não é presença",
+          "request": "Contar quantas vezes cada categoria aparece, preservando todas as ocorrências.",
+          "generated": {
+            "id": "colecoes-ia-ruim",
+            "title": "A contagem foi sobrescrita",
+            "purpose": "Reproduzir uma falha de IA com entrada repetida.",
+            "code": "categorias = [\"bug\", \"bug\", \"duvida\"]\ncontagens = {}\nfor categoria in categorias:\n    contagens[categoria] = 1\nprint(contagens)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Inclui uma repetição para distinguir presença de frequência."
+              },
+              {
+                "line": 2,
+                "explanation": "Cria o resultado vazio."
+              },
+              {
+                "line": 3,
+                "explanation": "Percorre cada ocorrência."
+              },
+              {
+                "line": 4,
+                "explanation": "Sempre grava 1, apagando a contagem anterior quando a chave reaparece."
+              },
+              {
+                "line": 5,
+                "explanation": "Mostra um resultado plausível, porém incorreto para a frequência de bug."
+              }
+            ],
+            "takeaway": "Um teste com categorias todas diferentes esconderia o defeito.",
+            "expectedOutput": "{'bug': 1, 'duvida': 1}"
+          },
+          "diagnosis": [
+            "A chave é reatribuída com o valor constante 1 em todas as iterações.",
+            "A implementação só informa presença, embora o pedido exija frequência.",
+            "Repetições e lista vazia precisam de casos de aceitação próprios."
+          ],
+          "correction": {
+            "id": "colecoes-contagem",
+            "title": "Contar ocorrências",
+            "purpose": "Construir um relatório por categoria, incluindo categorias repetidas.",
+            "code": "categorias = [\"bug\", \"duvida\", \"bug\"]\ncontagens = {}\nfor categoria in categorias:\n    anterior = contagens.get(categoria, 0)\n    contagens[categoria] = anterior + 1\nprint(contagens)",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Cada ocorrência é um elemento da lista; repetições são relevantes e devem ser contadas."
+              },
+              {
+                "line": 2,
+                "explanation": "Cria um dicionário vazio. Não há necessidade de adivinhar todas as categorias antes."
+              },
+              {
+                "line": 3,
+                "explanation": "Percorre cada ocorrência da lista, na ordem."
+              },
+              {
+                "line": 4,
+                "explanation": "Lê a contagem anterior ou assume zero somente se a chave não existe."
+              },
+              {
+                "line": 5,
+                "explanation": "Grava a contagem acrescida de um. A segunda ocorrência de bug encontra 1 e grava 2."
+              },
+              {
+                "line": 6,
+                "explanation": "Mostra o relatório. A ordem das chaves segue sua primeira inserção, não uma ordenação alfabética automática."
+              }
+            ],
+            "takeaway": "Esse padrão serve para frequências e agrupamentos simples. Uma lista vazia produz um relatório vazio, sem categoria fictícia.",
+            "expectedOutput": "{'bug': 2, 'duvida': 1}"
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Lista [\"bug\", \"bug\", \"duvida\"]",
+              "expected": "bug: 2; duvida: 1",
+              "why": "Detecta sobrescrita da contagem."
+            },
+            {
+              "scenario": "Lista vazia",
+              "expected": "Dicionário vazio",
+              "why": "Verifica que não há registro inventado."
+            },
+            {
+              "scenario": "Uma categoria \"duvida\"",
+              "expected": "duvida: 1",
+              "why": "Confere a primeira ocorrência."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Funções com entradas e resultados",
+          "explanation": "A contagem pode virar uma função que recebe categorias e devolve um relatório. Isso permite testar várias entradas sem duplicar o algoritmo.",
+          "topicIds": [
+            "python.funcoes"
+          ],
+          "caution": "Parâmetros e return serão ensinados na próxima aula."
+        },
+        {
+          "title": "Mutabilidade e estruturas aninhadas",
+          "explanation": "Cópias rasas, referências e alterações feitas por funções ajudam a explicar por que um registro muda em outro ponto do programa.",
+          "topicIds": [
+            "python.escopo-e-mutabilidade"
+          ],
+          "caution": "Não use uma cópia profunda como correção automática sem entender quais identidades precisam ser preservadas."
+        }
+      ],
+      "reviewChecklist": [
+        "A ordem e as repetições importam? Justifique lista ou dicionário.",
+        "A ausência de índice ou chave tem uma regra explícita?",
+        "Algum método modifica os dados compartilhados?",
+        "A contagem foi testada com entradas repetidas e vazias?",
+        "O código confunde o retorno de um método com o objeto alterado?"
+      ],
+      "sources": [
+        {
+          "sourceId": "python-datastructures",
+          "locator": "Seções 5.1, 5.1.3, 5.5 e 5.6",
+          "use": "Métodos de listas, percursos, dicionários e iteração de pares."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "pre-posicao",
+        "prompt": "Se uma lista tem três elementos, o índice 3 seleciona o último?",
+        "modelAnswer": "Não. Os índices não negativos são 0, 1 e 2; o índice 3 gera IndexError."
+      },
+      {
+        "id": "pre-chave",
+        "prompt": "O que acontece ao atribuir duas vezes à mesma chave de um dicionário?",
+        "modelAnswer": "O último valor substitui o anterior; não se cria uma segunda ocorrência da chave."
+      }
+    ],
+    "why": {
+      "problem": "Organizar ocorrências de tarefas e gerar um relatório por categoria.",
+      "cost": "Uma estrutura mal escolhida pode perder repetições, confundir posição com identidade ou alterar dados compartilhados."
+    },
+    "mentalModel": {
+      "analogy": "Uma lista lembra uma fila de posições; um dicionário lembra um catálogo consultado por etiquetas únicas.",
+      "limits": "São modelos de organização, não armazenamento físico literal. Dicionários também preservam ordem de inserção, mas são consultados por chave.",
+      "trace": {
+        "headers": [
+          "Ocorrência",
+          "Valor anterior",
+          "Novo valor"
+        ],
+        "rows": [
+          [
+            "bug",
+            "ausente → 0",
+            "1"
+          ],
+          [
+            "duvida",
+            "ausente → 0",
+            "1"
+          ],
+          [
+            "bug",
+            "1",
+            "2"
+          ]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Lista é uma sequência mutável; dicionário é uma associação mutável entre chaves únicas e valores. Escolha pela pergunta que você precisa responder.",
+      "parts": [
+        "Posição e chave têm significados diferentes.",
+        "Métodos podem modificar um objeto sem devolvê-lo.",
+        "Uma atribuição não cria automaticamente uma cópia."
+      ],
+      "code": "nomes = [\"Ana\", \"Bia\", \"Caio\"]\nprint(nomes[0], nomes[-1])\nprint(len(nomes))\nprint(nomes[1:3])",
+      "expectedOutput": "Ana Caio\n3\n['Bia', 'Caio']"
+    },
+    "workedExamples": [
+      {
+        "problem": "Construir um relatório por categoria, incluindo categorias repetidas.",
+        "subgoals": [
+          {
+            "label": "Passo 1",
+            "code": "categorias = [\"bug\", \"duvida\", \"bug\"]",
+            "why": "Cada ocorrência é um elemento da lista; repetições são relevantes e devem ser contadas."
+          },
+          {
+            "label": "Passo 2",
+            "code": "contagens = {}",
+            "why": "Cria um dicionário vazio. Não há necessidade de adivinhar todas as categorias antes."
+          },
+          {
+            "label": "Passo 3",
+            "code": "for categoria in categorias:",
+            "why": "Percorre cada ocorrência da lista, na ordem."
+          },
+          {
+            "label": "Passo 4",
+            "code": "    anterior = contagens.get(categoria, 0)",
+            "why": "Lê a contagem anterior ou assume zero somente se a chave não existe."
+          },
+          {
+            "label": "Passo 5",
+            "code": "    contagens[categoria] = anterior + 1",
+            "why": "Grava a contagem acrescida de um. A segunda ocorrência de bug encontra 1 e grava 2."
+          },
+          {
+            "label": "Passo 6",
+            "code": "print(contagens)",
+            "why": "Mostra o relatório. A ordem das chaves segue sua primeira inserção, não uma ordenação alfabética automática."
+          }
+        ],
+        "expectedOutput": "{'bug': 2, 'duvida': 1}"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "append-retorno",
+        "claim": "append devolve a lista aumentada.",
+        "refutation": "O objeto é modificado, mas o retorno é None.",
+        "correct": "Chame o método e continue usando a lista original."
+      },
+      {
+        "tag": "chave-valor",
+        "claim": "in procura os valores do dicionário.",
+        "refutation": "A consulta padrão testa as chaves.",
+        "correct": "Escolha chaves, values ou items conforme a pergunta."
+      },
+      {
+        "tag": "copia-total",
+        "claim": "copy isola todos os objetos internos.",
+        "refutation": "A cópia é rasa: os elementos internos continuam compartilhados.",
+        "correct": "Separe a estrutura externa dos objetos internos antes de escolher a estratégia."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Formulários e APIs",
+        "description": "Ler registros por chaves e validar campos obrigatórios antes de aceitar os dados."
+      },
+      {
+        "context": "Relatórios",
+        "description": "Contar ocorrências sem perder repetições e explicar a regra de agrupamento."
+      },
+      {
+        "context": "Revisão de IA",
+        "description": "Investigar retornos None, alterações compartilhadas e entradas que revelam perda de dados."
+      }
+    ],
+    "efficiency": {
+      "naive": "valores = [3, 1, 2]\nordenados = valores.copy()\nordenados.sort()\nprint(ordenados)",
+      "better": "valores = [3, 1, 2]\nordenados = sorted(valores)\nprint(ordenados)",
+      "criterion": "As duas formas preservam valores e mostram a mesma saída. sorted expressa diretamente a criação de uma lista ordenada; não há aqui uma alegação de ganho medido de desempenho.",
+      "expectedOutput": "[1, 2, 3]"
+    },
+    "summary": "Escolha posição ou chave pelo requisito. Confira mutações e retornos, trate ausência e teste repetições. Cópias rasas preservam referências internas; um resultado plausível pode estar perdendo dados.",
+    "selfExplain": [
+      {
+        "id": "self-mapa",
+        "prompt": "Explique por que atribuir 1 a cada categoria não conta ocorrências.",
+        "modelAnswer": "A mesma chave é sobrescrita; para contar, precisamos ler o valor anterior e acrescentar um."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "rec-indice",
+        "prompt": "Qual é a diferença entre lista[1] e lista[1:3]?",
+        "modelAnswer": "O primeiro seleciona um elemento; o segundo cria uma fatia com posições 1 e 2 quando existentes."
+      },
+      {
+        "id": "rec-get",
+        "prompt": "get insere o padrão quando falta uma chave?",
+        "modelAnswer": "Não. Apenas devolve o padrão sem alterar o dicionário."
+      },
+      {
+        "id": "rec-copia",
+        "prompt": "Por que b = a não protege uma lista de alterações feitas por b?",
+        "modelAnswer": "Ambos os nomes referenciam o mesmo objeto mutável."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "python.listas-e-dicionarios.v1.quiz-01",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Escolha a estrutura",
+      "prompt": "Guardar uma sequência de leituras, com ordem e repetições, pede qual estrutura inicial?",
+      "explanation": "Uma lista representa a sequência sem descartar repetições.",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "Lista",
+          "feedback": "A lista preserva ordem e pode conter elementos repetidos."
+        },
+        {
+          "id": "b",
+          "text": "Dicionário com cada leitura como chave única",
+          "feedback": "Repetir uma chave substituiria o valor anterior."
+        },
+        {
+          "id": "c",
+          "text": "Uma variável por leitura",
+          "feedback": "Isso dificulta percorrer uma quantidade variável de leituras."
+        }
+      ],
+      "solution": {
+        "optionId": "a"
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.quiz-02",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Ausência e zero",
+      "prompt": "Para d = {\"x\": 0}, qual o valor de d.get(\"x\", 9)?",
+      "explanation": "get distingue ausência de um valor existente igual a zero.",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "9",
+          "feedback": "O padrão só é usado quando a chave não existe."
+        },
+        {
+          "id": "b",
+          "text": "0",
+          "feedback": "A chave existe e seu valor zero é preservado."
+        },
+        {
+          "id": "c",
+          "text": "None",
+          "feedback": "Foi fornecido um padrão e a chave já existe."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.previsao-01",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Referência compartilhada",
+      "prompt": "Preveja exatamente a saída.",
+      "explanation": "Os dois nomes alcançam a mesma lista.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "code": "a = [4]\nb = a\nb.append(7)\nprint(a)",
+      "solution": {
+        "output": "[4, 7]"
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.previsao-02",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Atualização por chave",
+      "prompt": "Preveja exatamente a saída.",
+      "explanation": "A chave a foi atualizada e a chave b foi acrescentada. Há dois pares.",
+      "type": "PRIMM_PREDICT",
+      "difficulty": 1,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "code": "d = {\"a\": 1}\nd[\"a\"] = 3\nd[\"b\"] = 2\nprint(len(d), d[\"a\"])",
+      "solution": {
+        "output": "2 3"
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.erro-01",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Revise os métodos",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "explanation": "remove procura um valor; pop pode receber uma posição.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 2,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "items": [
+        {
+          "id": "a",
+          "text": "append altera a lista e devolve None."
+        },
+        {
+          "id": "b",
+          "text": "remove recebe uma posição, e não um valor."
+        },
+        {
+          "id": "c",
+          "text": "pop sem argumento retira o último elemento de uma lista não vazia."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.erro-02",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Revise cópias e chaves",
+      "prompt": "Marque todas as afirmações incorretas.",
+      "explanation": "Listas não são hashable e cópias rasas compartilham elementos internos.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "difficulty": 2,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "items": [
+        {
+          "id": "a",
+          "text": "Listas podem ser chaves de um dicionário."
+        },
+        {
+          "id": "b",
+          "text": "Uma cópia rasa duplica recursivamente todas as listas internas."
+        },
+        {
+          "id": "c",
+          "text": "in em um dicionário consulta suas chaves."
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "a",
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.parsons-01",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Conte as cores",
+      "prompt": "Organize e indente para contar as cores de [\"azul\", \"azul\"] e imprimir somente 2. Deixe o bloco incorreto de fora.",
+      "explanation": "O dicionário começa fora do laço; o incremento preserva a contagem anterior.",
+      "type": "PARSONS",
+      "difficulty": 2,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "blocks": [
+        {
+          "id": "a",
+          "code": "for cor in [\"azul\", \"azul\"]:",
+          "distractor": false
+        },
+        {
+          "id": "b",
+          "code": "print(contagens[\"azul\"])",
+          "distractor": false
+        },
+        {
+          "id": "c",
+          "code": "contagens = {}",
+          "distractor": false
+        },
+        {
+          "id": "d",
+          "code": "contagens[cor] = contagens.get(cor, 0) + 1",
+          "distractor": false
+        },
+        {
+          "id": "e",
+          "code": "contagens[cor] = 1",
+          "distractor": true
+        }
+      ],
+      "solution": {
+        "orders": [
+          [
+            {
+              "id": "c",
+              "indent": 0
+            },
+            {
+              "id": "a",
+              "indent": 0
+            },
+            {
+              "id": "d",
+              "indent": 1
+            },
+            {
+              "id": "b",
+              "indent": 0
+            }
+          ]
+        ],
+        "output": "2"
+      }
+    },
+    {
+      "id": "python.listas-e-dicionarios.v1.quiz-03",
+      "lessonId": "python.listas-e-dicionarios.v1",
+      "topicId": "python.listas-e-dicionarios",
+      "title": "Preserve os dados",
+      "prompt": "Você precisa de uma lista ordenada e deve manter a original como está. Qual expressão atende diretamente?",
+      "explanation": "sorted cria uma nova lista; sort modifica o objeto existente.",
+      "type": "MISCONCEPTION_QUIZ",
+      "difficulty": 1,
+      "skills": [
+        "organizar-colecoes",
+        "rastrear-estado"
+      ],
+      "options": [
+        {
+          "id": "a",
+          "text": "sorted(original)",
+          "feedback": "Cria outra lista ordenada."
+        },
+        {
+          "id": "b",
+          "text": "original.sort()",
+          "feedback": "Modifica a própria lista."
+        },
+        {
+          "id": "c",
+          "text": "original = original.sort()",
+          "feedback": "Além da alteração, atribui None ao nome."
+        }
+      ],
+      "solution": {
+        "optionId": "a"
+      }
+    }
+  ]
+}

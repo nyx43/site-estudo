@@ -1,0 +1,10 @@
+{
+  "id": "python-datastructures",
+  "title": "Tutorial oficial de Python — estruturas de dados",
+  "kind": "OFFICIAL_DOCUMENTATION",
+  "author": "Python Software Foundation e colaboradores",
+  "edition": "Python 3.12",
+  "url": "https://docs.python.org/3.12/tutorial/datastructures.html",
+  "checkedAt": "2026-11-13",
+  "note": "Conferido no texto oficial CPython 3.12; explicações e exemplos da aula são autorais."
+}

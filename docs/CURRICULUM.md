@@ -1,6 +1,6 @@
 # Planejamento curricular
 
-Proposta inicial revisável: 13 disciplinas, 49 módulos e 115 tópicos. Há três aulas completas de Python; os demais tópicos representam planejamento. Cada disciplina tem uma apresentação, e cada módulo explica sua base, o conhecimento assumido e os critérios para revisar soluções de IA.
+Proposta inicial revisável: 13 disciplinas, 49 módulos e 115 tópicos. Há quatro aulas completas de Python; os demais tópicos representam planejamento. Cada disciplina tem uma apresentação, e cada módulo explica sua base, o conhecimento assumido e os critérios para revisar soluções de IA.
 
 A fonte de verdade é `content/curriculum/*.json`. Cada tópico tem objetivos, pré-requisitos, roteiro, equívocos, atividades e critérios. Projetos são propostas futuras. A autoria segue [AUTHORING.md](AUTHORING.md), com avaliação humana registrada para depois em [REVIEW_QUEUE.md](REVIEW_QUEUE.md).
 

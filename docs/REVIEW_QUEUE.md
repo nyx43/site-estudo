@@ -8,7 +8,9 @@ O usuário informou que avaliará o site e o conteúdo depois do trabalho. Esta 
 - Python — Condicionais, v1: explicação de booleanos, comparações, blocos, ordem, fronteiras, curto-circuito e revisão de uma política de acesso incorreta.
 - Python — Laços de repetição, v2: comandos e sintaxe, acumuladores, direção do range, break/continue, casos vazios, aninhamento e diagnóstico de código de IA.
 
-As três versões atuais usam `AUTO_CHECKED`, sem aprovação humana implícita. A v1 de laços permanece preservada com seus exercícios e histórico. A leitura completa não altera a conclusão de estudo.
+As quatro versões atuais usam `AUTO_CHECKED`, sem aprovação humana implícita. A v1 de laços permanece preservada com seus exercícios e histórico. A leitura completa não altera a conclusão de estudo.
+
+- Python — Listas e dicionários, v1: posições, métodos, retorno None, chaves, ausência, cópia rasa e contagem de ocorrências. Conferir a progressão e os oito exercícios.
 
 ## Currículo
 
