@@ -192,6 +192,49 @@ describe("lab service and HTTP handlers", () => {
     expect(badOrigin.status).toBe(403);
     expect(badOrigin.headers.get("cache-control")).toBe("private, no-store");
 
+    const missingOriginRequest = new Request("http://127.0.0.1:3000/api/lab/run", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        host: "127.0.0.1:3000",
+      },
+      body: JSON.stringify({ mode: "run", code: "print(1)", stdin: "" }),
+    });
+    const missingOrigin = await handlers.run(missingOriginRequest);
+    expect(missingOrigin.status).toBe(403);
+
+    const dnsRebinding = await handlers.run(
+      makeJsonRequest(
+        { mode: "run", code: "print(1)", stdin: "" },
+        { host: "rebind.attacker:3000", origin: "http://rebind.attacker:3000" },
+      ),
+    );
+    expect(dnsRebinding.status).toBe(403);
+
+    const userinfoSpoof = await handlers.run(
+      makeJsonRequest(
+        { mode: "run", code: "print(1)", stdin: "" },
+        { host: "127.0.0.1@evil.example", origin: "http://127.0.0.1@evil.example" },
+      ),
+    );
+    expect(userinfoSpoof.status).toBe(403);
+
+    const localhostLoopback = await handlers.run(
+      makeJsonRequest(
+        { mode: "run", code: "print(1)", stdin: "" },
+        { host: "localhost:3000", origin: "http://localhost:3000" },
+      ),
+    );
+    expect(localhostLoopback.status).toBe(200);
+
+    const ipv6Loopback = await handlers.run(
+      makeJsonRequest(
+        { mode: "run", code: "print(1)", stdin: "" },
+        { host: "[::1]:3000", origin: "http://[::1]:3000" },
+      ),
+    );
+    expect(ipv6Loopback.status).toBe(200);
+
     const badType = await handlers.run(
       makeJsonRequest("print(1)", { "Content-Type": "text/plain" }),
     );

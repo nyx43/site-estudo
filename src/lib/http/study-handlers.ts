@@ -22,18 +22,72 @@ export async function studyResponse(operation: () => Promise<unknown>) {
   }
 }
 
-export function checkOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  if (!origin) return;
-  const url = new URL(request.url);
-  let browserOrigin: URL;
-  try { browserOrigin = new URL(origin); } catch { throw new StudyError(403, "Origem da requisição não permitida."); }
-  // Next may construct request.url with its bind hostname. Host retains the requested authority.
-  if (browserOrigin.host !== (request.headers.get("host") ?? url.host) || browserOrigin.protocol !== url.protocol) throw new StudyError(403, "Origem da requisição não permitida.");
+export const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
+
+export interface OriginCheckOptions {
+  requireOrigin?: boolean;
+  allowedHosts?: ReadonlySet<string>;
 }
 
-export async function readStudyJson(request: Request, maxBytes = 16384): Promise<unknown> {
-  checkOrigin(request);
+function parseAuthority(rawHost: string, protocol: string): URL {
+  if (!rawHost || /[\s@\\/?#,]/.test(rawHost)) {
+    throw new StudyError(403, "Host da requisição não permitido.");
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(`${protocol}//${rawHost}`);
+  } catch {
+    throw new StudyError(403, "Host da requisição não permitido.");
+  }
+  if (parsed.username || parsed.password || parsed.pathname !== "/" || parsed.search || parsed.hash) {
+    throw new StudyError(403, "Host da requisição não permitido.");
+  }
+  return parsed;
+}
+
+export function checkOrigin(request: Request, options: OriginCheckOptions = {}) {
+  const url = new URL(request.url);
+  // Next may construct request.url with its bind hostname. Host retains the requested authority.
+  const hostHeader = request.headers.get("host") ?? url.host;
+  const hostUrl = parseAuthority(hostHeader, url.protocol);
+
+  if (options.allowedHosts && !options.allowedHosts.has(hostUrl.hostname.toLowerCase())) {
+    throw new StudyError(403, "Host não permitido para esta operação.");
+  }
+
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    if (options.requireOrigin) {
+      throw new StudyError(403, "Cabeçalho Origin obrigatório para esta operação.");
+    }
+    return;
+  }
+
+  let browserOrigin: URL;
+  try {
+    browserOrigin = new URL(origin);
+  } catch {
+    throw new StudyError(403, "Origem da requisição não permitida.");
+  }
+  if (
+    browserOrigin.username ||
+    browserOrigin.password ||
+    browserOrigin.host.toLowerCase() !== hostUrl.host.toLowerCase() ||
+    browserOrigin.protocol !== hostUrl.protocol
+  ) {
+    throw new StudyError(403, "Origem da requisição não permitida.");
+  }
+  if (options.allowedHosts && !options.allowedHosts.has(browserOrigin.hostname.toLowerCase())) {
+    throw new StudyError(403, "Origem não permitida para esta operação.");
+  }
+}
+
+export async function readStudyJson(
+  request: Request,
+  maxBytes = 16384,
+  security?: OriginCheckOptions,
+): Promise<unknown> {
+  checkOrigin(request, security);
   if (!request.headers.get("content-type")?.startsWith("application/json")) throw new StudyError(415, "Envie dados em JSON.");
   const reader = request.body?.getReader();
   if (!reader) throw new StudyError(400, "Corpo da requisição ausente.");

@@ -3,7 +3,7 @@ import { LAB_LIMITS, LabRunRequestSchema } from "../lab/schema";
 import { SandboxBusyError, SandboxUnavailableError } from "../lab/sandbox";
 import { LabError, type createLabService } from "../lab/service";
 import { StudyError } from "../study/service";
-import { readStudyJson } from "./study-handlers";
+import { LOOPBACK_HOSTS, readStudyJson } from "./study-handlers";
 
 type LabService = ReturnType<typeof createLabService>;
 const noCache = { "Cache-Control": "private, no-store" };
@@ -12,7 +12,10 @@ export function createLabHandlers(service: LabService) {
   return {
     async run(request: Request) {
       try {
-        const raw = await readStudyJson(request, LAB_LIMITS.maxBodyBytes);
+        const raw = await readStudyJson(request, LAB_LIMITS.maxBodyBytes, {
+          requireOrigin: true,
+          allowedHosts: LOOPBACK_HOSTS,
+        });
         const parsed = LabRunRequestSchema.parse(raw);
         const data = await service.run(parsed);
         return Response.json({ data, meta: { version: 1 } }, { headers: noCache });

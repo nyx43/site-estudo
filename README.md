@@ -18,6 +18,8 @@ npm run db:seed
 npm run dev
 ```
 
+Por padrão, `npm run dev` e `npm run start` escutam apenas em `127.0.0.1` (loopback local). Caso precise acessar pela rede local (ex.: testar no celular), utilize os scripts explícitos `npm run dev:lan` ou `npm run start:lan` (`0.0.0.0`) — **atenção ao risco**: esta versão não possui autenticação de usuários, expondo suas anotações e histórico na rede local, e o endpoint de execução do laboratório (`POST /api/lab/run`) continua recusando cabeçalhos `Host`/`Origin` fora de loopback para prevenir ataques de DNS rebinding e execução remota não autorizada.
+
 Drizzle com SQLite local é instalado pelo npm, sem download adicional de engines. Não desative verificações TLS ou de checksum. No ambiente da nuvem, se o diretório de cache padrão do npm não for gravável, use `npm --cache /workspace/.cache/npm ci`.
 
 `DATABASE_URL="file:./data/estudo.db"` é relativo à raiz do projeto. O arquivo do banco é ignorado pelo Git. Nunca redefina o banco para contornar uma migração.
