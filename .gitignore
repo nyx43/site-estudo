@@ -12,6 +12,8 @@ next-env.d.ts
 *.db-shm
 *.db-wal
 *.db-journal
+*.sqlite*
 data/
+backups/
 materials/
 .cache/

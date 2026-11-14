@@ -1,10 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { count, eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/libsql/migrator";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { loadCurriculum } from "../../src/lib/content/load-curriculum";
+import { createDatabaseBackup, verifyBackupRestore } from "../../src/lib/db/backup";
 import { seedCatalog } from "../../src/lib/db/seed-catalog";
 import { createSqliteCatalogRepository } from "../../src/lib/db/catalog-repository";
 import { createFileCatalogRepository } from "../../src/lib/content/catalog-repository";
@@ -78,5 +79,53 @@ describe("migração, seed e adaptador SQLite", () => {
     const row = await connection.db.query.subjects.findFirst({ where: eq(subjects.id, definitions[0].slug) });
     expect(row?.description).toBe(definitions[0].description);
     expect(await connection.db.query.subjects.findFirst({ where: eq(subjects.id, extra.slug) })).toBeDefined();
+  });
+
+  it("gera backup VACUUM INTO fora do repositório, recusa caminhos internos e valida restauração temporária", async () => {
+    const dbUrl = `file:${path.join(directory, "test.db")}`;
+      await expect(
+        createDatabaseBackup({
+          databaseUrl: dbUrl,
+          backupDir: path.join(process.cwd(), "backups-proibidos"),
+        }),
+      ).rejects.toThrow(/dentro do repositório/i);
+
+    const externalBackupRoot = await mkdtemp(path.join(tmpdir(), "estudo-ext-backup-"));
+    const internalLinkDir = await mkdtemp(path.join(tmpdir(), "estudo-link-parent-"));
+    try {
+      const repoTrapLink = path.join(internalLinkDir, "link-para-repo");
+      await symlink(path.join(process.cwd(), "data"), repoTrapLink);
+      await expect(
+        createDatabaseBackup({
+          databaseUrl: dbUrl,
+          backupDir: repoTrapLink,
+        }),
+      ).rejects.toThrow(/dentro do repositório/i);
+
+      const originalBytesBefore = await readFile(path.join(directory, "test.db"));
+      const backup = await createDatabaseBackup({
+        databaseUrl: dbUrl,
+        backupDir: externalBackupRoot,
+      });
+
+      expect(backup.integrityCheck).toBe("ok");
+      expect(backup.foreignKeyErrors).toBe(0);
+      expect(backup.backupCounts).toEqual(backup.sourceCounts);
+      expect(backup.backupCounts.Subject).toBeGreaterThan(0);
+
+      const restoreCheck = await verifyBackupRestore({
+        backupFile: backup.backupFile,
+        databaseUrl: dbUrl,
+      });
+      expect(restoreCheck.integrityCheck).toBe("ok");
+      expect(restoreCheck.foreignKeyErrors).toBe(0);
+      expect(restoreCheck.restoredCounts).toEqual(backup.sourceCounts);
+
+      const originalBytesAfter = await readFile(path.join(directory, "test.db"));
+      expect(Buffer.compare(originalBytesBefore, originalBytesAfter)).toBe(0);
+    } finally {
+      await rm(externalBackupRoot, { recursive: true, force: true });
+      await rm(internalLinkDir, { recursive: true, force: true });
+    }
   });
 });
