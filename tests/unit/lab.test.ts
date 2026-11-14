@@ -15,6 +15,7 @@ import {
   SandboxUnavailableError,
   buildBubblewrapArgs,
   createSandboxRunner,
+  probeSandboxAvailability,
   type PythonSandboxRunner,
 } from "@/lib/lab/sandbox";
 import { LAB_LIMITS, LabDefinitionSchema, LabRunRequestSchema, type LabDefinition } from "@/lib/lab/schema";
@@ -365,31 +366,33 @@ describe("sandbox fail-closed isolation contract", () => {
     expect(results.every((item) => item.stdout === "done\n")).toBe(true);
   });
 
-  it("aborts queued and active executions, releases slots, and avoids running later tests", async () => {
-    const mockChildFactory = (onKill: (signal: NodeJS.Signals) => void) => {
-      const child = new EventEmitter() as ChildProcess;
-      child.stdin = { end: vi.fn(), on: vi.fn(), destroy: vi.fn() } as unknown as ChildProcess["stdin"];
-      child.stdout = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stdout"];
-      child.stderr = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stderr"];
-      const fd3 = new EventEmitter();
-      Object.defineProperty(child, "stdio", { value: [child.stdin, child.stdout, child.stderr, fd3] });
-      child.kill = vi.fn((sig?: NodeJS.Signals | number) => {
-        onKill((typeof sig === "string" ? sig : "SIGKILL") as NodeJS.Signals);
-        return true;
-      });
-      return { child, fd3 };
-    };
+type SpawnFn = NonNullable<Parameters<typeof createSandboxRunner>[0]>["spawnProcess"];
 
+function createMockSandboxChild(onKill?: (signal: NodeJS.Signals) => void) {
+  const child = new EventEmitter() as ChildProcess;
+  child.stdin = { end: vi.fn(), on: vi.fn(), destroy: vi.fn() } as unknown as ChildProcess["stdin"];
+  child.stdout = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stdout"];
+  child.stderr = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stderr"];
+  const fd3 = new EventEmitter();
+  Object.defineProperty(child, "stdio", { value: [child.stdin, child.stdout, child.stderr, fd3] });
+  child.kill = vi.fn((sig?: NodeJS.Signals | number) => {
+    onKill?.((typeof sig === "string" ? sig : "SIGKILL") as NodeJS.Signals);
+    return true;
+  });
+  return { child, fd3 };
+}
+
+  it("aborts queued and active executions, releases slots, and avoids running later tests", async () => {
     const children: { child: ChildProcess; fd3: EventEmitter }[] = [];
     const runner = createSandboxRunner({
       pathExists: () => true,
       spawnProcess: (() => {
-        const entry = mockChildFactory(() => {
+        const entry = createMockSandboxChild(() => {
           queueMicrotask(() => entry.child.emit("close", null, "SIGKILL"));
         });
         children.push(entry);
         return entry.child;
-      }) as unknown as NonNullable<Parameters<typeof createSandboxRunner>[0]>["spawnProcess"],
+      }) as unknown as SpawnFn,
     });
 
     // Lot 1 and 2 occupy active slots; slot 3 queues
@@ -450,5 +453,49 @@ describe("sandbox fail-closed isolation contract", () => {
     expect(abortedResponse.status).toBe(499);
     expect((await abortedResponse.json()).error.code).toBe("SANDBOX_ABORTED");
     expect(executeSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports sandbox availability accurately via probeSandboxAvailability and GET /api/lab/status handler", async () => {
+    const missingBinaries = await probeSandboxAvailability({
+      pathExists: () => false,
+    });
+    expect(missingBinaries.available).toBe(false);
+    expect(missingBinaries.reason).toContain("bubblewrap ou python3");
+
+    const failedHandshake = await probeSandboxAvailability({
+      pathExists: () => true,
+      spawnProcess: (() => {
+        const { child } = createMockSandboxChild();
+        queueMicrotask(() => child.emit("close", 1, null));
+        return child;
+      }) as unknown as SpawnFn,
+    });
+    expect(failedHandshake.available).toBe(false);
+    expect(failedHandshake.reason).toContain("falhou na inicialização");
+
+    const healthy = await probeSandboxAvailability({
+      pathExists: () => true,
+      spawnProcess: (() => {
+        const { child, fd3 } = createMockSandboxChild();
+        queueMicrotask(() => {
+          fd3.emit("data", Buffer.from("OK"));
+          child.emit("close", 0, null);
+        });
+        return child;
+      }) as unknown as SpawnFn,
+    });
+    expect(healthy.available).toBe(true);
+    expect(healthy.limits.memoryMb).toBe(128);
+
+    const statusHandler = createLabHandlers(
+      createLabService({ loadLabByTopic: async () => sampleLab, runner: { execute: vi.fn() } }),
+      async () => missingBinaries,
+    );
+    const response = await statusHandler.status();
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Cache-Control")).toBe("private, no-store");
+    const json = (await response.json()) as { data: { available: boolean; reason?: string } };
+    expect(json.data.available).toBe(false);
+    expect(json.data.reason).toContain("bubblewrap");
   });
 });

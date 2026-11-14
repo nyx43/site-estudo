@@ -1,6 +1,11 @@
 import { z } from "zod";
-import { LAB_LIMITS, LabRunRequestSchema } from "../lab/schema";
-import { SandboxAbortedError, SandboxBusyError, SandboxUnavailableError } from "../lab/sandbox";
+import { LAB_LIMITS, LabRunRequestSchema, type LabSandboxStatus } from "../lab/schema";
+import {
+  SandboxAbortedError,
+  SandboxBusyError,
+  SandboxUnavailableError,
+  probeSandboxAvailability,
+} from "../lab/sandbox";
 import { LabError, type createLabService } from "../lab/service";
 import { StudyError } from "../study/service";
 import { LOOPBACK_HOSTS, readStudyJson } from "./study-handlers";
@@ -8,8 +13,15 @@ import { LOOPBACK_HOSTS, readStudyJson } from "./study-handlers";
 type LabService = ReturnType<typeof createLabService>;
 const noCache = { "Cache-Control": "private, no-store" };
 
-export function createLabHandlers(service: LabService) {
+export function createLabHandlers(
+  service: LabService,
+  probeStatus: () => Promise<LabSandboxStatus> = probeSandboxAvailability,
+) {
   return {
+    async status() {
+      const data = await probeStatus();
+      return Response.json({ data, meta: { version: 1 } }, { headers: noCache });
+    },
     async run(request: Request) {
       try {
         const raw = await readStudyJson(request, LAB_LIMITS.maxBodyBytes, {

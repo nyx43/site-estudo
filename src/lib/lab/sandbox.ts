@@ -1,6 +1,6 @@
 import { spawn, type ChildProcess, type SpawnOptions } from "node:child_process";
 import { existsSync } from "node:fs";
-import { LAB_LIMITS, type LabExecutionResult } from "./schema";
+import { LAB_LIMITS, type LabExecutionResult, type LabSandboxStatus } from "./schema";
 
 const defaultPathExists = (target: string) => existsSync(/*turbopackIgnore: true*/ target);
 const defaultSpawnProcess = ((command: string, args: readonly string[], options?: SpawnOptions) =>
@@ -480,4 +480,55 @@ let defaultRunner: PythonSandboxRunner | null = null;
 export function getDefaultSandboxRunner(): PythonSandboxRunner {
   if (!defaultRunner) defaultRunner = createSandboxRunner();
   return defaultRunner;
+}
+
+/** Verifica rapidamente se bubblewrap, user namespaces e python3 iniciam a sandbox com sucesso. */
+export async function probeSandboxAvailability(deps: SandboxDependencies = {}): Promise<LabSandboxStatus> {
+  const pathExists = deps.pathExists ?? defaultPathExists;
+  const bwrapPath = deps.bwrapPath ?? "/usr/bin/bwrap";
+  const pythonPath = deps.pythonPath ?? "/usr/bin/python3";
+  const config = defaultLimits(deps.limits);
+  const limits = {
+    timeoutMs: config.timeoutMs,
+    memoryMb: Math.round(config.memoryBytes / (1024 * 1024)),
+    maxOutputKb: Math.round(config.maxOutputBytes / 1024),
+    cpuSeconds: config.cpuSeconds,
+  };
+  const checkedAt = new Date().toISOString();
+
+  if (!pathExists(bwrapPath) || !pathExists(pythonPath) || !pathExists("/usr")) {
+    return {
+      available: false,
+      reason: "Binários de isolamento (bubblewrap ou python3) não encontrados no sistema.",
+      checkedAt,
+      limits,
+    };
+  }
+
+  try {
+    const probeRunner = createSandboxRunner({
+      ...deps,
+      limits: { ...deps.limits, timeoutMs: deps.limits?.timeoutMs ?? 1500 },
+    });
+    const result = await probeRunner.execute({ code: "pass" });
+    if (result.isolated && result.exitCode === 0 && !result.timedOut) {
+      return { available: true, checkedAt, limits };
+    }
+    return {
+      available: false,
+      reason: "A sandbox isolada não concluiu a inicialização mínima esperada.",
+      checkedAt,
+      limits,
+    };
+  } catch (error) {
+    return {
+      available: false,
+      reason:
+        error instanceof SandboxUnavailableError
+          ? error.message
+          : "A sandbox isolada (bubblewrap/user namespaces) está indisponível neste ambiente.",
+      checkedAt,
+      limits,
+    };
+  }
 }

@@ -13,7 +13,7 @@ import {
   Terminal,
   XCircle,
 } from "lucide-react";
-import { studyRequest } from "@/lib/study/client";
+import { StudyClientError, studyRequest } from "@/lib/study/client";
 import { toStableTtsId } from "@/lib/study/tts";
 import {
   LAB_DRAFTS_STORAGE_KEY,
@@ -23,7 +23,7 @@ import {
   type LabDraftMap,
 } from "@/lib/lab/drafts";
 import type { PublicLab, PublicLabChallenge } from "@/lib/lab/public";
-import { LAB_LIMITS, type LabRunResponse } from "@/lib/lab/schema";
+import { LAB_LIMITS, type LabRunResponse, type LabSandboxStatus } from "@/lib/lab/schema";
 import { TtsBlock } from "../study/tts-block";
 import { TtsProvider } from "../study/tts-provider";
 import { TtsToolbar } from "../study/tts-toolbar";
@@ -105,6 +105,7 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
   const [tabInsertsSpaces, setTabInsertsSpaces] = useState(false);
   const [tabStatusNotice, setTabStatusNotice] = useState("");
   const [cursor, setCursor] = useState({ line: 1, col: 1 });
+  const [sandboxStatus, setSandboxStatus] = useState<Pick<LabSandboxStatus, "available" | "reason"> | null>(null);
 
   const drafts = useSyncExternalStore(subscribeDrafts, readDraftSnapshot, () => EMPTY_DRAFTS);
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
@@ -127,6 +128,8 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
   const currentError = errorsByScope[activeScope] ?? "";
   const currentNotice = noticesByScope[activeScope] ?? "";
   const isDirty = code !== starterCode || stdin !== starterStdin;
+  const isSandboxUnavailable = sandboxStatus !== null && !sandboxStatus.available;
+  const isExecutionDisabled = Boolean(runningMode) || !code.trim() || isSandboxUnavailable;
 
   const updateDraft = useCallback(
     (nextCode: string, nextStdin: string, passed?: boolean) => {
@@ -177,7 +180,7 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
     fallbackError: string,
     onSuccess?: (data: LabRunResponse) => void,
   ) => {
-    if (runningMode || !code.trim()) return;
+    if (runningMode || !code.trim() || isSandboxUnavailable) return;
     const targetScope = activeScope;
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -194,6 +197,12 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
     } catch (error) {
       if ((error instanceof DOMException && error.name === "AbortError") || controller.signal.aborted) {
         setNoticesByScope((prev) => ({ ...prev, [targetScope]: "Execução cancelada." }));
+      } else if (error instanceof StudyClientError && error.code === "SANDBOX_UNAVAILABLE") {
+        setSandboxStatus({ available: false, reason: error.message });
+        setErrorsByScope((prev) => ({
+          ...prev,
+          [targetScope]: error.message,
+        }));
       } else {
         setErrorsByScope((prev) => ({
           ...prev,
@@ -309,7 +318,31 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
   }, [tabStatusNotice]);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const loadSandboxStatus = async () => {
+      try {
+        const status = await studyRequest<LabSandboxStatus>("/api/lab/status", undefined, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted) {
+          setSandboxStatus({ available: status.available, reason: status.reason });
+        }
+      } catch (error) {
+        if ((error instanceof DOMException && error.name === "AbortError") || controller.signal.aborted) {
+          return;
+        }
+        setSandboxStatus({
+          available: false,
+          reason:
+            error instanceof Error
+              ? error.message
+              : "Não foi possível verificar a disponibilidade da sandbox no servidor.",
+        });
+      }
+    };
+    void loadSandboxStatus();
     return () => {
+      controller.abort();
       abortControllerRef.current?.abort();
     };
   }, []);
@@ -496,11 +529,25 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
             />
           </div>
 
+          {isSandboxUnavailable && (
+            <div className="lab-sandbox-unavailable" role="alert">
+              <AlertTriangle size={16} aria-hidden="true" />
+              <div>
+                <strong>Execução temporariamente indisponível</strong>
+                <p>
+                  {sandboxStatus.reason ?? "A sandbox bubblewrap/Python não está acessível neste ambiente."} Você
+                  pode continuar editando o código normalmente; seus rascunhos seguem salvos localmente.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="lab-actions">
             <button
               type="button"
               className="button primary"
-              disabled={Boolean(runningMode) || !code.trim()}
+              disabled={isExecutionDisabled}
+              title={isSandboxUnavailable ? "Execução desabilitada: sandbox indisponível." : undefined}
               onClick={executeCode}
             >
               <Play size={14} aria-hidden="true" />
@@ -511,7 +558,8 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
               <button
                 type="button"
                 className="button secondary"
-                disabled={Boolean(runningMode) || !code.trim()}
+                disabled={isExecutionDisabled}
+                title={isSandboxUnavailable ? "Execução desabilitada: sandbox indisponível." : undefined}
                 onClick={runChallengeTests}
               >
                 <FlaskConical size={14} aria-hidden="true" />

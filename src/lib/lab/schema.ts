@@ -137,3 +137,15 @@ export type LabRunResponse =
       allPassed: boolean;
       results: LabTestCaseResult[];
     };
+
+export interface LabSandboxStatus {
+  available: boolean;
+  reason?: string;
+  checkedAt: string;
+  limits: {
+    timeoutMs: number;
+    memoryMb: number;
+    maxOutputKb: number;
+    cpuSeconds: number;
+  };
+}
