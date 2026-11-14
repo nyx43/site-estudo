@@ -382,7 +382,11 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
             >
               <span>{challenge.title}</span>
               {challengeDraft?.passed && (
-                <span className="lab-tab-passed" aria-label="Concluído localmente">
+                <span
+                  className="lab-tab-passed"
+                  aria-label="Passou nos testes automáticos"
+                  title="Passou nos testes automáticos"
+                >
                   <CheckCircle2 size={13} aria-hidden="true" />
                 </span>
               )}
@@ -447,6 +451,9 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
               <span className={`lab-draft-pill ${isDirty ? "dirty" : ""}`}>
                 {isDirty ? "Rascunho salvo localmente" : "Código inicial"}
               </span>
+              {currentChallenge && savedDraft?.passed && (
+                <span className="lab-draft-pill dirty">Passou nos testes automáticos</span>
+              )}
             </div>
             <div className="lab-editor-tools">
               <button
@@ -675,12 +682,12 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
                 <div>
                   <strong>
                     {currentResult.allPassed
-                      ? "Todos os testes automáticos passaram!"
+                      ? "Passou nos testes automáticos"
                       : `${currentResult.passedCount} de ${currentResult.totalCount} testes passaram`}
                   </strong>
                   <p>
                     {currentResult.allPassed
-                      ? "Sua solução atendeu todos os casos definidos para este desafio."
+                      ? "Sua solução atendeu todos os casos definidos para este desafio (verificação automática local)."
                       : "Compare a saída esperada com a obtida nos casos abaixo e ajuste seu código."}
                   </p>
                 </div>

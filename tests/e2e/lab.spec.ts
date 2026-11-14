@@ -118,8 +118,8 @@ test("navegação, execução com stdin, stderr, persistência de rascunho e tes
   await expect(page.getByTestId("lab-stdout")).toHaveText("2\n1\nFogo!");
 
   await page.getByRole("button", { name: /Rodar testes \(3\)/ }).click();
-  await expect(page.getByTestId("lab-test-summary")).toContainText("Todos os testes automáticos passaram!");
-  await expect(page.getByLabel("Concluído localmente")).toBeVisible();
+  await expect(page.getByTestId("lab-test-summary")).toContainText("Passou nos testes automáticos");
+  await expect(page.getByLabel("Passou nos testes automáticos")).toBeVisible();
 
   await expectNoHorizontalOverflow(page);
 });

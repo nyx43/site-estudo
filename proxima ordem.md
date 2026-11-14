@@ -28,7 +28,7 @@ Atualizado em 13/11/2026. A referência de longo prazo continua em [ordem de tra
 
 - **Dependência de `bubblewrap` e namespaces de usuário sem privilégios:** o executor requer `/usr/bin/bwrap` e `/usr/bin/python3` funcionais no host Linux com criação de user namespaces liberada para o processo Node. Em contêineres restritos ou sistemas sem `bwrap`, a API retorna propositalmente HTTP `503` (`SANDBOX_UNAVAILABLE`) sem fallback inseguro.
 - **Execução efêmera e sem escrita persistente:** não há suporte a bibliotecas externas fora da biblioteca padrão do Python 3 nem gravação em `/sandbox` (somente leitura); entradas interativas passo a passo ocorrem em lote via caixa `stdin`.
-- **Rascunhos locais:** o código digitado no editor e o selo local de desafio concluído são salvos apenas no `localStorage` do navegador (`estudo-lab-drafts-v1`) para preservar integralmente as tabelas e o histórico de versões do banco SQLite.
+- **Rascunhos locais:** o código digitado no editor e o selo `"Passou nos testes automáticos"` (sem sugerir domínio) são salvos apenas no `localStorage` do navegador (`estudo-lab-drafts-v1`) para preservar integralmente as tabelas e o histórico de versões do banco SQLite.
 
 ## Verificações e testes executados
 
