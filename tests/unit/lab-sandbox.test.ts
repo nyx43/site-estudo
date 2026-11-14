@@ -1,12 +1,19 @@
 import { type SpawnOptions, spawn } from "node:child_process";
 import { readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { loadLabs } from "@/lib/content/load-labs";
 import { normalizeLabOutput } from "@/lib/lab/public";
 import { SandboxAbortedError, createSandboxRunner, getDefaultSandboxRunner } from "@/lib/lab/sandbox";
+import { assertSandboxAvailable, readSandboxSkipDirective } from "../sandbox-policy";
 
-describe("real bwrap Python sandbox isolation and behavior", () => {
+const { shouldSkip } = readSandboxSkipDirective("tests/unit/lab-sandbox.test.ts");
+
+describe.skipIf(shouldSkip)("real bwrap Python sandbox isolation and behavior", () => {
+  beforeAll(async () => {
+    await assertSandboxAvailable("tests/unit/lab-sandbox.test.ts");
+  });
+
   const runner = getDefaultSandboxRunner();
 
   it("executes Python loops with stdin and UTF-8 output", async () => {

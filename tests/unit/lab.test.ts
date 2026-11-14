@@ -20,6 +20,7 @@ import {
 } from "@/lib/lab/sandbox";
 import { LAB_LIMITS, LabDefinitionSchema, LabRunRequestSchema, type LabDefinition } from "@/lib/lab/schema";
 import { createLabService } from "@/lib/lab/service";
+import { assertSandboxAvailable, readSandboxSkipDirective } from "../sandbox-policy";
 
 const sampleLab: LabDefinition = {
   schemaVersion: 1,
@@ -497,5 +498,26 @@ function createMockSandboxChild(onKill?: (signal: NodeJS.Signals) => void) {
     const json = (await response.json()) as { data: { available: boolean; reason?: string } };
     expect(json.data.available).toBe(false);
     expect(json.data.reason).toContain("bubblewrap");
+  });
+
+  it("enforces explicit fail-by-default sandbox policy unless SANDBOX_TESTS=skip is set with visible warning", async () => {
+    const warn = vi.fn();
+    const skipped = readSandboxSkipDirective("suite-demo", { envValue: "skip", warn });
+    expect(skipped.shouldSkip).toBe(true);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("[SANDBOX_TESTS=skip]"));
+
+    expect(() => readSandboxSkipDirective("suite-demo", { envValue: "maybe" })).toThrow("SANDBOX_TESTS=skip");
+
+    await expect(
+      assertSandboxAvailable("suite-demo", {
+        envValue: "",
+        probe: async () => ({
+          available: false,
+          reason: "user namespaces bloqueados",
+          checkedAt: "2026-11-13T00:00:00.000Z",
+          limits: { timeoutMs: 2500, memoryMb: 128, maxOutputKb: 16, cpuSeconds: 2 },
+        }),
+      }),
+    ).rejects.toThrow("SANDBOX_TESTS=skip");
   });
 });

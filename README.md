@@ -48,6 +48,8 @@ Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente
 
 Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o navegador instalado por `npx playwright install chromium`. Também é possível definir `CHROMIUM_PATH`. Os percursos criam seu próprio banco em `.cache/e2e-*.db` e servidor na porta 3100. Eles não reutilizam o servidor ou o progresso de desenvolvimento. Não execute um servidor no mesmo diretório de build durante `npm run build`.
 
+Política de testes dependentes de `bubblewrap`: por padrão, as suítes que executam código Python real (`tests/unit/lab-sandbox.test.ts` e os percursos de execução em `tests/e2e/lab.spec.ts`) **falham com mensagem explícita** caso `/usr/bin/bwrap`, `/usr/bin/python3` ou user namespaces não estejam disponíveis — nunca pulam em silêncio. Em ambientes restritos, só é permitido pulá-las explicitamente com `SANDBOX_TESTS=skip` (que imprime aviso visível no terminal).
+
 ### Aulas e prática
 
 Depois de migrar e popular o banco, abra `/aulas`. A leitura mostra todo o conteúdo sem perguntas de desbloqueio e não marca partes como concluídas. Cada aula oferece também um percurso guiado de 10 partes, pré-perguntas sem nota, exemplos explicados e autoexplicação. As respostas e partes concluídas ficam salvas no SQLite.
