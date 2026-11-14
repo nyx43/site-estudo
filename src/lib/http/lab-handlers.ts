@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { LAB_LIMITS, LabRunRequestSchema } from "../lab/schema";
-import { SandboxBusyError, SandboxUnavailableError } from "../lab/sandbox";
+import { SandboxAbortedError, SandboxBusyError, SandboxUnavailableError } from "../lab/sandbox";
 import { LabError, type createLabService } from "../lab/service";
 import { StudyError } from "../study/service";
 import { LOOPBACK_HOSTS, readStudyJson } from "./study-handlers";
@@ -17,9 +17,15 @@ export function createLabHandlers(service: LabService) {
           allowedHosts: LOOPBACK_HOSTS,
         });
         const parsed = LabRunRequestSchema.parse(raw);
-        const data = await service.run(parsed);
+        const data = await service.run(parsed, { signal: request.signal });
         return Response.json({ data, meta: { version: 1 } }, { headers: noCache });
       } catch (error) {
+        if (error instanceof SandboxAbortedError) {
+          return Response.json(
+            { error: { code: error.code, message: error.message } },
+            { status: 499, headers: noCache },
+          );
+        }
         if (error instanceof z.ZodError) {
           return Response.json(
             { error: { code: "INVALID_REQUEST", message: error.issues[0]?.message ?? "Confira os campos enviados." } },

@@ -10,6 +10,7 @@ import {
 } from "@/lib/lab/drafts";
 import { normalizeLabOutput, toPublicLab } from "@/lib/lab/public";
 import {
+  SandboxAbortedError,
   SandboxBusyError,
   SandboxUnavailableError,
   buildBubblewrapArgs,
@@ -362,5 +363,92 @@ describe("sandbox fail-closed isolation contract", () => {
     const results = await Promise.all(accepted);
     expect(results).toHaveLength(totalAccepted);
     expect(results.every((item) => item.stdout === "done\n")).toBe(true);
+  });
+
+  it("aborts queued and active executions, releases slots, and avoids running later tests", async () => {
+    const mockChildFactory = (onKill: (signal: NodeJS.Signals) => void) => {
+      const child = new EventEmitter() as ChildProcess;
+      child.stdin = { end: vi.fn(), on: vi.fn(), destroy: vi.fn() } as unknown as ChildProcess["stdin"];
+      child.stdout = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stdout"];
+      child.stderr = Object.assign(new EventEmitter(), { destroy: vi.fn() }) as unknown as ChildProcess["stderr"];
+      const fd3 = new EventEmitter();
+      Object.defineProperty(child, "stdio", { value: [child.stdin, child.stdout, child.stderr, fd3] });
+      child.kill = vi.fn((sig?: NodeJS.Signals | number) => {
+        onKill((typeof sig === "string" ? sig : "SIGKILL") as NodeJS.Signals);
+        return true;
+      });
+      return { child, fd3 };
+    };
+
+    const children: { child: ChildProcess; fd3: EventEmitter }[] = [];
+    const runner = createSandboxRunner({
+      pathExists: () => true,
+      spawnProcess: (() => {
+        const entry = mockChildFactory(() => {
+          queueMicrotask(() => entry.child.emit("close", null, "SIGKILL"));
+        });
+        children.push(entry);
+        return entry.child;
+      }) as unknown as NonNullable<Parameters<typeof createSandboxRunner>[0]>["spawnProcess"],
+    });
+
+    // Lot 1 and 2 occupy active slots; slot 3 queues
+    const activeController = new AbortController();
+    const queuedController = new AbortController();
+    const run1 = runner.execute({ code: "while True: pass", signal: activeController.signal });
+    const run2 = runner.execute({ code: "while True: pass" });
+    const run3 = runner.execute({ code: "print('queued')", signal: queuedController.signal });
+
+    // Cancel queued execution first while queue is full
+    queuedController.abort();
+    await expect(run3).rejects.toBeInstanceOf(SandboxAbortedError);
+
+    // Cancel active execution 1 -> kills active child 1 and frees slot cleanly
+    activeController.abort();
+    await expect(run1).rejects.toBeInstanceOf(SandboxAbortedError);
+
+    // Finish active execution 2 normally and verify next execution succeeds cleanly
+    const active2 = children[1];
+    active2.fd3.emit("data", Buffer.from("OK"));
+    active2.child.stdout?.emit("data", Buffer.from("second\n"));
+    active2.child.emit("close", 0, null);
+    expect((await run2).stdout).toBe("second\n");
+
+    const afterCancel = runner.execute({ code: "print('fresh')" });
+    const freshChild = children[2];
+    freshChild.fd3.emit("data", Buffer.from("OK"));
+    freshChild.child.stdout?.emit("data", Buffer.from("fresh\n"));
+    freshChild.child.emit("close", 0, null);
+    expect((await afterCancel).stdout).toBe("fresh\n");
+
+    // HTTP handler returns 499 SANDBOX_ABORTED when AbortSignal fires
+    const executeSpy = vi.fn<PythonSandboxRunner["execute"]>().mockRejectedValue(new SandboxAbortedError());
+    const handlers = createLabHandlers(
+      createLabService({
+        loadLabByTopic: async () => sampleLab,
+        runner: { execute: executeSpy },
+      }),
+    );
+    const reqController = new AbortController();
+    const abortedResponse = await handlers.run(
+      new Request("http://127.0.0.1:3000/api/lab/run", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          origin: "http://127.0.0.1:3000",
+          host: "127.0.0.1:3000",
+        },
+        body: JSON.stringify({
+          mode: "test",
+          topicId: sampleLab.topicId,
+          challengeId: "c1",
+          code: "print(1)",
+        }),
+        signal: reqController.signal,
+      }),
+    );
+    expect(abortedResponse.status).toBe(499);
+    expect((await abortedResponse.json()).error.code).toBe("SANDBOX_ABORTED");
+    expect(executeSpy).toHaveBeenCalledTimes(1);
   });
 });

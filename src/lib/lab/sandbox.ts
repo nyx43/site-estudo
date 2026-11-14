@@ -22,10 +22,19 @@ export class SandboxBusyError extends Error {
   }
 }
 
+export class SandboxAbortedError extends Error {
+  readonly code = "SANDBOX_ABORTED" as const;
+
+  constructor(message = "Execução cancelada.") {
+    super(message);
+  }
+}
+
 export interface SandboxExecutionInput {
   code: string;
   stdin?: string;
   timeoutMs?: number;
+  signal?: AbortSignal;
 }
 
 export interface SandboxLimitsConfig {
@@ -190,14 +199,45 @@ export function buildBubblewrapArgs(options: {
 
 function createSandboxQueue(maxConcurrent: number, maxQueued: number) {
   let active = 0;
-  const waiting: (() => void)[] = [];
+  const waiting: { wake: () => void }[] = [];
 
-  return async function withSlot<T>(task: () => Promise<T>): Promise<T> {
+  return async function withSlot<T>(task: () => Promise<T>, signal?: AbortSignal): Promise<T> {
+    if (signal?.aborted) {
+      throw new SandboxAbortedError();
+    }
+
     if (active >= maxConcurrent) {
       if (waiting.length >= maxQueued) {
         throw new SandboxBusyError();
       }
-      await new Promise<void>((resolve) => waiting.push(resolve));
+      await new Promise<void>((resolve, reject) => {
+        let done = false;
+        const cleanup = () => signal?.removeEventListener("abort", onAbort);
+        const entry = {
+          wake: () => {
+            if (done) return;
+            done = true;
+            cleanup();
+            resolve();
+          },
+        };
+        const onAbort = () => {
+          if (done) return;
+          done = true;
+          const idx = waiting.indexOf(entry);
+          if (idx >= 0) waiting.splice(idx, 1);
+          cleanup();
+          reject(new SandboxAbortedError());
+        };
+        signal?.addEventListener("abort", onAbort, { once: true });
+        waiting.push(entry);
+      });
+    }
+
+    if (signal?.aborted) {
+      const next = waiting.shift();
+      if (next) next.wake();
+      throw new SandboxAbortedError();
     }
 
     active += 1;
@@ -206,7 +246,7 @@ function createSandboxQueue(maxConcurrent: number, maxQueued: number) {
     } finally {
       active -= 1;
       const next = waiting.shift();
-      if (next) next();
+      if (next) next.wake();
     }
   };
 }
@@ -218,6 +258,13 @@ function decodeBoundedBuffers(chunks: Buffer[], maxBytes: number): string {
 }
 
 function killProcessSafely(child: ChildProcess, signal: NodeJS.Signals) {
+  if (typeof child.pid === "number" && child.pid > 0) {
+    try {
+      process.kill(-child.pid, signal);
+    } catch {
+      // Grupo já encerrado ou execução simulada sem PGID de sistema.
+    }
+  }
   try {
     child.kill(signal);
   } catch {
@@ -236,6 +283,11 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
       return runWithSlot(
         () =>
           new Promise<LabExecutionResult>((resolve, reject) => {
+            if (input.signal?.aborted) {
+              reject(new SandboxAbortedError());
+              return;
+            }
+
             const bwrapPath = deps.bwrapPath ?? "/usr/bin/bwrap";
             const pythonPath = deps.pythonPath ?? "/usr/bin/python3";
 
@@ -256,6 +308,7 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
             try {
               child = spawnFn(bwrapPath, args, {
                 stdio: ["pipe", "pipe", "pipe", "pipe"],
+                detached: true,
               });
             } catch {
               reject(new SandboxUnavailableError());
@@ -269,23 +322,46 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
             let combinedRunawayBytes = 0;
             let handshakeText = "";
             let timedOut = false;
+            let aborted = false;
             let outputTruncated = false;
             let settled = false;
+            let forceKillTimer: ReturnType<typeof setTimeout> | undefined;
+            let abortWatchdogTimer: ReturnType<typeof setTimeout> | undefined;
+
+            const onAbort = () => {
+              if (settled || aborted) return;
+              aborted = true;
+              clearTimeout(wallTimer);
+              killProcessSafely(child, "SIGKILL");
+              abortWatchdogTimer = setTimeout(() => {
+                finishError(new SandboxAbortedError());
+              }, 300);
+            };
+
+            const cleanupListeners = () => {
+              clearTimeout(wallTimer);
+              clearTimeout(forceKillTimer);
+              clearTimeout(abortWatchdogTimer);
+              input.signal?.removeEventListener("abort", onAbort);
+            };
 
             const finishError = (err: Error) => {
               if (settled) return;
               settled = true;
-              clearTimeout(wallTimer);
-              clearTimeout(forceKillTimer);
+              cleanupListeners();
+              child.stdin?.destroy();
+              child.stdout?.destroy();
+              child.stderr?.destroy();
               reject(err);
             };
 
-            let forceKillTimer: ReturnType<typeof setTimeout> | undefined;
             const wallTimer = setTimeout(() => {
               timedOut = true;
               killProcessSafely(child, "SIGTERM");
               forceKillTimer = setTimeout(() => killProcessSafely(child, "SIGKILL"), 250);
             }, limits.timeoutMs);
+
+            input.signal?.addEventListener("abort", onAbort, { once: true });
 
             const killRunawayOutput = () => {
               if (combinedRunawayBytes > limits.maxCombinedRunawayBytes) {
@@ -295,7 +371,7 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
             };
 
             child.on("error", () => {
-              finishError(new SandboxUnavailableError());
+              finishError(aborted ? new SandboxAbortedError() : new SandboxUnavailableError());
             });
 
             child.stdin?.on("error", () => {
@@ -340,8 +416,12 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
             child.on("close", (code, signal) => {
               if (settled) return;
               settled = true;
-              clearTimeout(wallTimer);
-              clearTimeout(forceKillTimer);
+              cleanupListeners();
+
+              if (aborted) {
+                reject(new SandboxAbortedError());
+                return;
+              }
 
               if (handshakeText !== "OK") {
                 reject(
@@ -387,9 +467,10 @@ export function createSandboxRunner(deps: SandboxDependencies = {}): PythonSandb
               child.stdin?.end(payload);
             } catch {
               killProcessSafely(child, "SIGKILL");
-              finishError(new SandboxUnavailableError());
+              finishError(aborted ? new SandboxAbortedError() : new SandboxUnavailableError());
             }
           }),
+        input.signal,
       );
     },
   };

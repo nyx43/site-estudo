@@ -1,7 +1,10 @@
+import { type SpawnOptions, spawn } from "node:child_process";
+import { readdirSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
 import { loadLabs } from "@/lib/content/load-labs";
 import { normalizeLabOutput } from "@/lib/lab/public";
-import { createSandboxRunner, getDefaultSandboxRunner } from "@/lib/lab/sandbox";
+import { SandboxAbortedError, createSandboxRunner, getDefaultSandboxRunner } from "@/lib/lab/sandbox";
 
 describe("real bwrap Python sandbox isolation and behavior", () => {
   const runner = getDefaultSandboxRunner();
@@ -134,6 +137,59 @@ describe("real bwrap Python sandbox isolation and behavior", () => {
 
     expect(bomb.outputTruncated).toBe(true);
     expect(Buffer.byteLength(bomb.stdout, "utf8")).toBeLessThanOrEqual(16384);
+  });
+
+  it("cancels mid-loop via AbortController leaving zero orphan processes or temp dirs and recovers cleanly", async () => {
+    const spawnedPids: number[] = [];
+    const trackedSpawn = ((cmd: string, args: readonly string[], opts: SpawnOptions) => {
+      const child = spawn(cmd, args, opts);
+      if (child.pid) spawnedPids.push(child.pid);
+      return child;
+    }) as unknown as typeof spawn;
+    const trackedRunner = createSandboxRunner({
+      limits: { timeoutMs: 4500, cpuSeconds: 5 },
+      spawnProcess: trackedSpawn,
+    });
+
+    const tmpBefore = new Set(readdirSync(tmpdir()));
+    const controller = new AbortController();
+    const startedAt = Date.now();
+    const cancelTimer = setTimeout(() => controller.abort(), 160);
+
+    try {
+      await expect(
+        trackedRunner.execute({
+          code: "import time\nwhile True:\n    time.sleep(0.05)",
+          signal: controller.signal,
+        }),
+      ).rejects.toBeInstanceOf(SandboxAbortedError);
+    } finally {
+      clearTimeout(cancelTimer);
+    }
+
+    const cancelElapsedMs = Date.now() - startedAt;
+    expect(cancelElapsedMs).toBeLessThan(1500);
+    expect(spawnedPids.length).toBe(1);
+
+    // O processo bwrap/python deve ter sido encerrado e recolhido do SO.
+    for (const pid of spawnedPids) {
+      let alive = true;
+      try {
+        process.kill(pid, 0);
+      } catch {
+        alive = false;
+      }
+      expect(alive).toBe(false);
+    }
+
+    const tmpAfter = readdirSync(tmpdir());
+    const leftoverEntries = tmpAfter.filter((entry) => !tmpBefore.has(entry));
+    expect(leftoverEntries).toEqual([]);
+
+    // Execução subsequente funciona normalmente com a fila liberada.
+    const nextRun = await trackedRunner.execute({ code: "print('recuperado')" });
+    expect(nextRun.exitCode).toBe(0);
+    expect(nextRun.stdout).toBe("recuperado\n");
   });
 
   it("passes every challenge test case in content/labs using its referenceSolution", async () => {

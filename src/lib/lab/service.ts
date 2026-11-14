@@ -1,6 +1,6 @@
 import { loadLabByTopic } from "../content/load-labs";
 import { normalizeLabOutput } from "./public";
-import { getDefaultSandboxRunner, type PythonSandboxRunner } from "./sandbox";
+import { SandboxAbortedError, getDefaultSandboxRunner, type PythonSandboxRunner } from "./sandbox";
 import type { LabDefinition, LabRunRequest, LabRunResponse, LabTestCaseResult } from "./schema";
 
 export class LabError extends Error {
@@ -22,9 +22,14 @@ export function createLabService(deps: LabServiceDependencies = {}) {
   const runner = deps.runner ?? getDefaultSandboxRunner();
 
   return {
-    async run(request: LabRunRequest): Promise<LabRunResponse> {
+    async run(request: LabRunRequest, options?: { signal?: AbortSignal }): Promise<LabRunResponse> {
+      const signal = options?.signal;
+      if (signal?.aborted) {
+        throw new SandboxAbortedError();
+      }
+
       if (request.mode === "run") {
-        const execution = await runner.execute({ code: request.code, stdin: request.stdin });
+        const execution = await runner.execute({ code: request.code, stdin: request.stdin, signal });
         return { mode: "run", execution };
       }
 
@@ -40,7 +45,10 @@ export function createLabService(deps: LabServiceDependencies = {}) {
 
       const results: LabTestCaseResult[] = [];
       for (const testCase of challenge.tests) {
-        const execution = await runner.execute({ code: request.code, stdin: testCase.stdin });
+        if (signal?.aborted) {
+          throw new SandboxAbortedError();
+        }
+        const execution = await runner.execute({ code: request.code, stdin: testCase.stdin, signal });
         const actualOutput = normalizeLabOutput(execution.stdout);
         const expectedOutput = normalizeLabOutput(testCase.expectedOutput);
         const passed =

@@ -9,6 +9,7 @@ import {
   Play,
   RotateCcw,
   ShieldCheck,
+  Square,
   Terminal,
   XCircle,
 } from "lucide-react";
@@ -100,12 +101,14 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
   const [runningMode, setRunningMode] = useState<"run" | "test" | null>(null);
   const [resultsByScope, setResultsByScope] = useState<Record<string, LabRunResponse>>({});
   const [errorsByScope, setErrorsByScope] = useState<Record<string, string>>({});
+  const [noticesByScope, setNoticesByScope] = useState<Record<string, string>>({});
   const [tabInsertsSpaces, setTabInsertsSpaces] = useState(false);
   const [tabStatusNotice, setTabStatusNotice] = useState("");
   const [cursor, setCursor] = useState({ line: 1, col: 1 });
 
   const drafts = useSyncExternalStore(subscribeDrafts, readDraftSnapshot, () => EMPTY_DRAFTS);
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const editorId = useId();
   const stdinId = useId();
 
@@ -122,6 +125,7 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
   const stdin = savedDraft ? savedDraft.stdin : starterStdin;
   const currentResult = resultsByScope[activeScope] ?? null;
   const currentError = errorsByScope[activeScope] ?? "";
+  const currentNotice = noticesByScope[activeScope] ?? "";
   const isDirty = code !== starterCode || stdin !== starterStdin;
 
   const updateDraft = useCallback(
@@ -156,56 +160,85 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
       return next;
     });
     setErrorsByScope((prev) => ({ ...prev, [activeScope]: "" }));
+    setNoticesByScope((prev) => ({ ...prev, [activeScope]: "" }));
   };
 
   const syncCursor = (element: HTMLTextAreaElement) => {
     setCursor(computeCursorPosition(element.value, element.selectionStart ?? 0));
   };
 
-  const executeCode = async () => {
+  const cancelExecution = () => {
+    abortControllerRef.current?.abort();
+  };
+
+  const runLabRequest = async (
+    mode: "run" | "test",
+    payload: unknown,
+    fallbackError: string,
+    onSuccess?: (data: LabRunResponse) => void,
+  ) => {
     if (runningMode || !code.trim()) return;
-    setRunningMode("run");
-    setErrorsByScope((prev) => ({ ...prev, [activeScope]: "" }));
+    const targetScope = activeScope;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    setRunningMode(mode);
+    setErrorsByScope((prev) => ({ ...prev, [targetScope]: "" }));
+    setNoticesByScope((prev) => ({ ...prev, [targetScope]: "" }));
+
     try {
-      const data = await studyRequest<LabRunResponse>("/api/lab/run", {
-        mode: "run",
-        code,
-        stdin,
+      const data = await studyRequest<LabRunResponse>("/api/lab/run", payload, {
+        signal: controller.signal,
       });
-      setResultsByScope((prev) => ({ ...prev, [activeScope]: data }));
+      setResultsByScope((prev) => ({ ...prev, [targetScope]: data }));
+      onSuccess?.(data);
     } catch (error) {
-      setErrorsByScope((prev) => ({
-        ...prev,
-        [activeScope]: error instanceof Error ? error.message : "Não foi possível executar o código.",
-      }));
+      if ((error instanceof DOMException && error.name === "AbortError") || controller.signal.aborted) {
+        setNoticesByScope((prev) => ({ ...prev, [targetScope]: "Execução cancelada." }));
+      } else {
+        setErrorsByScope((prev) => ({
+          ...prev,
+          [targetScope]: error instanceof Error ? error.message : fallbackError,
+        }));
+      }
     } finally {
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+      }
       setRunningMode(null);
     }
   };
 
+  const executeCode = async () => {
+    await runLabRequest(
+      "run",
+      {
+        mode: "run",
+        code,
+        stdin,
+      },
+      "Não foi possível executar o código.",
+    );
+  };
+
   const runChallengeTests = async () => {
-    if (runningMode || !currentChallenge || !code.trim()) return;
-    setRunningMode("test");
-    setErrorsByScope((prev) => ({ ...prev, [activeScope]: "" }));
-    try {
-      const data = await studyRequest<LabRunResponse>("/api/lab/run", {
+    if (!currentChallenge) return;
+    const targetCode = code;
+    const targetStdin = stdin;
+    await runLabRequest(
+      "test",
+      {
         mode: "test",
         topicId: lab.topicId,
         challengeId: currentChallenge.id,
-        code,
-      });
-      setResultsByScope((prev) => ({ ...prev, [activeScope]: data }));
-      if (data.mode === "test") {
-        updateDraft(code, stdin, data.allPassed);
-      }
-    } catch (error) {
-      setErrorsByScope((prev) => ({
-        ...prev,
-        [activeScope]: error instanceof Error ? error.message : "Não foi possível validar os testes automáticos.",
-      }));
-    } finally {
-      setRunningMode(null);
-    }
+        code: targetCode,
+      },
+      "Não foi possível validar os testes automáticos.",
+      (data) => {
+        if (data.mode === "test") {
+          updateDraft(targetCode, targetStdin, data.allPassed);
+        }
+      },
+    );
   };
 
   const setEditorSelection = (pos: number) => {
@@ -274,6 +307,12 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
     const timer = window.setTimeout(() => setTabStatusNotice(""), 4000);
     return () => window.clearTimeout(timer);
   }, [tabStatusNotice]);
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   const ttsScopeKey = `${lab.id}:${activeScope}`;
   const exitStatusInfo = useMemo(() => {
@@ -481,6 +520,17 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
                   : `Rodar testes (${currentChallenge.tests.length})`}
               </button>
             )}
+
+            {runningMode && (
+              <button
+                type="button"
+                className="button lab-cancel-button"
+                onClick={cancelExecution}
+              >
+                <Square size={13} aria-hidden="true" />
+                Cancelar
+              </button>
+            )}
           </div>
         </div>
 
@@ -490,7 +540,7 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
               <Terminal size={15} aria-hidden="true" />
               <h3>Console e verificação</h3>
             </div>
-            {(currentResult || currentError) && (
+            {(currentResult || currentError || currentNotice) && (
               <button type="button" className="lab-tool-button" onClick={clearOutput}>
                 <Eraser size={13} aria-hidden="true" />
                 Limpar saída
@@ -505,7 +555,14 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
             </div>
           )}
 
-          {!currentResult && !currentError && !runningMode && (
+          {currentNotice && !runningMode && (
+            <div className="lab-cancel-notice" role="status" aria-live="polite">
+              <Square size={14} aria-hidden="true" />
+              <p>{currentNotice}</p>
+            </div>
+          )}
+
+          {!currentResult && !currentError && !currentNotice && !runningMode && (
             <div className="lab-empty-console">
               <ShieldCheck size={20} aria-hidden="true" />
               <p>

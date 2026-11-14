@@ -595,6 +595,9 @@ button:disabled { opacity: .55; }
 .lab-stdin-box label { font-size: 12px; font-weight: 600; color: #274432; }
 .lab-stdin-box p { font-size: 11px; color: #677a63; }
 .lab-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.lab-cancel-button { background: #fcf3f1; border-color: #dfb4ab; color: #7e2d23; }
+.lab-cancel-button:hover { background: #f8e4e0; border-color: #ca8d80; }
+.lab-cancel-notice { display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-radius: 6px; border: 1px solid #dfd8b8; background: #faf6e4; color: #67521c; font-size: 12px; }
 .lab-empty-console { border: 1px dashed #cfdcc4; border-radius: 7px; padding: 26px 18px; text-align: center; color: #5f7459; display: grid; place-items: center; gap: 10px; background: #fafcf7; font-size: 12px; }
 .lab-alert-error { display: flex; align-items: flex-start; gap: 9px; padding: 12px 14px; border-radius: 6px; border: 1px solid #e7bfb7; background: #fdf0ed; color: #7e2e23; font-size: 12px; }
 .lab-console-result, .lab-tests-result { display: grid; gap: 13px; min-width: 0; }
@@ -646,6 +649,9 @@ button:disabled { opacity: .55; }
 [data-theme="dark"] .lab-accessibility-note { background: #223b2a; border-color: #496e4f; color: #cde7c8; }
 [data-theme="dark"] .lab-empty-console { background: #18261e; border-color: #3f5543; color: #bacbb8; }
 [data-theme="dark"] .lab-alert-error { background: #472a26; border-color: #7d4a42; color: #ffd4cc; }
+[data-theme="dark"] .lab-cancel-button { background: #472a26; border-color: #7d4a42; color: #ffd4cc; }
+[data-theme="dark"] .lab-cancel-button:hover { background: #5a342f; border-color: #9e5d52; }
+[data-theme="dark"] .lab-cancel-notice { background: #413821; border-color: #706035; color: #f0dba3; }
 [data-theme="dark"] .lab-badge.sandbox { background: #23422e; border-color: #497555; color: #c4e8c9; }
 [data-theme="dark"] .lab-badge.ok { background: #23452d; border-color: #4d7e55; color: #c7ebc5; }
 [data-theme="dark"] .lab-badge.error { background: #4a2b27; border-color: #7d4942; color: #ffd3cc; }
