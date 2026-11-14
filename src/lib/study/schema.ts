@@ -6,12 +6,17 @@ const code = z.string().min(1).max(8000).refine((value) => value.trim().length >
 const id = z.string().regex(/^[a-z0-9]+(?:[.-][a-z0-9]+)*$/);
 const question = z.object({ id, prompt: text, modelAnswer: text }).strict();
 
+export const exampleModes = ["PYTHON_SANDBOX", "STATIC_CODE", "CONCEPTUAL_ARTIFACT"] as const;
+export type ExampleMode = typeof exampleModes[number];
+
 export const lessonSteps = ["prequestions", "why", "mental-model", "concept", "worked-example", "misconceptions", "uses", "efficiency", "summary", "reflection"] as const;
 export type LessonStep = typeof lessonSteps[number];
 
 export const LessonSchema = z.object({
   id, topicId: id, version: z.number().int().positive(), title: text,
   status: z.enum(["DRAFT", "AUTO_CHECKED", "VERIFIED"]),
+  exampleMode: z.enum(exampleModes).optional(),
+  exampleLanguage: text.optional(),
   objectives: z.array(text).min(2).max(5),
   teaching: TeachingSchema.optional(),
   prequestions: z.array(question).min(2).max(3),

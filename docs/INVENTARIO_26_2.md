@@ -1,172 +1,112 @@
 # Inventário de fontes 26.2 — 13/11/2026
 
-Metadados do Google Drive; conteúdo não lido nesta rodada. Assuntos por título são hipóteses, sem objetivos, pré-requisitos ou localizadores confirmados. APTA excluída. Datas UTC de modificação. Direitos e sensibilidade pessoal requerem avaliação antes de uso.
+Inventário consolidado após inspeção passiva dos **63 arquivos** distribuídos nas **5 pastas autorizadas** do período 26.2 (e suas 5 subpastas `/Tarefas/`). **APTA — Direitos Humanos permanece explicitamente excluída** (não lida, não indexada e não vinculada ao catálogo ou banco). Nenhum arquivo bruto, caminho local de máquina pessoal ou dump integral é publicado no repositório.
 
-## Complexidade — / (15lq4yHbJx-ZUKGSBaoNHdx7eYu77C6Ni)
+Observação de paginação/referência em PDFs: salvo indicação explícita em contrário, as páginas citadas abaixo referem-se à paginação real do arquivo PDF (índice do visualizador / `pdfinfo`), preservando também títulos originais com eventuais desvios ortográficos dos arquivos de origem (ex.: `Sistemas Oeracionais - Aula 2.pdf`).
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+## Resumo por disciplina acadêmica
+
+| Disciplina 26.2 | Arquivos | Autoria / identificação nos metadados | Correlação no catálogo | Modo de verificação / linguagem | Lacunas principais |
 | --- | --- | --- | --- | --- | --- |
-| Tarefas | 1_O2CPxnfWxq4fJvSmWSkOUofOZ3PDyhl | application/vnd.google-apps.folder | 2026-11-13T22:34:44.633Z | listável | metadados |
-| 45338.py | 1oQ2GWMTlPr0rBlFE5d9TxvvNHDGsAtqI | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 45339.py | 1LzZySVowBbimqvHOMGm_izaw8hvLvULo | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 45340.py | 1kcIreR6v5umbTi89FAMiYY__jo4Xt8UB | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 48081.py | 1KkQ6VUUa97MikSLBXH-EnsMi0j3fpIzr | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 48082.py | 1YnvTOFsI-ok_5eqkM9cNEgA4LHE0Dnsy | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 48083.py | 1bx0f78GHuwp3h6DZb2X2g9KW8fHbVVlx | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| 50687.py | 11G9rIwaaNzZiKiG1wva6xdSFiDyPdQMA | text/x-python | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| Complexidade.txt | 1DW3zt5dMPGLzppNc41CffaxcimD1FeLj | text/plain | 2026-11-13T22:14:16.546Z | download permitido | não lido nesta rodada |
-| Fila_Circular (1).xlsx | 1suKdiny9A8qL9irbAbqnec4UmrNEgEvl | application/vnd.openxmlformats-officedocument.spreadsheetml.sheet | 2026-11-13T22:11:33.328Z | download permitido | não lido nesta rodada |
-| Estrutura de Dados - Estruturas Básicas (1).pdf | 1gC47vaP-UPttSb54w9NmHqXk9WZEmPTz | application/pdf | 2026-11-13T22:08:39.892Z | download permitido | não lido nesta rodada |
-| Complexidade de Algoritmos - Aula 03.pdf | 1XZd2H-7_xbto8F3BAjbKZ86eEnKTqlS_ | application/pdf | 2026-11-13T22:08:39.891Z | download permitido | não lido nesta rodada |
-| Complexidade de Algoritmos - Aula 04.pdf | 1jIYOvnDUjjas5Et1Uv3PqQfXGwUBEBE_ | application/pdf | 2026-11-13T22:08:39.891Z | download permitido | não lido nesta rodada |
-| Complexidade de Algoritmos - Aula 01.pdf | 1HRG3dRU4RhyVYkpwunezBVT7j1ybjeQm | application/pdf | 2026-11-13T22:08:39.889Z | download permitido | não lido nesta rodada |
-| Complexidade de Algoritmos - Aula 02.pdf | 1e3CG12iXWR7oYrrFCIXhpGX4vq1lIoWN | application/pdf | 2026-11-13T22:08:39.889Z | download permitido | não lido nesta rodada |
+| **Complexidade de Algoritmos e Estrutura de Dados** | 15 | Prof. Fabio dos Santos Gonçalves (`FABIO GONCALVES` / `Fabio S Goncalves`) | `algoritmos` e `estruturas-de-dados` (+ apoio `python`) | `PYTHON_SANDBOX` (Python 3 em `bwrap`) | PDF `Aula 04.pdf` traz título interno de metadado *"Árvores Binárias de Pesquisa"*, mas o conteúdo trata de Selection, Insertion e Bubble Sort; árvores e grafos não aparecem nos PDFs recebidos até aqui. Script `48083.py` contém bug didático em mensagem de fila cheia (`"Fila Vazia!!"`). |
+| **Desenvolvimento de Softwares para Web** | 13 | Material institucional UGB V2-2026 (`Thailan DEV`) | `web-dev` | `STATIC_CODE` (HTTP, JSON, React JSX, REST) | Cobertura forte em Cliente-Servidor, HTTP/REST/JSON, APIs Node/Django, React (`conceitos-react.zip`), Tailwind v4 e mensageria RabbitMQ (`(4).pdf`); faltam materiais dedicados de autenticação JWT/OAuth, testes automatizados E2E/API e acessibilidade WCAG aprofundada. |
+| **Engenharia de Requisitos de Softwares** | 20 | Prof. André Ricardo Prazeres Rodrigues (`ANDRE RODRIGUES`) | `requisitos` | `CONCEPTUAL_ARTIFACT` | Cobertura completa de introdução, stakeholders, entrevistas/questionários, brainstorming/observação, RF vs RNF, Casos de Uso UML, Histórias INVEST, SRS IEEE 830 e prototipagem (`exemplo1.png`, `exemplo2.jpg`, `exemplo3.png`). Faltam tópicos explícitos de priorização formal (MoSCoW/RICE) e análise de impacto. |
+| **Sistemas Operacionais** | 8 | Prof. Fabio dos Santos Gonçalves + *Guia Foca Linux* v5.02 (Gleydson Mazioli da Silva) | `sistemas-operacionais` | `CONCEPTUAL_ARTIFACT` (SO / Shell / Linux) | Ausência de PDF específico `Aula 1` na pasta, suprida pelo plano/resumo em `Sistemas Operacionais.txt` (`L1–L88`), `Unix_History.pdf` (41 p.) e `Iniciante.pdf` (143 p.). Conteúdo sólido de arquitetura, kernel, processos, semáforos/monitores, sistemas de arquivos, FHS e CLI Linux. |
+| **Gerenciamento de Banco de Dados** | 7 | `David Ricci`, `Daniel Furtado` | `banco-de-dados` (com vínculo `java` / `web-dev`) | `STATIC_CODE` (SQL + Java Spring Data JPA) | **Lacuna crítica mantida:** a pasta contém Java OO (`Aula - OO [Java].pdf`), revisão OO/REST (`revisaoPOOSpring.pdf`), Web Services + Spring Data JPA (`DW2-Modulo6-Intro-Web-Services-Spring.pdf` p. 29–34 com `@Entity`, `JpaRepository`, `@Query` SQL nativo e `@Transactional`), projeto `demo1.zip` (Spring Boot 4.1.2 + JPA + MySQL `softDB`) e atividade de resumo sobre **MongoDB** (`Tarefas/Enunciados.txt`), mas **não contém apostilas de modelagem relacional (DER/MER), formas normais (1FN–3FN), SQL DDL/DML/JOINs ou planos de execução**. |
 
-## Web — / (1QqROulvuEdofBQq1NVZES1jkejdcTmuB)
+---
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+## Inventário detalhado por arquivo (63 arquivos inspecionados)
+
+### 1. Complexidade de Algoritmos e Estrutura de Dados (`15lq4yHbJx-ZUKGSBaoNHdx7eYu77C6Ni`)
+
+| Arquivo | Drive ID | Tamanho / Extensão | SHA-256 (prefixo 16) | Escopo verificado na leitura | Observações e sensibilidade |
 | --- | --- | --- | --- | --- | --- |
-| Tarefas | 19BythefI7vDCyo3vPVwvtMvbKURkrgTF | application/vnd.google-apps.folder | 2026-11-13T22:34:44.649Z | listável | metadados |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (4).pdf | 1gHexE-oBxT5gRRZtjf0eRVleIaMeZEGF | application/pdf | 2026-11-13T22:08:39.930Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (2).pdf | 1E-edH92sw2rSigEanKTVYk1JJaL-3reA | application/pdf | 2026-11-13T22:08:39.924Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (1) (1).pdf | 1jaqJ_rUi-0mct2RA6g-nm0C1Gruvism3 | application/pdf | 2026-11-13T22:08:39.921Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (8).pdf | 19xKrpAAGcqWPrFIWgUN_pvxDr4mM4l4_ | application/pdf | 2026-11-13T22:08:39.919Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (6).pdf | 1_uPp2cGuNqs1dAOZpao5XWMkLwxd_6WP | application/pdf | 2026-11-13T22:08:39.916Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (1).pdf | 1zB1FokuStKBpQZ_iBKgDY9Kq4p9Vq5Qm | application/pdf | 2026-11-13T22:08:39.913Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (3).pdf | 1uUStIUBQfWiqnDIj3H7g07YlWKsnkzK7 | application/pdf | 2026-11-13T22:08:39.911Z | download permitido | não lido nesta rodada |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB.pdf | 1PViXknude_ciQhozSFfwhfVrHrAYO_Dt | application/pdf | 2026-11-13T22:08:39.911Z | download permitido | não lido nesta rodada |
-| conceitos-react.zip | 1-qavil5Iekf0CCp9FqgXgnDbiB1g9G9y | application/zip | 2026-11-13T22:08:39.904Z | download permitido | não lido nesta rodada |
-| Aula 2 - Desenvolvimento de Software para WEB.pdf | 1QULCwzresExVaZd5aKo-2BBBOZYt6hfP | application/pdf | 2026-11-13T22:08:39.903Z | download permitido | não lido nesta rodada |
-| Aula 1 - Desenvolvimento de Software para WEB.pdf | 1904g48N1f_aF5W4l-sPOx49wIjHHQSTe | application/pdf | 2026-11-13T22:08:39.894Z | download permitido | não lido nesta rodada |
+| `Complexidade de Algoritmos - Aula 01.pdf` | `1HRG3dRU4RhyVYkpwunezBVT7j1ybjeQm` | 17 p. PDF | `b8da06e538161e1f` | Introdução à complexidade de tempo e espaço, motivação de eficiência, escala de entrada `n`, notação Big O e exemplo quadrático com `bubble_sort` (p. 13). | Sem PII. |
+| `Complexidade de Algoritmos - Aula 02.pdf` | `1e3CG12iXWR7oYrrFCIXhpGX4vq1lIoWN` | 20 p. PDF | `89c00d6169a86541` | Medição empírica com `time.time()` (p. 11) e `timeit` (p. 12–17), complexidade de espaço (p. 18–19: Merge Sort e recursão `fatorial(n)` em `O(n)`) e exercício comparando busca linear vs binária (p. 20). | Sem PII. Atenção p. 15 mostra rascunho de decorador `@timeit.timeit` não executável diretamente sem wrapper próprio. |
+| `Complexidade de Algoritmos - Aula 03.pdf` | `1XZd2H-7_xbto8F3BAjbKZ86eEnKTqlS_` | 21 p. PDF | `107c299d6fbfc89b` | Notações assintóticas $O$, $\Omega$ (p. 4), $\Theta$ (p. 5), contagem de instruções simples/condicionais/loops simples/aninhados (p. 6–17), busca linear `O(n)` (p. 18) e busca binária `O(log n)` (p. 19–20). | Sem PII. Contagem de loop `for i in range(n)` anotada como `1 + n + (n - 1) -> 2n`. |
+| `Complexidade de Algoritmos - Aula 04.pdf` | `1jIYOvnDUjjas5Et1Uv3PqQfXGwUBEBE_` | 23 p. PDF | `c26c955c90197f8a` | Ordenação: Selection Sort (`O(n^2)`, p. 12–15), Insertion Sort (`O(n^2)` / bom para quase ordenados, p. 16–19), Bubble Sort (`O(n)` melhor caso / `O(n^2)` pior caso, p. 20–22) e exercício de menu (p. 23). | Metadado PDF `Title` incorreto (*"Árvores Binárias de Pesquisa"*); o conteúdo real é **Ordenação**. |
+| `Estrutura de Dados - Estruturas Básicas (1).pdf` | `1gC47vaP-UPttSb54w9NmHqXk9WZEmPTz` | 24 p. PDF | `2b2e953e4a989e1f` | Pilha LIFO e aplicação em delimitadores (p. 3–10), Fila FIFO (p. 11–17) e Fila Circular com vetor fixo e `rpos`/`spos` (p. 18–24). | Implementação em Python usa `global` e listas mutáveis. |
+| `Fila_Circular (1).xlsx` | `1suKdiny9A8qL9irbAbqnec4UmrNEgEvl` | 10 KB XLSX | `14332a030cac9c18` | Rastreamento tabular de `push`/`pop` em fila circular `MAX = 5` acompanhando índices `rpos` e `spos`. | Inspecionado via XML sem macros. |
+| `Complexidade.txt` | `1DW3zt5dMPGLzppNc41CffaxcimD1FeLj` | 21 KB TXT | `7f00548e90a0068d` | Notas corridas de aulas e avisos do ambiente acadêmico sobre complexidade, buscas e ordenação. | Preservar apenas conceitos; excluir avisos de datas/links internos. |
+| `45338.py` | `1oQ2GWMTlPr0rBlFE5d9TxvvNHDGsAtqI` | 523 B PY | `9b43e70d17b00794` | `ordenacao_selecao(A)` (Selection Sort). | Código fonte didático; validar só em sandbox. |
+| `45339.py` | `1LzZySVowBbimqvHOMGm_izaw8hvLvULo` | 517 B PY | `28cd259fb1d6eaea` | `ordenacao_insercao(A)` (Insertion Sort). | Idem. |
+| `45340.py` | `1kcIreR6v5umbTi89FAMiYY__jo4Xt8UB` | 369 B PY | `496d3c020a583e56` | `ordenacao_bolha(A)` (Bubble Sort). | Idem; usa `random.sample`. |
+| `48081.py` | `1KkQ6VUUa97MikSLBXH-EnsMi0j3fpIzr` | 794 B PY | `ebbfa2f2622d6536` | Pilha com `inicializa()`, `push()`, `pop()`, `show()` e capacidade `MAX = 5`. | Sem PII. |
+| `48082.py` | `1YnvTOFsI-ok_5eqkM9cNEgA4LHE0Dnsy` | 715 B PY | `802bfacb9accf1ae` | Fila linear com `spos`, `rpos`, `push()` e `pop()`. | Sem PII. |
+| `48083.py` | `1bx0f78GHuwp3h6DZb2X2g9KW8fHbVVlx` | 1015 B PY | `aca6fc8eee603a70` | Fila circular com `init(maximo)`, `push()` e `pop()`. | **Bug didático identificado:** na condição de fila cheia em `push()`, imprime `"\nFila Vazia!!"` em vez de `"Fila Cheia!!"`. Excelente caso de revisão. |
+| `50687.py` | `11G9rIwaaNzZiKiG1wva6xdSFiDyPdQMA` | 2197 B PY | `dab52cda82490402` | Menu interativo em CLI integrando pilha, fila, fila circular e ordenação. | Sem PII. |
+| `Tarefas/Enunciados.txt` | `1hkJi3qHCkK0Wsj2aI-XxRS8SAksz-rPi` | 3880 B TXT | `e862cd7a05afa33c` | Enunciados de entregas práticas (ordenação, estruturas e menu). | Sem PII de alunos. |
 
-## Requisitos — / (11FY2i35yjI4KeE43jNYCtgWgJzkFZ0XL)
+### 2. Desenvolvimento de Softwares para Web (`1QqROulvuEdofBQq1NVZES1jkejdcTmuB`)
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+Desambiguação verificada por conteúdo e SHA-256:
+- Todos os 9 PDFs `_[V2 - 2026]...` e `Aula 1`/`Aula 2` possuem hashes **distintos** entre si.
+- **Não há duplicata** entre `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (2).pdf` da raiz (`420f7cdf0231e773`, 16 p. — *Monolito vs. Microsserviços + CRUD*) e `Tarefas/_[V2 - 2026] ... (2).pdf` (`0e12c423381755da`, 3 p. — *3 exercícios práticos em React*).
+- Já `... (2).pdf` (raiz, 16 p.) e `... (8).pdf` (raiz, 17 p., `1a7dcd4cfe5bc93e`) compartilham os slides de *Monolito vs. Microsserviços + CRUD*, tendo `(8)` uma capa adicional `"CHECKPOINT AULA 8"` na p. 1.
+
+| Arquivo | Drive ID | Tamanho / Extensão | SHA-256 (prefixo 16) | Escopo verificado na leitura | Observações e sensibilidade |
 | --- | --- | --- | --- | --- | --- |
-| Tarefas | 1VTLXl_UQpZiRrS80Guepk-RMJl2Ndvn0 | application/vnd.google-apps.folder | 2026-11-13T22:34:44.628Z | listável | metadados |
-| exemplo1.png | 1lQlFOjeSyBvxWOi6cSS0Vtd9fbZUJzkG | image/png | 2026-11-13T22:15:49.112Z | download permitido | não lido nesta rodada |
-| exemplo2.jpg | 1LYS3fgC9B6XIo8tCu10XB4tl4sjj_-g1 | image/jpeg | 2026-11-13T22:15:49.112Z | download permitido | não lido nesta rodada |
-| exemplo3.png | 10H3yEH336toY9cd7iyjbFxzIYtLqITfj | image/png | 2026-11-13T22:15:49.112Z | download permitido | não lido nesta rodada |
-| aula9_prototipagem_exercicio.docx | 1sUm1i73mlBdneSEwSSHmOnch5rxI6caV | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 2026-11-13T22:08:39.937Z | download permitido | não lido nesta rodada |
-| aula9_prototipagem.pdf | 1Z9N28Laa8YW8UhxaXig-VFKqaLu0p6G- | application/pdf | 2026-11-13T22:08:39.937Z | download permitido | não lido nesta rodada |
-| aula10_Prototipagem_exercicios.pdf | 1KavQq-O05FEeWD1z8frdEv-BLEYjlA3y | application/pdf | 2026-11-13T22:08:39.937Z | download permitido | não lido nesta rodada |
-| aula7_revisao.pdf | 1xP4YLNP_J2G-uLst1Cq7CY-xDvpVOI2t | application/pdf | 2026-11-13T22:08:39.936Z | download permitido | não lido nesta rodada |
-| aula8_IEEE_exercicios.docx | 1Sc1tbFkILrE4kUT5tr_-RwyWh7y5M3oH | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 2026-11-13T22:08:39.936Z | download permitido | não lido nesta rodada |
-| aula8_IEEE.pdf | 1Gnxj5NYhuoSHB9iUqEpgHpIyiIMPlAAV | application/pdf | 2026-11-13T22:08:39.936Z | download permitido | não lido nesta rodada |
-| Aula3_Elicitacao_Requisitos_Parte2.pptx | 1axD3qFX1alK-1-wxsYegsuF7KQErC5Dx | application/vnd.openxmlformats-officedocument.presentationml.presentation | 2026-11-13T22:08:39.935Z | download permitido | não lido nesta rodada |
-| aula3_engenharia_software.pdf | 1D-w83_2QY9JBIea7hqFraTVyFZWGjSxS | application/pdf | 2026-11-13T22:08:39.935Z | download permitido | não lido nesta rodada |
-| aula4_engenharia_software.pdf | 13StCem7A3svsFYywe5UociRQdxsLwHc3 | application/pdf | 2026-11-13T22:08:39.935Z | download permitido | não lido nesta rodada |
-| aula5_uml_caso_uso.pdf | 10GleDvb9lZktmNY8b6tj7vuj5jomn2HQ | application/pdf | 2026-11-13T22:08:39.935Z | download permitido | não lido nesta rodada |
-| aula6_INVEST.pdf | 16j4LgqbATCVCI0VkRRE2MB2kYYdDIwda | application/pdf | 2026-11-13T22:08:39.935Z | download permitido | não lido nesta rodada |
-| aula1_exercicios.docx | 1HlLkYa04eHpr461CZTwG813BNH8h0nBN | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 2026-11-13T22:08:39.934Z | download permitido | não lido nesta rodada |
-| Aula1_Introducao_Engenharia_Requisitos.pptx | 1_RMd0i0FeWsHZsgx1bDXrc1i7j9rZNth | application/vnd.openxmlformats-officedocument.presentationml.presentation | 2026-11-13T22:08:39.934Z | download permitido | não lido nesta rodada |
-| aula2_exercicios.docx | 10FCzNrLhSl-tSD08eMln4yybfmYeA9x1 | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 2026-11-13T22:08:39.934Z | download permitido | não lido nesta rodada |
-| Aula2_Stakeholders_Elicitacao_Requisitos.pptx | 1tySwEiIuwVVqRSxnk1iq8-UXEKEHxd0W | application/vnd.openxmlformats-officedocument.presentationml.presentation | 2026-11-13T22:08:39.934Z | download permitido | não lido nesta rodada |
-| aula1 (1).docx | 1JlhfqFH__D5EPyvi1oTZfdEN3rtkHsUL | application/vnd.openxmlformats-officedocument.wordprocessingml.document | 2026-11-13T22:08:39.933Z | download permitido | não lido nesta rodada |
+| `Aula 1 - Desenvolvimento de Software para WEB.pdf` | `1904g48N1f_aF5W4l-sPOx49wIjHHQSTe` | 17 p. PDF | `66b71d825872eddb` | Ementa e cronograma do semestre (14 aulas efetivas: HTTP/Cliente-Servidor, HTML/CSS, JS/TS, React/Next, Node, APIs). | Sem PII. |
+| `Aula 2 - Desenvolvimento de Software para WEB.pdf` | `1QULCwzresExVaZd5aKo-2BBBOZYt6hfP` | 43 p. PDF | `146dc92ff92fb5f7` | Ciclo Request/Response (p. 10–12), DNS (p. 13), HTTP/HTTPS e TLS (p. 14–15), estrutura Request/Response (p. 16–18), Front-end vs Back-end vs Full Stack (p. 19–28), Arquitetura em Camadas Apresentação/Controller/Service/Repository (p. 32–38) e MVC (p. 40–43). | Base direta para `web-dev.http-e-rest`. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB.pdf` | `1PViXknude_ciQhozSFfwhfVrHrAYO_Dt` | 52 p. PDF | `79da33e74cd3f009` | APIs e Endpoints (p. 12–20), Verbos HTTP (p. 24–27), Status Codes 100–599 e cenário de falha em `200 OK { "success": false }` (p. 28–31), REST vs RESTful e princípios (p. 33–43), JSON (p. 47–49) e integração com API Django (`views.py`/`serializer.py`/`urls.py`, p. 50–52). | Sem sufixo numérico (`Checkpoint Aula 3`); fonte primária direta para `web-dev.http-e-rest`. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (1).pdf` | `1zB1FokuStKBpQZ_iBKgDY9Kq4p9Vq5Qm` | 15 p. PDF | `124f136833fa0e03` | Front-end com React: Virtual DOM, JSX, componentes, Props, State e Hooks. | Sem PII. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (1) (1).pdf` | `1jaqJ_rUi-0mct2RA6g-nm0C1Gruvism3` | 17 p. PDF | `4c5b94eec4126873` | Design Responsivo e estilização utilitária com Tailwind CSS v4. | Sem PII. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (2).pdf` | `1E-edH92sw2rSigEanKTVYk1JJaL-3reA` | 16 p. PDF | `420f7cdf0231e773` | Arquiteturas Monolito vs Microsserviços (p. 1–15) e CRUD (p. 16). | Sobrepõe conteúdo de `(8).pdf` sem slide de capa. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (3).pdf` | `1uUStIUBQfWiqnDIj3H7g07YlWKsnkzK7` | 2 p. PDF | `abc192c086a10a82` | Checkpoint Aula 5 — dinâmica *"Capture the Bug"*. | Sem PII. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (4).pdf` | `1gHexE-oBxT5gRRZtjf0eRVleIaMeZEGF` | 38 p. PDF | `78bd3257cc31bfbf` | Mensageria assíncrona com RabbitMQ (filas, exchanges, produtores e consumidores). | Tópico avançado / complementar. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (6).pdf` | `1_uPp2cGuNqs1dAOZpao5XWMkLwxd_6WP` | 10 p. PDF | `cf9da1f3242ab4d9` | Prática de laboratório integrando React (frontend) e Django REST API (`GET`, `POST`, `DELETE` e filtro por query string `?nome=...`). | Bom material de contrato cliente-servidor. |
+| `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (8).pdf` | `19xKrpAAGcqWPrFIWgUN_pvxDr4mM4l4_` | 17 p. PDF | `1a7dcd4cfe5bc93e` | Checkpoint Aula 8 — Arquitetura Monolito vs Microsserviços + CRUD. | Versão com capa da Aula 8 de `(2).pdf` raiz. |
+| `conceitos-react.zip` | `1-qavil5Iekf0CCp9FqgXgnDbiB1g9G9y` | 83 KB ZIP (28 entradas) | `0f1b609964406aa1` | App Vite + React 18 com exemplos autorais de `ComponentesPage.jsx`, `PropsPage.jsx`, `StatePage.jsx`, `ComposicaoPage.jsx` e `HooksPage.jsx`. | Inspecionado estaticamente sem `npm install` nem execução. Sem PII. |
+| `Tarefas/Enunciados.txt` | `1Jg4fgOb4oepCPo5_btMNR_c4DGECy0Io` | 1589 B TXT | `c86cda2df08bf326` | Orientações de entregas via GitHub (branches por exercício, API NodeJS + frontend Tailwind). | Sem PII. |
+| `Tarefas/_[V2 - 2026] UGB - Desenvolvimento de Software para WEB (2).pdf` | `1zJJXilOH-kQztyJkPj3rHRI_TNJhzBam` | 3 p. PDF | `0e12c423381755da` | Três exercícios React com `useState`: Caixa de mercado (p. 1), Adivinhação (p. 2) e Pedra/Papel/Tesoura (p. 3). | Arquivo distinto do `(2).pdf` da raiz. |
 
-## Sistemas Operacionais — / (1w-zidGEG-xvoiP0D8L-ELNmon_HmYIdt)
+### 3. Engenharia de Requisitos de Softwares (`11FY2i35yjI4KeE43jNYCtgWgJzkFZ0XL`)
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+| Arquivo | Drive ID | Tamanho / Extensão | SHA-256 (prefixo 16) | Escopo verificado na leitura | Observações e sensibilidade |
 | --- | --- | --- | --- | --- | --- |
-| Tarefas | 1kxjIPKTphI7lAjVP2yvL9hfB6mQ0we_7 | application/vnd.google-apps.folder | 2026-11-13T22:34:44.617Z | listável | metadados |
-| Sistemas Operacionais.txt | 1fdj0GFxknz8j3HYrJ5uyhTSq18Vlz-Z9 | text/plain | 2026-11-13T22:14:16.547Z | download permitido | não lido nesta rodada |
-| Iniciante.pdf | 17tp-RW3TYcTASRA35kYeC85UDqwhodEK | application/pdf | 2026-11-13T22:08:39.932Z | download permitido | não lido nesta rodada |
-| Sistemas Oeracionais - Aula 5.pdf | 1DrF7puNCzCgUIQy6jRoPKoW0JBK7Fa_7 | application/pdf | 2026-11-13T22:08:39.932Z | download permitido | não lido nesta rodada |
-| Sistemas Operacionais - Aula 4.pdf | 11WFsOZBrfzi2nHgTiO2pZUB1We-ixN-M | application/pdf | 2026-11-13T22:08:39.932Z | download permitido | não lido nesta rodada |
-| Sistemas Oeracionais - Aula 2.pdf | 1NUxRapeOedRCKNjrEYeEZj-Mes_nYPzG | application/pdf | 2026-11-13T22:08:39.931Z | download permitido | não lido nesta rodada |
-| Sistemas Oeracionais - Aula 3.pdf | 1lYYXvw8GdCQs0BV544w0tt862tRIGDQT | application/pdf | 2026-11-13T22:08:39.931Z | download permitido | não lido nesta rodada |
-| Unix_History.pdf | 1ro5Tc5o5dF9zsy4pap3XWflc17WRdLDO | application/pdf | 2026-11-13T22:08:39.931Z | download permitido | não lido nesta rodada |
+| `Aula1_Introducao_Engenharia_Requisitos.pptx` | `1_RMd0i0FeWsHZsgx1bDXrc1i7j9rZNth` | 7 slides PPTX | `34f317812618c8c7` | Definição de requisitos, importância (com exemplo de apagão/falha de atualização), RF vs RNF e ciclo de vida inicial (slides 1–7). | Sem PII. |
+| `aula1 (1).docx` | `1JlhfqFH__D5EPyvi1oTZfdEN3rtkHsUL` | DOCX | `9340e93c8e062875` | Plano/ementa da disciplina (60 h) e introdução às metas do semestre. | Sem respostas de alunos. |
+| `aula1_exercicios.docx` | `1HlLkYa04eHpr461CZTwG813BNH8h0nBN` | DOCX | `77317d9d04255fff` | Atividades de classificação e identificação de requisitos (Aula 1). | Sem PII de alunos. |
+| `Aula2_Stakeholders_Elicitacao_Requisitos.pptx` | `1tySwEiIuwVVqRSxnk1iq8-UXEKEHxd0W` | 4 slides PPTX | `7e466b526f7eb51b` | Definição e exemplos de stakeholders (slide 2), entrevistas abertas/fechadas e questionários com escala Likert (slide 3), exercícios (slide 4). | Sem PII. |
+| `aula2_exercicios.docx` | `10FCzNrLhSl-tSD08eMln4yybfmYeA9x1` | DOCX | `02d70baa27a8b2f4` | Dinâmica com 5 perguntas abertas vs 5 fechadas para sistema acadêmico. | Sem PII de alunos. |
+| `Aula3_Elicitacao_Requisitos_Parte2.pptx` | `1axD3qFX1alK-1-wxsYegsuF7KQErC5Dx` | 5 slides PPTX | `5d41a41ef5f078e0` | Roteiro de brainstorming, ficha de observação e análise documental (slides 1–5). | Sem PII. |
+| `aula3_engenharia_software.pdf` | `1D-w83_2QY9JBIea7hqFraTVyFZWGjSxS` | 8 p. PDF | `37285d7c7df3876d` | Versão estendida da Aula 3: brainstorming (p. 2–4), observação em campo (p. 4–5), análise documental (p. 6–7) e estudo de caso de academia (p. 8). | Sem PII. |
+| `aula4_engenharia_software.pdf` | `13StCem7A3svsFYywe5UociRQdxsLwHc3` | 8 p. PDF | `4f2bfd2ff0e2a6d6` | Requisitos Funcionais vs Não Funcionais (disponibilidade, escalabilidade, segurança), testabilidade e verbos recomendados (p. 1–8). | Fonte central de `requisitos.funcionais-e-nao-funcionais`. |
+| `aula5_uml_caso_uso.pdf` | `10GleDvb9lZktmNY8b6tj7vuj5jomn2HQ` | 12 p. PDF | `2203397587375fae` | Atores, estrutura textual de caso de uso, notação UML e relacionamentos `<<include>>` e `<<extend>>` (p. 1–12). | Sem PII. |
+| `aula6_INVEST.pdf` | `16j4LgqbATCVCI0VkRRE2MB2kYYdDIwda` | 11 p. PDF | `b8c47eee5a4e0eff` | Histórias de usuário (`Como <perfil>, quero <ação> para <valor>`) e os 6 critérios INVEST com exemplos bons e ruins (p. 1–11). | Sem PII. |
+| `aula7_revisao.pdf` | `1xP4YLNP_J2G-uLst1Cq7CY-xDvpVOI2t` | 14 p. PDF | `919b265679827f6e` | Consolidação de fluxo de requisitos, elicitação (entrevistas, questionários, workshops), RF/RNF, qualidade, casos de uso e INVEST (p. 1–14). | Sem PII. |
+| `aula8_IEEE.pdf` | `1Gnxj5NYhuoSHB9iUqEpgHpIyiIMPlAAV` | 5 p. PDF | `04763e07557026d3` | Estrutura do padrão IEEE (Introdução, Descrição Geral, Requisitos Específicos) e critérios de clareza, testabilidade e consistência (p. 1–5). | Fonte complementar direta de `requisitos.funcionais-e-nao-funcionais`. |
+| `aula8_IEEE_exercicios.docx` | `1Sc1tbFkILrE4kUT5tr_-RwyWh7y5M3oH` | DOCX | `e96f250dc162aab7` | Cinco questões objetivas sobre SRS IEEE, termos subjetivos ("moderno e intuitivo"), requisitos de desempenho mensuráveis e contradição (`RF01`/`RF02`). | Sem respostas pessoais identificadas. |
+| `aula9_prototipagem.pdf` | `1Z9N28Laa8YW8UhxaXig-VFKqaLu0p6G-` | 7 p. PDF | `2423ccb51715e1ac` | Prototipagem em papel, baixa/alta fidelidade, Balsamiq/Figma, benefícios e limites (p. 1–7). | Sem PII. |
+| `aula9_prototipagem_exercicio.docx` | `1sUm1i73mlBdneSEwSSHmOnch5rxI6caV` | DOCX | `f80e081348fb18fa` | Cinco questões sobre classificação de protótipos e papel da prototipagem na validação. | Sem PII. |
+| `aula10_Prototipagem_exercicios.pdf` | `1KavQq-O05FEeWD1z8frdEv-BLEYjlA3y` | 1 p. PDF | `1f112399d999caf8` | Exercício prático de prototipagem (tela e validação). | Sem PII. |
+| `exemplo1.png` / `exemplo2.jpg` / `exemplo3.png` | `1lQlFOje...` / `1LYS3fgC...` / `10H3yEH3...` | 3 imagens | `24dd41c5...`, `57a897e5...`, `5d009777...` | Inspecionadas visualmente: ilustram níveis de fidelidade de protótipo (rascunho em papel, wireframe estrutural e tela de interface de app). | Sem dados pessoais ou capturas sensíveis. |
+| `Tarefas/Enunciados.txt` | `1puxKe8DxQOaIFwg4QCk0ykOaZ03eUKNF` | 1313 B TXT | `e330856d1f68b7b9` | Orientações das entregas da disciplina. | Sem PII. |
 
-## Banco de Dados — / (1owHJxMVZJmMSLCvF7KExW_vCx6V1O-ig)
+### 4. Sistemas Operacionais (`1w-zidGEG-xvoiP0D8L-ELNmon_HmYIdt`)
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+| Arquivo | Drive ID | Tamanho / Extensão | SHA-256 (prefixo 16) | Escopo verificado na leitura | Observações e sensibilidade |
 | --- | --- | --- | --- | --- | --- |
-| Tarefas | 1elTHksRn3sDbo8nNKuWT0QqiC-BXPmKk | application/vnd.google-apps.folder | 2026-11-13T22:34:44.634Z | listável | metadados |
-| demo1.zip | 18MWSwapmtCjRqNXczTBA-ahOrofqp6pG | application/zip | 2026-11-13T22:08:39.933Z | download permitido | não lido nesta rodada |
-| DW2-Modulo6-Intro-Web-Services-Spring.pdf | 1-1bxBJNFgseLQ7GGd1pKQSJtX1yFoxlk | application/pdf | 2026-11-13T22:08:39.933Z | download permitido | não lido nesta rodada |
-| revisaoPOOSpring.pdf | 14swb7fF3jafSqHqzTdLicB8KtGHjKbEI | application/pdf | 2026-11-13T22:08:39.933Z | download permitido | não lido nesta rodada |
-| Aula - OO [Java].pdf | 1jsPZgjc4i-cq_4NPhzn31DFuSSoS1Cvi | application/pdf | 2026-11-13T22:08:39.932Z | download permitido | não lido nesta rodada |
+| `Unix_History.pdf` | `1ro5Tc5o5dF9zsy4pap3XWflc17WRdLDO` | 41 p. PDF | `999472a01697bd61` | História do Unix (Multics, AT&T Bell Labs 1969, C, BSD/NetBSD/OpenBSD/FreeBSD, GNU e Linux 1991). | Base para `historia-e-evolucao-unix`. |
+| `Sistemas Oeracionais - Aula 2.pdf` | `1NUxRapeOedRCKNjrEYeEZj-Mes_nYPzG` | 15 p. PDF | `8af5ee830cd99b8f` | Classificação arquitetural (monolítico p. 2, camadas p. 3, microkernel) e por propósito/uso (monotarefa/multitarefa p. 4, batch, rede, distribuído, multiusuário, desktop, servidor, embarcado, soft/hard real-time p. 5–15). | Base para `modo-usuario-e-kernel`. |
+| `Sistemas Oeracionais - Aula 3.pdf` | `1lYYXvw8GdCQs0BV544w0tt862tRIGDQT` | 23 p. PDF | `815da55d15b39aca` | Arquitetura do SO e núcleo (p. 2–7), SO monoprogramado e tratador de interrupções (p. 8–10), multiprogramado (p. 11–13), conceito/arquitetura de kernel (p. 14–16) e responsabilidades em processos/memória (p. 17–23). | Base central de `sistemas-operacionais.modo-usuario-e-kernel`. |
+| `Sistemas Operacionais - Aula 4.pdf` | `11WFsOZBrfzi2nHgTiO2pZUB1We-ixN-M` | 21 p. PDF | `51ae298764f0942b` | Continuação das responsabilidades do kernel (memória virtual p. 2, drivers de dispositivos p. 3, chamadas de sistema p. 4), processos e pseudo-paralelismo (p. 5–7), IPC/condições de corrida/regiões críticas (p. 8–11), semáforos e monitores (p. 12–21). | Base complementar de `modo-usuario-e-kernel` (chamada de sistema p. 4 e drivers p. 3). |
+| `Sistemas Oeracionais - Aula 5.pdf` | `1DrF7puNCzCgUIQy6jRoPKoW0JBK7Fa_7` | 26 p. PDF | `f38e3af50002f0eb` | Sistema de arquivos (abstração, organização, tipos de arquivos, diretórios, compartilhamento e implementação em disco). | Base futura para `sistemas-de-arquivos`. |
+| `Iniciante.pdf` | `17tp-RW3TYcTASRA35kYeC85UDqwhodEK` | 143 p. PDF | `3b9296559acc701b` | *Guia Foca Linux — Iniciante* v5.02 (27/07/2020), Gleydson Mazioli da Silva. Manual livre cobrindo fundamentos Linux, shell, diretórios, permissões, processos e comandos essenciais. | Contém apenas e-mails públicos de colaboradores históricos de documentação livre. |
+| `Sistemas Operacionais.txt` | `1fdj0GFxknz8j3HYrJ5uyhTSq18Vlz-Z9` | 30 KB TXT | `e94e380856cd4e8e` | Roteiro completo da disciplina (L1–L465): evolução histórica, Linux/FHS (`/etc`, `/var`, `/home`, `/mnt`, 7 tipos de arquivos), comandos CLI (`pwd`, `ls`, `cd`, `mkdir`, `cp`, `mv`, `rm`, `cat`, `less`, `head`, `tail`) e roteiro de atividades. | Suprimento da lacuna de `Aula 1.pdf`. |
+| `Tarefas/Enunciados.txt` | `1nq8MnoMKI0dJ3R0juYgSmY5Bq50DUnpI` | 7479 B TXT | `accf582ec0720b02` | Pesquisas comparativas de sistemas de arquivos (`NTFS`, `ext4`, `FAT32`/`exFAT`, `APFS`, `Btrfs`, `ZFS`) e distribuições Linux. | Sem PII. |
 
-## Complexidade — /Tarefas/ (1_O2CPxnfWxq4fJvSmWSkOUofOZ3PDyhl)
+### 5. Gerenciamento de Banco de Dados (`1owHJxMVZJmMSLCvF7KExW_vCx6V1O-ig`)
 
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
+| Arquivo | Drive ID | Tamanho / Extensão | SHA-256 (prefixo 16) | Escopo verificado na leitura | Observações e lacunas |
 | --- | --- | --- | --- | --- | --- |
-| Enunciados.txt | 1hkJi3qHCkK0Wsj2aI-XxRS8SAksz-rPi | text/plain | 2026-11-13T22:18:15.613Z | download permitido | não lido nesta rodada |
+| `Aula - OO [Java].pdf` | `1jsPZgjc4i-cq_4NPhzn31DFuSSoS1Cvi` | 13 p. PDF | `7581378f6c9b1e41` | Introdução a classes, objetos, atributos e métodos em Java (`class Carro`, instâncias, métodos com retorno e parâmetros). | Escopo de POO Java; sem SQL. |
+| `revisaoPOOSpring.pdf` | `14swb7fF3jafSqHqzTdLicB8KtGHjKbEI` | 67 p. PDF | `a2f7e6593fb34a99` | Revisão de classes/instâncias/atributos em Java (p. 1–42), transição para recursos REST (`URI`, `GET`, `POST`, `DELETE`, status HTTP, p. 43–64) e Modelo de Maturidade de Richardson (p. 65). | Conteúdo híbrido POO + APIs REST. |
+| `DW2-Modulo6-Intro-Web-Services-Spring.pdf` | `1-1bxBJNFgseLQ7GGd1pKQSJtX1yFoxlk` | 42 p. PDF | `1fc91b347994e356` | REST vs SOAP, verbos HTTP e idempotência (p. 2–13), Spring Boot / IoC / DI / MVC / Controller / Service (p. 14–28), **ORM, `JpaRepository`, Query Methods, `@Query(..., nativeQuery=true)` SQL nativo, `@Entity` correspondendo a tabela e `@Transactional`/ACID** (p. 29–35) e referências MDN/Spring (p. 42). | Único material da pasta com persistência relacional (via ORM/JPA e SQL nativo). |
+| `demo1.zip` | `18MWSwapmtCjRqNXczTBA-ahOrofqp6pG` | 25 KB ZIP | `25224b3b217e1076` | Projeto Maven Spring Boot 4.1.2 (Java) com `spring-boot-starter-webmvc`, `spring-boot-starter-data-jpa`, `mysql-connector-j`, `docker-compose.yml` (serviço MySQL `softDB` na porta `5223:3306`), entidade `@Entity SoftwareEngineer` (`@Id @GeneratedValue(strategy = GenerationType.IDENTITY)`), `SoftwareEngineerRepository`, `Service` e `Controller`. | Inspecionado estaticamente sem executar Maven/Docker. Não declara relacionamentos `OneToMany`/`@JoinColumn` nem SQL DDL explícito. |
+| `Tarefas/Enunciados.txt` | `1VQM-UzZodcQIIuNqM2JKDQoxCGsx6Kti` | 533 B TXT | `d7070e9f47bc24cc` | Enunciado pedindo breve resumo das funcionalidades principais do **MongoDB**. | Sem apostila ou exemplos anexados de MongoDB. |
+| `Tarefas/ExerciciosOO.pdf` | `1Ce3ufrQB44am31pGh_rtFN9moqmtaWFc` | 1 p. PDF | `55efde46f3b4f88a` | Lista curta de exercícios básicos de POO Java. | Sem SQL. |
+| `Tarefas/ExerciciosOOClasses.pdf` | `1tvj9_zgtl17ROXMg4WvL4TubLJfA5mfz` | 1 p. PDF | `7b74ccfe7822e797` | Lista curta de definição de classes em Java. | Sem SQL. |
 
-## Web — /Tarefas/ (19BythefI7vDCyo3vPVwvtMvbKURkrgTF)
-
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
-| --- | --- | --- | --- | --- | --- |
-| _[V2 - 2026] UGB - Desenvolvimento de Software para WEB (2).pdf | 1zJJXilOH-kQztyJkPj3rHRI_TNJhzBam | application/pdf | 2026-11-13T22:18:15.614Z | download permitido | não lido nesta rodada |
-| Enunciados.txt | 1Jg4fgOb4oepCPo5_btMNR_c4DGECy0Io | text/plain | 2026-11-13T22:18:15.614Z | download permitido | não lido nesta rodada |
-
-## Requisitos — /Tarefas/ (1VTLXl_UQpZiRrS80Guepk-RMJl2Ndvn0)
-
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
-| --- | --- | --- | --- | --- | --- |
-| Enunciados.txt | 1puxKe8DxQOaIFwg4QCk0ykOaZ03eUKNF | text/plain | 2026-11-13T22:18:15.615Z | download permitido | não lido nesta rodada |
-
-## Sistemas Operacionais — /Tarefas/ (1kxjIPKTphI7lAjVP2yvL9hfB6mQ0we_7)
-
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
-| --- | --- | --- | --- | --- | --- |
-| Enunciados.txt | 1nq8MnoMKI0dJ3R0juYgSmY5Bq50DUnpI | text/plain | 2026-11-13T22:18:15.615Z | download permitido | não lido nesta rodada |
-
-## Banco de Dados — /Tarefas/ (1elTHksRn3sDbo8nNKuWT0QqiC-BXPmKk)
-
-| Título | ID | Tipo | Modificado UTC | Acesso | Leitura |
-| --- | --- | --- | --- | --- | --- |
-| Enunciados.txt | 1VQM-UzZodcQIIuNqM2JKDQoxCGsx6Kti | text/plain | 2026-11-13T22:18:15.615Z | download permitido | não lido nesta rodada |
-| ExerciciosOO.pdf | 1Ce3ufrQB44am31pGh_rtFN9moqmtaWFc | application/pdf | 2026-11-13T22:18:15.615Z | download permitido | não lido nesta rodada |
-| ExerciciosOOClasses.pdf | 1tvj9_zgtl17ROXMg4WvL4TubLJfA5mfz | application/pdf | 2026-11-13T22:18:15.615Z | download permitido | não lido nesta rodada |
-
-## Limites de Acesso e Paginação
-
-1. **Acesso na sessão local:** Os 68 itens listados acima residem no Google Drive (`1mBktCwJAgSY-mjwKx9o4R8zGqsUpnPeX`) distribuídos em 5 pastas raiz de disciplinas e suas respectivas 5 subpastas `Tarefas`. Os binários originais (PDF, PPTX, DOCX, XLSX, PNG/JPG e ZIP) **não estão baixados** no checkout local nem em `/workspace/materials`, e o ambiente local não dispõe de conector MCP do Google Drive ativo na sessão para leitura direta do conteúdo interno.
-2. **Escopo da listagem e paginação:** A consulta ao conector retornou 68 itens (5 pastas `Tarefas` + 63 arquivos) com limite de até 1000 itens por chamada de pasta. Nenhuma das 10 pastas/subpastas se aproximou do teto de 1000 itens (máximo de 20 itens na raiz de Requisitos), mas o conector utilizado na coleta inicial não expôs `nextPageToken` explícito.
-3. **Exclusão de APTA:** A pasta *APTA — Direitos Humanos* foi identificada na raiz do período e permanece **explicitamente excluída** do inventário de importação, do banco e do agrupamento 26.2.
-4. **Regra de não invenção de localizadores (`docs/AUTHORING.md`):** Nenhuma página de PDF, número de slide, capítulo ou autoria não verificada foi inventada. O que consta como confirmado abaixo provém exclusivamente do diagnóstico documentado em [ordem de trabalho 26.2.md](../ordem%20de%20trabalho%2026.2.md); os demais itens permanecem marcados como `Pendente de leitura local/conector (apenas metadados no checkout)`, e nenhum arquivo foi cadastrado prematuramente em `content/sources/*.json`.
-
-## Desambiguação de Arquivos com Nomes Semelhantes
-
-- **Desenvolvimento de Softwares para Web (`_[V2 - 2026] UGB - Desenvolvimento de Software para WEB*.pdf`):**
-  - Existem **8 arquivos na raiz** (`1QqROulvuEdofBQq1NVZES1jkejdcTmuB`) e **1 arquivo homônimo em `/Tarefas/`** (`19BythefI7vDCyo3vPVwvtMvbKURkrgTF`), todos distintos pelo ID do Drive e pelo timestamp de modificação:
-    - Sem sufixo numérico (raiz): `1PViXknude_ciQhozSFfwhfVrHrAYO_Dt` (`2026-11-13T22:08:39.911Z`)
-    - Sufixo `(1)` (raiz): `1zB1FokuStKBpQZ_iBKgDY9Kq4p9Vq5Qm` (`2026-11-13T22:08:39.913Z`)
-    - Sufixo `(1) (1)` (raiz): `1jaqJ_rUi-0mct2RA6g-nm0C1Gruvism3` (`2026-11-13T22:08:39.921Z`)
-    - Sufixo `(2)` (raiz): `1E-edH92sw2rSigEanKTVYk1JJaL-3reA` (`2026-11-13T22:08:39.924Z`)
-    - Sufixo `(2)` (`/Tarefas/`): `1zJJXilOH-kQztyJkPj3rHRI_TNJhzBam` (`2026-11-13T22:18:15.614Z`) — cópia ou versão anexada à pasta de tarefas 10 minutos após a raiz; exige comparação de hash/conteúdo antes de deduplicar.
-    - Sufixo `(3)` (raiz): `1uUStIUBQfWiqnDIj3H7g07YlWKsnkzK7` (`2026-11-13T22:08:39.911Z`)
-    - Sufixo `(4)` (raiz): `1gHexE-oBxT5gRRZtjf0eRVleIaMeZEGF` (`2026-11-13T22:08:39.930Z`)
-    - Sufixo `(6)` (raiz): `1_uPp2cGuNqs1dAOZpao5XWMkLwxd_6WP` (`2026-11-13T22:08:39.916Z`)
-    - Sufixo `(8)` (raiz): `19xKrpAAGcqWPrFIWgUN_pvxDr4mM4l4_` (`2026-11-13T22:08:39.919Z`)
-- **Engenharia de Requisitos de Softwares:**
-  - `aula1_exercicios.docx` (`1HlLkYa04eHpr461CZTwG813BNH8h0nBN`, `22:08:39.934Z`) vs. `aula1 (1).docx` (`1JlhfqFH__D5EPyvi1oTZfdEN3rtkHsUL`, `22:08:39.933Z`): documentos Word separados da Aula 1; devem ser referenciados pelo ID do Drive ao extrair cenários.
-  - `aula9_prototipagem.pdf` (`1Z9N28Laa8YW8UhxaXig-VFKqaLu0p6G-`), `aula9_prototipagem_exercicio.docx` (`1sUm1i73mlBdneSEwSSHmOnch5rxI6caV`) e `aula10_Prototipagem_exercicios.pdf` (`1KavQq-O05FEeWD1z8frdEv-BLEYjlA3y`): material expositivo em PDF separado das listas de exercícios das aulas 9 e 10.
-- **Sistemas Operacionais (grafia original preservada):**
-  - Os PDFs das aulas 2, 3 e 5 possuem a grafia original `Sistemas Oeracionais - Aula 2.pdf` (`1NUxRapeOedRCKNjrEYeEZj-Mes_nYPzG`), `Sistemas Oeracionais - Aula 3.pdf` (`1lYYXvw8GdCQs0BV544w0tt862tRIGDQT`) e `Sistemas Oeracionais - Aula 5.pdf` (`1DrF7puNCzCgUIQy6jRoPKoW0JBK7Fa_7`), enquanto a aula 4 está grafada como `Sistemas Operacionais - Aula 4.pdf` (`11WFsOZBrfzi2nHgTiO2pZUB1We-ixN-M`).
-- **Arquivos `Enunciados.txt` nas 5 subpastas `/Tarefas/`:**
-  - Cinco arquivos distintos com o mesmo nome `Enunciados.txt`, desambiguados pelo ID e pasta pai:
-    - Complexidade: `1hkJi3qHCkK0Wsj2aI-XxRS8SAksz-rPi`
-    - Web: `1Jg4fgOb4oepCPo5_btMNR_c4DGECy0Io`
-    - Requisitos: `1puxKe8DxQOaIFwg4QCk0ykOaZ03eUKNF`
-    - Sistemas Operacionais: `1nq8MnoMKI0dJ3R0juYgSmY5Bq50DUnpI`
-    - Banco de Dados: `1VQM-UzZodcQIIuNqM2JKDQoxCGsx6Kti`
-
-## Matriz por Fonte (Nível 1)
-
-| Disciplina 26.2 | ID Drive / Arquivo | Assunto / Escopo Confirmado | Correlação no Catálogo | Localizador / Estado de Leitura | Direitos / Sensibilidade / Segurança | Lacunas Identificadas |
-| --- | --- | --- | --- | --- | --- | --- |
-| **Complexidade de Algoritmos e Estrutura de Dados** | `1DW3zt5dMPGLzppNc41CffaxcimD1FeLj` (`Complexidade.txt`), `1HRG3dRU4RhyVYkpwunezBVT7j1ybjeQm` (`Aula 01.pdf`), `1e3CG12iXWR7oYrrFCIXhpGX4vq1lIoWN` (`Aula 02.pdf`), `1XZd2H-7_xbto8F3BAjbKZ86eEnKTqlS_` (`Aula 03.pdf`), `1jIYOvnDUjjas5Et1Uv3PqQfXGwUBEBE_` (`Aula 04.pdf`) | Fundamentos de análise de complexidade de algoritmos e crescimento assintótico (nível 1 confirmado no diagnóstico inicial). | `algoritmos` (`algoritmos.modelagem-de-algoritmos`, `algoritmos.complexidade-e-tamanho-da-entrada`) + apoio em `python` | Resumo diagnóstico confirmado; páginas/seções exatas pendentes de leitura local/conector (apenas metadados no checkout). | Material didático acadêmico; não publicar PDFs brutos em `public/` ou no Git. | Falta mapear páginas e exercícios página a página para autoria da Fase 3. |
-| **Complexidade de Algoritmos e Estrutura de Dados** | `1gC47vaP-UPttSb54w9NmHqXk9WZEmPTz` (`Estrutura de Dados - Estruturas Básicas (1).pdf`), `1suKdiny9A8qL9irbAbqnec4UmrNEgEvl` (`Fila_Circular (1).xlsx`) | Estruturas lineares básicas, filas e representação de fila circular em planilha. | `estruturas-de-dados` (`estruturas-de-dados.arrays-listas-e-referencias`, `estruturas-de-dados.pilhas-e-filas`) | Pendente de leitura local/conector (apenas metadados no checkout). | Planilha `.xlsx` e PDF: inspecionar sem macro e reescrever explicações próprias. | Confirmar se há outras estruturas (árvores/grafos) previstas além das estruturas lineares. |
-| **Complexidade de Algoritmos e Estrutura de Dados** | `45338.py` (`1oQ2GWMTlPr0rBlFE5d9TxvvNHDGsAtqI`), `45339.py` (`1LzZySVowBbimqvHOMGm_izaw8hvLvULo`), `45340.py` (`1kcIreR6v5umbTi89FAMiYY__jo4Xt8UB`), `48081.py` (`1KkQ6VUUa97MikSLBXH-EnsMi0j3fpIzr`), `48082.py` (`1YnvTOFsI-ok_5eqkM9cNEgA4LHE0Dnsy`), `48083.py` (`1bx0f78GHuwp3h6DZb2X2g9KW8fHbVVlx`), `50687.py` (`11G9rIwaaNzZiKiG1wva6xdSFiDyPdQMA`) e `Enunciados.txt` (`1hkJi3qHCkK0Wsj2aI-XxRS8SAksz-rPi`) | Scripts Python de exercícios/exemplos práticos e enunciados de tarefas da disciplina. | `algoritmos`, `estruturas-de-dados` e `python` (`python.lacos-de-repeticao`, `python.listas-e-dicionarios`) | Pendente de leitura local/conector (apenas metadados no checkout). | Tratar `.py` como dados/fonte; não executar fora de sandbox isolado (`bwrap`) e avaliar autoria/dados pessoais antes de citar. | Ler enunciados e cada script `.py` para alinhar piloto do laboratório Python (Fase 2/3). |
-| **Desenvolvimento de Softwares para Web** | `1904g48N1f_aF5W4l-sPOx49wIjHHQSTe` (`Aula 1 - Desenvolvimento de Software para WEB.pdf`), `1QULCwzresExVaZd5aKo-2BBBOZYt6hfP` (`Aula 2 - Desenvolvimento de Software para WEB.pdf`) | Ementa confirmada na Aula 1: arquitetura cliente-servidor, HTTP, HTML/CSS, JS/TS, React/Next, Node, APIs e tópicos avançados. | `web-dev` (módulos `estrutura-e-layout`, `javascript-e-interacao`, `contratos-e-qualidade`) | Ementa da Aula 1 confirmada no diagnóstico; páginas detalhadas e Aula 2 pendentes de leitura local/conector. | Slides/apostilas da faculdade; usar apenas como referência autoral rastreável. | Ementa é planejamento; falta confirmar quais tópicos são efetivamente cobertos nos demais PDFs. |
-| **Desenvolvimento de Softwares para Web** | 8 PDFs `_[V2 - 2026] UGB - Desenvolvimento de Software para WEB*.pdf` na raiz + 1 em `/Tarefas/` (`1zJJXilOH-kQztyJkPj3rHRI_TNJhzBam`) + `Enunciados.txt` (`1Jg4fgOb4oepCPo5_btMNR_c4DGECy0Io`) | Apostilas/unidades da disciplina UGB e enunciados de tarefas. | `web-dev` | Pendente de leitura local/conector (apenas metadados no checkout). | Desambiguar por ID antes do uso; não publicar PDFs nem copiar enunciados literalmente. | Identificar o tema individual e páginas de cada um dos 9 PDFs `_[V2 - 2026]`. |
-| **Desenvolvimento de Softwares para Web** | `1-qavil5Iekf0CCp9FqgXgnDbiB1g9G9y` (`conceitos-react.zip`) | Arquivo compactado com projeto/exemplos de conceitos React. | `web-dev` (`web-dev.estado-e-componentes`) | Pendente de inspeção estática da lista de arquivos (apenas metadados no checkout). | **Segurança:** arquivo `.zip` externo; proibido extrair sem validação de caminhos (zip slip) ou executar scripts/`npm install` do arquivo bruto. | Inspecionar árvore de arquivos de forma passiva quando o binário estiver disponível. |
-| **Engenharia de Requisitos de Softwares** | `1_RMd0i0FeWsHZsgx1bDXrc1i7j9rZNth` (`Aula1_Introducao_Engenharia_Requisitos.pptx`), `1tySwEiIuwVVqRSxnk1iq8-UXEKEHxd0W` (`Aula2_Stakeholders_Elicitacao_Requisitos.pptx`), `1axD3qFX1alK-1-wxsYegsuF7KQErC5Dx` (`Aula3_Elicitacao_Requisitos_Parte2.pptx`) | Introdução à engenharia de requisitos, identificação de stakeholders e técnicas de elicitação (confirmado no diagnóstico). | `requisitos` (`requisitos.problema-e-stakeholders`, `requisitos.elicitacao`, `requisitos.funcionais-e-nao-funcionais`) | Escopo inicial confirmado no diagnóstico; números de slides pendentes de leitura local/conector. | Apresentações `.pptx` acadêmicas; elaborar explicações e cenários próprios. | Registrar numeração exata de slides quando lidos na Fase 3. |
-| **Engenharia de Requisitos de Softwares** | `aula3_engenharia_software.pdf` (`1D-w83_2QY9JBIea7hqFraTVyFZWGjSxS`), `aula4_engenharia_software.pdf` (`13StCem7A3svsFYywe5UociRQdxsLwHc3`), `aula5_uml_caso_uso.pdf` (`10GleDvb9lZktmNY8b6tj7vuj5jomn2HQ`), `aula6_INVEST.pdf` (`16j4LgqbATCVCI0VkRRE2MB2kYYdDIwda`), `aula7_revisao.pdf` (`1xP4YLNP_J2G-uLst1Cq7CY-xDvpVOI2t`), `aula8_IEEE.pdf` (`1Gnxj5NYhuoSHB9iUqEpgHpIyiIMPlAAV`), `aula9_prototipagem.pdf` (`1Z9N28Laa8YW8UhxaXig-VFKqaLu0p6G-`) | Fundamentos de ES, UML e casos de uso, histórias de usuário e critérios INVEST, revisão, padrão IEEE de especificação e prototipagem. | `requisitos` (`requisitos.historias-de-usuario-e-invest`, `requisitos.casos-de-uso`, `requisitos.ambiguidade-e-vagueza`, `requisitos.criterios-de-aceitacao`) | Tópicos identificados por título e diagnóstico; localizadores de página pendentes de leitura local/conector. | Direitos autorais docentes; não copiar textos ou diagramas brutos. | Mapear seções do padrão IEEE e de prototipagem em relação aos tópicos de `requisitos.json`. |
-| **Engenharia de Requisitos de Softwares** | `aula1 (1).docx` (`1JlhfqFH__D5EPyvi1oTZfdEN3rtkHsUL`), `aula1_exercicios.docx` (`1HlLkYa04eHpr461CZTwG813BNH8h0nBN`), `aula2_exercicios.docx` (`10FCzNrLhSl-tSD08eMln4yybfmYeA9x1`), `aula8_IEEE_exercicios.docx` (`1Sc1tbFkILrE4kUT5tr_-RwyWh7y5M3oH`), `aula9_prototipagem_exercicio.docx` (`1sUm1i73mlBdneSEwSSHmOnch5rxI6caV`), `aula10_Prototipagem_exercicios.pdf` (`1KavQq-O05FEeWD1z8frdEv-BLEYjlA3y`), `exemplo1.png` (`1lQlFOjeSyBvxWOi6cSS0Vtd9fbZUJzkG`), `exemplo2.jpg` (`1LYS3fgC9B6XIo8tCu10XB4tl4sjj_-g1`), `exemplo3.png` (`10H3yEH336toY9cd7iyjbFxzIYtLqITfj`), `Enunciados.txt` (`1puxKe8DxQOaIFwg4QCk0ykOaZ03eUKNF`) | Exercícios práticos (aulas 1, 2, 8, 9, 10), imagens de exemplo e enunciados de tarefas. | `requisitos` | Pendente de leitura local/conector (apenas metadados no checkout). | **Sensibilidade:** arquivos `.docx` e imagens podem conter respostas pessoais, nomes de alunos ou capturas de tela; revisar privacidade antes de extrair exemplos. | Verificar conteúdo visual de `exemplo1.png`, `exemplo2.jpg` e `exemplo3.png`. |
-| **Sistemas Operacionais** | `1fdj0GFxknz8j3HYrJ5uyhTSq18Vlz-Z9` (`Sistemas Operacionais.txt`), `1ro5Tc5o5dF9zsy4pap3XWflc17WRdLDO` (`Unix_History.pdf`), `17tp-RW3TYcTASRA35kYeC85UDqwhodEK` (`Iniciante.pdf`), `Aula 2.pdf` (`1NUxRapeOedRCKNjrEYeEZj-Mes_nYPzG`), `Aula 3.pdf` (`1lYYXvw8GdCQs0BV544w0tt862tRIGDQT`), `Aula 4.pdf` (`11WFsOZBrfzi2nHgTiO2pZUB1We-ixN-M`), `Aula 5.pdf` (`1DrF7puNCzCgUIQy6jRoPKoW0JBK7Fa_7`), `Enunciados.txt` (`1nq8MnoMKI0dJ3R0juYgSmY5Bq50DUnpI`) | Escopo confirmado em `Sistemas Operacionais.txt`: história dos SOs e Unix, arquitetura e kernel (modo usuário vs. núcleo), processos, threads e sincronização, sistemas de arquivos e chamadas de sistema. | Nova disciplina `sistemas-operacionais` no catálogo (`content/curriculum/sistemas-operacionais.json`, nível 1 `PLANNED`) | `Sistemas Operacionais.txt` lido no diagnóstico inicial; páginas dos PDFs (`Iniciante`, `Unix_History`, `Aulas 2–5`) e `Enunciados.txt` pendentes de leitura local/conector. | Material didático; preservar fora do Git e criar explicações próprias. | Ausência de Aula 1 em PDF na pasta (coberta por `Sistemas Operacionais.txt` / `Iniciante.pdf` / `Unix_History.pdf`); confirmar páginas exatas dos PDFs na Fase 3. |
-| **Gerenciamento de Banco de Dados** | `1-1bxBJNFgseLQ7GGd1pKQSJtX1yFoxlk` (`DW2-Modulo6-Intro-Web-Services-Spring.pdf`), `14swb7fF3jafSqHqzTdLicB8KtGHjKbEI` (`revisaoPOOSpring.pdf`), `1jsPZgjc4i-cq_4NPhzn31DFuSSoS1Cvi` (`Aula - OO [Java].pdf`), `1Ce3ufrQB44am31pGh_rtFN9moqmtaWFc` (`ExerciciosOO.pdf`), `1tvj9_zgtl17ROXMg4WvL4TubLJfA5mfz` (`ExerciciosOOClasses.pdf`), `1VQM-UzZodcQIIuNqM2JKDQoxCGsx6Kti` (`Enunciados.txt`) | PDF lido (`DW2-Modulo6-Intro-Web-Services-Spring.pdf`) aborda REST, HTTP, Spring e injeção de dependência; os demais tratam de programação orientada a objetos em Java e revisão Spring. | `banco-de-dados` com relação cruzada para `java` e `web-dev` | Escopo de `DW2-Modulo6-Intro-Web-Services-Spring.pdf` confirmado no diagnóstico; demais PDFs e `Enunciados.txt` pendentes de leitura local/conector. | Material acadêmico; não publicar arquivos brutos. | **Lacuna crítica:** os arquivos presentes na pasta de *Gerenciamento de Banco de Dados* **não comprovam cobertura de modelagem relacional, SQL ou administração de SGBD**. Necessário confirmar se novas fontes de BD serão adicionadas ao Drive. |
-| **Gerenciamento de Banco de Dados** | `18MWSwapmtCjRqNXczTBA-ahOrofqp6pG` (`demo1.zip`) | Projeto de demonstração (provavelmente Java/Spring, dado o contexto da pasta). | `banco-de-dados`, `java`, `web-dev` | Pendente de inspeção estática (apenas metadados no checkout). | **Segurança:** arquivo `.zip` não confiável; proibido executar código ou builds contidos no pacote sem inspeção estática prévia. | Verificar se `demo1.zip` contém mapeamento objeto-relacional (JPA/Hibernate/SQL) quando inspecionado. |
-
+**Conclusão operacional sobre lacunas em `Gerenciamento de Banco de Dados`:** embora `DW2-Modulo6-Intro-Web-Services-Spring.pdf` e `demo1.zip` confirmem uso de **MySQL + Spring Data JPA (`@Entity`, `@Id`, `JpaRepository`, `@Query` SQL nativo, `@Transactional`)** e haja menção a MongoDB em tarefa, faltam apostilas da própria disciplina para **modelagem relacional (chaves primárias, estrangeiras e ações referenciais), formas normais, SQL (`SELECT`/`JOIN`/`GROUP BY`) e planos de execução**. Conforme `docs/AUTHORING.md`, essa lacuna é suprida explicitamente com documentação oficial verificada (PostgreSQL) e sinalizada na fila de revisão humana (`docs/REVIEW_QUEUE.md`).

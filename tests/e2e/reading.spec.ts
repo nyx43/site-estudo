@@ -15,9 +15,10 @@ test.beforeEach(async () => {
 test("aulas completas mostram código explicado sem exigir respostas", async ({ page, request }, testInfo) => {
   if (testInfo.project.name === "mobile") await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/aulas");
-  await expect(page.locator(".lesson-library-card")).toHaveCount(4);
-  await expect(page.locator(".lesson-library-card").first()).toContainText("Variáveis e tipos");
-  await page.locator(".lesson-library-card").first().getByRole("link", { name: "Ler aula completa", exact: true }).click();
+  await expect(page.locator(".lesson-library-card")).toHaveCount(10);
+  const pythonCard = page.locator(".lesson-library-card").filter({ hasText: "Variáveis e tipos" });
+  await expect(pythonCard).toBeVisible();
+  await pythonCard.getByRole("link", { name: "Ler aula completa", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Variáveis e tipos", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Comandos e sintaxe, sem pular etapas" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "O que cada linha faz", exact: true }).first()).toBeVisible();
@@ -75,4 +76,18 @@ test("listas e dicionários: leitura, oito exercícios e correção persistida",
   const result = await request.post(`/api/attempts/${parsons.data.id}/submissions`, { data: { requestId: randomUUID(), answer: { type: "PARSONS", order: [{ id: "c", indent: 0 }, { id: "a", indent: 0 }, { id: "d", indent: 1 }, { id: "b", indent: 0 }] } } });
   expect(result.ok()).toBe(true);
   expect((await result.json()).data.isCorrect).toBe(true);
+});
+
+test("aulas 26.2 estáticas e conceituais adaptam o texto de exemplos sem afirmar Python 3", async ({ page }, testInfo) => {
+  if (testInfo.project.name === "mobile") await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto("/aulas/web-dev.http-e-rest");
+  await expect(page.getByRole("heading", { name: "HTTP, códigos de status e contratos REST", exact: true })).toBeVisible();
+  await expect(page.getByText(/Os exemplos abaixo usam HTTP \/ JSON \/ REST/)).toBeVisible();
+  await expect(page.getByText(/programas independentes em Python 3/)).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
+
+  await page.goto("/aulas/requisitos.funcionais-e-nao-funcionais");
+  await expect(page.getByRole("heading", { name: "Requisitos funcionais, não funcionais e qualidade SRS", exact: true })).toBeVisible();
+  await expect(page.getByText(/especificações, fluxos e critérios estruturados linha a linha/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(page.viewportSize()!.width);
 });

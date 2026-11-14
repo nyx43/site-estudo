@@ -1,0 +1,461 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "requisitos.funcionais-e-nao-funcionais.v1",
+    "topicId": "requisitos.funcionais-e-nao-funcionais",
+    "version": 1,
+    "title": "Requisitos funcionais, não funcionais e qualidade SRS",
+    "status": "AUTO_CHECKED",
+    "exampleMode": "CONCEPTUAL_ARTIFACT",
+    "exampleLanguage": "Especificação de Requisitos / SRS IEEE",
+    "objectives": [
+      "Distinguir requisitos funcionais (o que o sistema faz) de requisitos não funcionais (restrições e qualidades como desempenho e segurança).",
+      "Reescrever frases vagas como \"o sistema deve ser rápido ou moderno\" em critérios objetivos e testáveis.",
+      "Avaliar requisitos segundo clareza, completude, consistência, testabilidade e rastreabilidade.",
+      "Organizar especificações na estrutura de um documento SRS baseado no padrão IEEE e revisar suposições inventadas por IA."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Antes de escrever código ou desenhar telas, a equipe precisa transformar pedidos soltos de usuários e gerentes em especificações verificáveis. Quando um stakeholder pede \"cadastro de alunos\" e outro exige que o sistema \"seja rápido\", ambos trazem necessidades legítimas, mas de naturezas distintas: funcionalidades e qualidades de operação.",
+        "Com base nas aulas de Engenharia de Requisitos de 26.2 (Aula 1, Aula 4, revisão da Aula 7 e padrão IEEE 830 / SRS da Aula 8 e lista de exercícios), esta lição mostra como classificar e redigir Requisitos Funcionais (RF) e Não Funcionais (RNF), detectar contradições internas e impedir que ferramentas ou assistentes de IA inventem metas de SLA sem evidência."
+      ],
+      "prerequisites": [
+        {
+          "topicId": "requisitos.problema-e-stakeholders",
+          "reason": "Identificar quem usa e quem patrocina o sistema fundamenta a origem e a rastreabilidade de cada requisito."
+        }
+      ],
+      "glossary": [
+        {
+          "term": "Requisito Funcional (RF)",
+          "meaning": "Declaração que descreve uma ação, serviço ou comportamento observável que o sistema deve executar para seus usuários.",
+          "example": "O sistema deve emitir histórico escolar em PDF para alunos matriculados."
+        },
+        {
+          "term": "Requisito Não Funcional (RNF)",
+          "meaning": "Restrição ou propriedade de qualidade sobre como o sistema opera, abrangendo desempenho, segurança, usabilidade, disponibilidade e escalabilidade.",
+          "example": "O sistema deve responder consultas em até 2 segundos em 95% das requisições."
+        },
+        {
+          "term": "Consistência",
+          "meaning": "Propriedade de um conjunto de requisitos que garante ausência de contradições diretas entre regras ou definições.",
+          "example": "Se RF-01 permite excluir pedidos pendentes e RF-02 proíbe excluir qualquer pedido, há inconsistência."
+        },
+        {
+          "term": "Testabilidade",
+          "meaning": "Capacidade de verificar objetivamente, por teste, inspeção ou medição, se o requisito foi satisfeito ou reprovado.",
+          "example": "Trocar \"ser moderno\" por critério mensurável em dispositivos móveis e contraste mínimo."
+        },
+        {
+          "term": "SRS (Software Requirements Specification — IEEE)",
+          "meaning": "Documento padronizado (como o modelo histórico IEEE 830) estruturado em Introdução, Descrição Geral e Requisitos Específicos.",
+          "example": "Separar visão geral e restrições de banco de dados na seção 2 e listas numeradas RF/RNF na seção 3."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Redação estruturada de Requisito Funcional (RF)",
+          "kind": "CONCEPT",
+          "syntax": "RF-XX: O sistema deve [verbo de ação] [condição] [resultado observável].",
+          "explanation": "Usar verbos de ação concretos (permitir, gerar, calcular, registrar, validar, emitir) evita abstrações vagas e explicita quando a funcionalidade acontece.",
+          "whenToUse": "Ao transformar entrevistas com stakeholders em itens verificáveis na seção Requisitos Específicos de um SRS.",
+          "pitfalls": [
+            "Descrever detalhes de implementação interna (ex.: biblioteca ou SQL específico) como se fossem requisito funcional de negócio.",
+            "Misturar várias ações independentes em um único parágrafo longo, dificultando aceite parcial e rastreabilidade."
+          ],
+          "examples": [
+            {
+              "id": "req.rf.estruturado",
+              "title": "Transformação de demanda vaga em RF completo e verificável",
+              "purpose": "Mostrar ação, pré-condição e saída esperada de um requisito funcional acadêmico.",
+              "code": "[ID] RF-01 (Módulo Acadêmico)\n[Ação] O sistema deve emitir histórico escolar em PDF\n[Condição] quando o aluno estiver regularmente matriculado\n[Critério] contendo todas as disciplinas cursadas, carga horária e situação final.",
+              "expectedOutput": "RF verificável: um testador confirma a emissão do PDF, a condição de matrícula e os três campos obrigatórios no documento.",
+              "lineNotes": [
+                { "line": 1, "explanation": "Identificador único RF-01 permite rastrear testes e mudanças em todo o ciclo de vida." },
+                { "line": 2, "explanation": "Verbo concreto (emitir) substitui verbos fracos como 'ter' ou 'ser'." },
+                { "line": 3, "explanation": "Define explicitamente a pré-condição para liberar a emissão." },
+                { "line": 4, "explanation": "Garante completude ao especificar formato (PDF) e conteúdo mínimo." }
+              ],
+              "takeaway": "Um bom RF responde com precisão: quem aciona ou sob qual condição, o que o sistema faz e qual resultado observável comprova a entrega."
+            }
+          ]
+        },
+        {
+          "name": "Métrica verificável em Requisito Não Funcional (RNF)",
+          "kind": "CONCEPT",
+          "syntax": "RNF-XX: O sistema deve [qualidade mensurável] sob [carga/cenário] medido por [critério].",
+          "explanation": "Qualidades como desempenho, disponibilidade ou usabilidade precisam de números, limites ou condições ambientais; adjetivos soltos tornam o requisito impossível de reprovar.",
+          "whenToUse": "Sempre que aparecerem palavras como rápido, seguro, fácil, escalável ou intuitivo nas anotações de reunião.",
+          "pitfalls": [
+            "Escrever 'responder rápido' ou 'suportar muitos usuários' sem definir tempo em segundos ou volume simultâneo.",
+            "Confundir disponibilidade (tempo ativo, ex.: 99,5%) com desempenho (latência de resposta em segundos)."
+          ],
+          "examples": [
+            {
+              "id": "req.rnf.metrica",
+              "title": "Conversão de 'o sistema deve ser rápido' em RNF testável",
+              "purpose": "Demonstrar como adicionar latência máxima, concorrência e método de verificação.",
+              "code": "[ID] RNF-01 (Desempenho - Consulta de Notas)\n[Restrição] O sistema deve retornar consultas de notas em até 2 segundos\n[Carga] para até 500 usuários simultâneos\n[Verificação] medido no percentil 95 durante teste de carga antes da entrega.",
+              "expectedOutput": "RNF mensurável: se P95 ultrapassar 2,0 s com 500 usuários simultâneos, o critério reprova objetivamente a versão.",
+              "lineNotes": [
+                { "line": 1, "explanation": "Identifica a categoria de qualidade (Desempenho) e o fluxo avaliado." },
+                { "line": 2, "explanation": "Fixa limite numérico objetivo de 2 segundos em vez do adjetivo 'rápido'." },
+                { "line": 3, "explanation": "Estabelece a carga simultânea esperada para o teste." },
+                { "line": 4, "explanation": "Elimina dúvidas definindo percentil 95 e momento da medição." }
+              ],
+              "takeaway": "Um RNF só cumpre seu papel se dois testadores independentes chegarem à mesma conclusão de aprovado ou reprovado ao medi-lo."
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "req.srs.ieee-estrutura",
+          "title": "Mapeamento de seções de uma SRS padrão IEEE",
+          "purpose": "Entender onde entram escopo, restrições tecnológicas, RFs, RNFs e origem das demandas no documento.",
+          "code": "1. Introdução -> Objetivo, escopo do Controle Acadêmico, definições e referências.\n2. Descrição Geral -> Perspectiva do produto, perfis (alunos, professores) e restrições.\n3. Requisitos Específicos -> RF-01: O sistema deve permitir cadastro de alunos.\n3. Requisitos Específicos -> RNF-01: Responder consultas em até 2 segundos.\n3. Requisitos Específicos -> RN-01: Nota final exige média >= 6,0 e 75% de frequência.\n4. Rastreabilidade -> RF-01 originado na entrevista com o coordenador acadêmico.",
+          "expectedOutput": "SRS coerente: visão global e restrições ficam separadas dos requisitos detalhados numerados, facilitando desenvolvimento e aceite.",
+          "lineNotes": [
+            { "line": 1, "explanation": "Seção 1 situa propósito, limites do sistema e vocabulário comum para evitar mal-entendidos." },
+            { "line": 2, "explanation": "Seção 2 descreve contexto, perfis de usuário e restrições gerais (ex.: sistema web, banco PostgreSQL)." },
+            { "line": 3, "explanation": "Seção 3 (Requisitos Específicos) concentra os requisitos funcionais numerados." },
+            { "line": 4, "explanation": "Também na Seção 3 ficam os requisitos não funcionais com suas métricas verificáveis." },
+            { "line": 5, "explanation": "Regras de negócio específicas complementam a Seção 3 com critérios objetivos." },
+            { "line": 6, "explanation": "Rastreabilidade liga cada ID à entrevista, documento ou norma que o justificou." }
+          ],
+          "takeaway": "Na estrutura IEEE, a seção Requisitos Específicos é o núcleo detalhado de RF e RNF; Introdução e Descrição Geral estabelecem contexto e restrições."
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Contradição entre requisitos e adjetivos subjetivos ocultos",
+          "explanation": "Um documento pode estar gramaticalmente bonito e ainda assim inviável se duas cláusulas se anularem (inconsistência) ou dependerem de opinião pessoal (falta de clareza e testabilidade).",
+          "example": {
+            "id": "req.qualidade.inconsistencia",
+            "title": "Pacote com contradição de exclusão e RNF subjetivo",
+            "purpose": "Praticar o diagnóstico de consistência e verificabilidade em uma especificação curta.",
+            "code": "RF-04: O usuário autenticado pode excluir pedidos pendentes pelo painel.\nRF-05: Nenhum pedido registrado no sistema pode ser excluído em hipótese alguma.\nRNF-03: O sistema deve ser moderno, rápido e intuitivo para todos.",
+            "expectedOutput": "FALHA DE CONSISTÊNCIA E TESTABILIDADE: RF-04 contradiz RF-05 (exclusão permitida vs. proibida); RNF-03 usa adjetivos subjetivos sem critério mensurável.",
+            "lineNotes": [
+              { "line": 1, "explanation": "RF-04 autoriza exclusão condicional de pedidos com status pendente." },
+              { "line": 2, "explanation": "CONFLITO: RF-05 proíbe qualquer exclusão de pedidos sem exceção, contradizendo RF-04." },
+              { "line": 3, "explanation": "VAGUEZA: 'moderno', 'rápido' e 'intuitivo' não possuem métrica de teste reproduzível." }
+            ],
+            "takeaway": "Antes de aceitar uma especificação, cruze pares de requisitos buscando contradições lógicas (consistência) e substitua adjetivos por critérios observáveis."
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "IA preenche métricas e SLAs sofisticados que nenhum stakeholder aprovou",
+          "request": "Peça a uma IA para estruturar RF e RNF de um módulo de reservas de salas a partir da anotação curta: 'aluno reserva sala e precisa funcionar bem'.",
+          "generated": {
+            "id": "req.ai.sla-inventado",
+            "title": "Especificação gerada com termos vagos e SLA inventado",
+            "purpose": "Mostrar o risco comum de usar IA para expandir anotações curtas sem marcar lacunas para confirmação humana.",
+            "code": "RF-10: O sistema deve permitir reserva de sala pelo aluno.\nRNF-10: O sistema deve ser rápido e seguro.\nRNF-11: O sistema deve garantir disponibilidade de 99,999% com failover multi-região.\nRNF-12: O usuário pode cancelar reservas com 1 clique, sem prazo limite.",
+            "expectedOutput": "REPROVADO NA REVISÃO IEEE: RNF-10 é subjetivo e não testável; RNF-11 inventa SLA de 99,999% sem validação com stakeholders; RNF-12 omite regra de prazo.",
+            "lineNotes": [
+              { "line": 1, "explanation": "RF-10 é válido em intenção, porém ainda precisa delimitar parâmetros da reserva." },
+              { "line": 2, "explanation": "FALHA: repete palavras subjetivas ('rápido e seguro') sem critério de teste." },
+              { "line": 3, "explanation": "ALUCINAÇÃO DE ESCOPO: inventa disponibilidade 99,999% e multi-região caríssima sem base nas entrevistas." },
+              { "line": 4, "explanation": "REGRA ASSUMIDA SEM EVIDÊNCIA: libera cancelamento sem prazo mínimo, possivelmente violando política da instituição." }
+            ],
+            "takeaway": "Quando falta evidência nas notas de elicitação, um assistente de IA tende a inventar números plausíveis ou manter adjetivos vagos; cabe ao analista sinalizar pendências e validar métricas."
+          },
+          "diagnosis": [
+            "RNF-10 falha em clareza e testabilidade ao manter adjetivos genéricos ('rápido', 'seguro').",
+            "RNF-11 introduz compromisso de 99,999% ('cinco noves') e arquitetura multi-região não solicitada, multiplicando custo do projeto sem validação.",
+            "RNF-12 assume uma política de cancelamento ilimitado em vez de registrar a dúvida para confirmação com o responsável."
+          ],
+          "correction": {
+            "id": "req.ai.revisado",
+            "title": "Especificação revisada com métrica verificável e lacuna sinalizada",
+            "purpose": "Alinhar os requisitos às evidências reais e isolar decisões em aberto para confirmação com o stakeholder.",
+            "code": "RF-10: O sistema deve permitir que o aluno solicite reserva de sala livre por data e horário.\nRNF-10: [Pendente de validação] Meta sugerida de resposta de até 2 segundos em 95% das consultas.\nRNF-11: [Pendente de validação] Disponibilidade alvo estimada em 99% em horário letivo.\nRN-12: Cancelamentos são permitidos até 2 horas antes do início da reserva (entrevista coordenação).",
+            "expectedOutput": "APROVADO PARA REVISÃO E ACEITE: ação clara, metas numéricas de RNF sinalizadas como pendentes de validação com o cliente e regra rastreada.",
+            "lineNotes": [
+              { "line": 1, "explanation": "Delimita os critérios mínimos da ação de reserva (sala livre, data e horário)." },
+              { "line": 2, "explanation": "Substitui 'rápido' por meta sugerida em P95, marcada explicitamente como pendente até confirmação com usuários." },
+              { "line": 3, "explanation": "Marca explicitamente o SLA de disponibilidade como pendente de aprovação, evitando obrigação falsa." },
+              { "line": 4, "explanation": "Registra a regra de prazo com referência explícita à fonte humana." }
+            ],
+            "takeaway": "Boa revisão de requisitos separa o que já tem fonte confirmada do que exige nova pergunta ao cliente antes de virar contrato ou código."
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Auditoria do documento antes da etapa de estimativa",
+              "expected": "Nenhum requisito contém adjetivos sem métrica nem valores numéricos não confirmados sem marcação",
+              "why": "Evita orçamentos distorcidos e retrabalho na fase de implementação."
+            },
+            {
+              "scenario": "Derivação de casos de teste pela equipe de QA",
+              "expected": "Cada RF e RNF gera pelo menos um caso de sucesso ou falha com critério numérico ou observável",
+              "why": "Confirma testabilidade real da especificação."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Elicitação, identificação de ambiguidades e casos de uso",
+          "explanation": "A qualidade de RF e RNF depende diretamente da elicitação com stakeholders e prepara a modelagem posterior em casos de uso e histórias de usuário.",
+          "topicIds": ["requisitos.elicitacao", "requisitos.ambiguidade-e-vagueza", "requisitos.casos-de-uso"],
+          "caution": "Não transforme requisitos iniciais em diagramas UML extensos antes de resolver inconsistências e termos subjetivos."
+        },
+        {
+          "title": "Histórias de usuário (INVEST) e critérios de aceitação testáveis",
+          "explanation": "Em times ágeis, RF e RNF alimentam histórias de usuário e seus critérios de aceitação no formato Dado/Quando/Então.",
+          "topicIds": ["requisitos.historias-de-usuario", "requisitos.criterios-de-aceitacao"],
+          "caution": "Histórias de usuário curtas não dispensam o registro explícito de restrições não funcionais mensuráveis do sistema."
+        }
+      ],
+      "reviewChecklist": [
+        "Cada RF expressa o que o sistema deve fazer com verbo concreto e pré-condições claras?",
+        "Cada RNF (desempenho, segurança, usabilidade, disponibilidade) possui critério mensurável e verificável?",
+        "Verifiquei pares de requisitos para eliminar contradições (consistência)?",
+        "Todos os IDs têm rastreabilidade até uma fonte real e nenhuma métrica foi inventada sem validação?"
+      ],
+      "sources": [
+        {
+          "sourceId": "requisitos-26-2-slides",
+          "locator": "Aula1_Introducao PPTX (slides 3–6), aula4_engenharia_software.pdf (p. 1–8), aula7_revisao.pdf (p. 3, 8–9), aula8_IEEE.pdf (p. 1–5) e aula8_IEEE_exercicios.docx",
+          "use": "Definição e comparação de RF/RNF, critérios de qualidade (clareza, completude, consistência, testabilidade, rastreabilidade), verbos recomendados e estrutura SRS IEEE."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "req.fnf.pre1",
+        "prompt": "Em um aplicativo bancário, qual é a diferença de classificação entre 'O sistema deve permitir transferências via PIX' e 'As senhas dos clientes devem ser armazenadas com criptografia'?",
+        "modelAnswer": "A transferência via PIX descreve uma funcionalidade oferecida ao usuário (Requisito Funcional), enquanto a exigência de criptografia das senhas define uma propriedade de segurança sobre como o sistema opera (Requisito Não Funcional)."
+      },
+      {
+        "id": "req.fnf.pre2",
+        "prompt": "Por que a frase 'O sistema deve ser moderno e intuitivo' falha em uma revisão segundo o padrão IEEE?",
+        "modelAnswer": "Porque 'moderno' e 'intuitivo' são termos subjetivos: pessoas diferentes terão opiniões opostas, impossibilitando um teste objetivo de aprovação ou reprovação."
+      }
+    ],
+    "why": {
+      "problem": "Requisitos ambíguos, incompletos ou contraditórios permitem que analistas, programadores e testadores construam interpretações incompatíveis do mesmo sistema.",
+      "cost": "Erros descobertos apenas depois da implementação exigem retrabalho caro em código, banco de dados e testes, além de gerar conflitos contratuais no aceite."
+    },
+    "mentalModel": {
+      "analogy": "Compare a especificação de requisitos ao projeto de construção de uma casa: Requisitos Funcionais definem o que os cômodos fazem (ter cozinha, permitir trancar a porta da frente); Requisitos Não Funcionais definem padrões e restrições sob as quais tudo opera (suportar vento de 90 km/h, isolamento acústico de 45 dB).",
+      "limits": "Escrever requisitos estruturados reduz ambiguidade, mas não substitui prototipação nem validação contínua com usuários reais quando o domínio muda.",
+      "trace": {
+        "headers": ["Declaração observada", "Classificação", "Diagnóstico de qualidade", "Reescrita / ação recomendada"],
+        "rows": [
+          ["Permitir cadastro de alunos", "Funcional (RF)", "Ação clara, falta detalhar dados mínimos", "RF: Cadastrar aluno com nome, CPF e e-mail válido"],
+          ["Responder em até 2 segundos", "Não Funcional (RNF)", "Mensurável, especificar carga/percentil", "RNF: Responder consultas em até 2 s em 95% dos casos"],
+          ["O sistema deve ser rápido", "Não Funcional (vago)", "Subjetivo e não testável", "Definir latência máxima e concorrência com o cliente"],
+          ["RF01 permite excluir / RF02 proíbe excluir", "Inconsistente", "Contradição lógica entre dois RFs", "Resolver regra com o coordenador de negócio antes do código"]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Requisitos Funcionais especificam os serviços e comportamentos que o sistema executa; Requisitos Não Funcionais estabelecem restrições e atributos de qualidade verificáveis sob os quais esses serviços devem operar.",
+      "parts": [
+        "Critérios de qualidade (IEEE / SRS): clareza (interpretação única), completude, consistência (sem contradições), testabilidade (critério verificável) e rastreabilidade (origem identificada).",
+        "Estrutura SRS IEEE: Introdução (objetivo, escopo, referências), Descrição Geral (contexto, usuários, restrições) e Requisitos Específicos (RFs, RNFs, regras e interfaces)."
+      ],
+      "code": "RF-01: O sistema deve gerar boleto bancário após confirmação do pedido.\nRNF-01: O sistema deve validar e registrar pagamentos em até 3 segundos para 500 usuários simultâneos.\nRNF-02: O sistema deve manter disponibilidade mensal mínima de 99,5%.",
+      "expectedOutput": "RF-01 -> Requisito Funcional (ação de negócio)\nRNF-01 -> Requisito Não Funcional de Desempenho (mensurável)\nRNF-02 -> Requisito Não Funcional de Disponibilidade (mensurável)"
+    },
+    "workedExamples": [
+      {
+        "problem": "Auditar e reescrever duas declarações colhidas em entrevista para uma startup de academias ('o sistema deve cadastrar alunos' e 'o sistema deve ser seguro e rápido').",
+        "subgoals": [
+          {
+            "label": "Submeta 1: Separar ação funcional de qualidades de operação",
+            "code": "Entrada 1: 'O sistema deve cadastrar alunos.' -> Tipo: Funcional (RF)\nEntrada 2: 'O sistema deve ser rápido e seguro.' -> Tipo: Não Funcional (dois atributos misturados e vagos)",
+            "why": "Cada requisito deve expressar uma única ideia para facilitar validação e testes separados de funcionalidade, latência e segurança."
+          },
+          {
+            "label": "Submeta 2: Tornar mensurável e rastreável com estrutura IEEE",
+            "code": "RF-01: O sistema deve cadastrar alunos com nome completo, CPF válido e plano ativo (entrevista sócio-fundador).\nRNF-01 (Desempenho): O sistema deve responder buscas de matrícula em até 2 segundos em 95% dos acessos.\nRNF-02 (Segurança): O sistema deve armazenar senhas com hash criptográfico e exigir MFA para administradores.",
+            "why": "Desmembra o pedido vago em dois RNFs independentes e verificáveis, mantendo a origem registrada."
+          }
+        ],
+        "expectedOutput": "Três requisitos atômicos (RF-01, RNF-01, RNF-02), cada um com verbo objetivo, critério testável e rastreabilidade."
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "req.rnf-menos-importante",
+        "claim": "Requisitos não funcionais são detalhes opcionais; se as funcionalidades existirem, qualquer tempo de resposta ou segurança serve.",
+        "refutation": "Um sistema funcional que demora 40 segundos para responder, cai em horários de pico ou grava senhas em texto puro fracassa em produção tanto quanto um sistema com funcionalidade ausente.",
+        "correct": "RF e RNF são complementares: funcionalidades sem qualidades mensuráveis de desempenho, disponibilidade e segurança tornam o software inutilizável."
+      },
+      {
+        "tag": "req.adjetivo-basta",
+        "claim": "Escrever 'interface moderna, rápida e intuitiva' já é suficiente como RNF de usabilidade e desempenho.",
+        "refutation": "Adjetivos subjetivos não permitem aprovar nem reprovar uma entrega de maneira imparcial: cada avaliador definirá 'intuitivo' de forma diferente.",
+        "correct": "Converta adjetivos em métricas ou critérios concretos (tempo em segundos, percentil, conclusão de tarefa em X minutos, responsividade em largura definida)."
+      },
+      {
+        "tag": "req.ieee-engessa",
+        "claim": "O padrão IEEE serve apenas para escolher linguagem de programação ou substituir testes de software.",
+        "refutation": "A SRS IEEE padroniza a organização e comunicação dos requisitos (Introdução, Descrição Geral, Requisitos Específicos); ela apoia o desenvolvimento e orienta os testes, nunca os substitui.",
+        "correct": "Use a estrutura IEEE para organizar requisitos de modo rastreável e padronizado, mantendo validação contínua e bateria de testes correspondente."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Alinhamento entre equipe técnica, QA e stakeholders antes de codificar",
+        "description": "Evita que programadores implementem pressupostos errados e reduz custos de retrabalho após o início do desenvolvimento."
+      },
+      {
+        "context": "Base objetiva para criação de roteiros de teste e aceite",
+        "description": "Requisitos específicos numerados (RF/RNF) fornecem os critérios exatos para aprovar ou reprovar uma versão."
+      },
+      {
+        "context": "Revisão crítica de especificações rascunhadas por IA",
+        "description": "Permite caçar adjetivos subjetivos, contradições entre itens e SLAs inventados antes de assumir compromissos."
+      }
+    ],
+    "efficiency": {
+      "naive": "R1: O sistema deve ser moderno, rápido e emitir documentos.",
+      "better": "RF-01: O sistema deve emitir certificado em PDF ao concluir o curso.\nRNF-01: A geração do certificado deve ocorrer em até 2 segundos em 95% das solicitações.",
+      "criterion": "Misturar função e adjetivos vagos em uma única frase impede isolar falhas de geração vs. latência e bloqueia testes objetivos; separar em RF e RNF atômicos e mensuráveis permite validação independente e rastreável.",
+      "expectedOutput": "RF-01 testável (formato PDF + condição) + RNF-01 mensurável (<= 2s em 95% dos casos)."
+    },
+    "summary": "Requisitos Funcionais descrevem o que o sistema faz e Requisitos Não Funcionais especificam sob quais restrições e metas mensuráveis de qualidade ele opera; organizá-los com clareza, completude, consistência, testabilidade e rastreabilidade no padrão SRS IEEE evita retrabalho e expõe ambiguidades.",
+    "selfExplain": [
+      {
+        "id": "req.fnf.se1",
+        "prompt": "Explique por que transformar 'o sistema deve responder rapidamente' em 'responder em até 2 segundos em 95% das requisições' muda o trabalho de desenvolvimento e testes.",
+        "modelAnswer": "Com 'rapidamente', desenvolvedor e cliente podem divergir sobre se 5 segundos é aceitável e nenhum teste automático consegue falhar com critério objetivo. Definir 2 segundos no percentil 95 orienta decisões de índice/cache no desenvolvimento e dá à equipe de QA uma linha de corte exata para aprovar ou reprovar."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "req.fnf.ret1",
+        "prompt": "Como diferenciar rapidamente um Requisito Funcional de um Requisito Não Funcional?",
+        "modelAnswer": "O Requisito Funcional descreve o que o sistema faz (serviço, ação ou comportamento executável); o Requisito Não Funcional descreve como ele deve operar ou sob quais restrições (desempenho, segurança, disponibilidade, usabilidade, escalabilidade)."
+      },
+      {
+        "id": "req.fnf.ret2",
+        "prompt": "Quais são as três seções principais de uma especificação SRS baseada no padrão IEEE 830?",
+        "modelAnswer": "1. Introdução (objetivo, escopo, definições, referências), 2. Descrição Geral (perspectiva do produto, usuários, restrições) e 3. Requisitos Específicos (RFs, RNFs, regras e interfaces)."
+      },
+      {
+        "id": "req.fnf.ret3",
+        "prompt": "O que caracteriza problemas de consistência e de testabilidade em um documento de requisitos?",
+        "modelAnswer": "Inconsistência ocorre quando dois requisitos se contradizem (ex.: um permite excluir pedidos e outro proíbe qualquer exclusão); falha de testabilidade ocorre quando faltam critérios objetivos ou métricas mensuráveis para verificar se o requisito foi cumprido."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "req.fnf.ex1",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Classificar RF vs. RNF em sistema acadêmico",
+      "prompt": "Leia o requisito retirado da especificação SRS: \"O sistema deve responder consultas de boletim em até 3 segundos para até 500 usuários simultâneos\". Como ele deve ser classificado?",
+      "difficulty": 1,
+      "skills": ["classificação RF/RNF", "critérios de qualidade"],
+      "explanation": "O requisito não está definindo uma nova ação de negócio isolada, mas sim uma meta mensurável de tempo de resposta sob carga, característica de Requisito Não Funcional de Desempenho.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "Requisito funcional, porque consulta de boletim envolve funcionalidade do sistema.", "feedback": "A ação de consultar boletim seria um RF; aqui o foco da exigência é o limite de 3 segundos sob 500 usuários simultâneos." },
+        { "id": "b", "text": "Requisito não funcional de desempenho, pois define restrição mensurável de tempo de resposta sob carga.", "feedback": "Correto! Tempo de resposta (3s) e concorrência (500 usuários) especificam qualidade operacional verificável." },
+        { "id": "c", "text": "Requisito inválido pelo padrão IEEE por incluir números específicos de usuários.", "misconceptionTag": "req.adjetivo-basta", "feedback": "Pelo contrário: números verificáveis tornam o RNF testável e conforme as boas práticas IEEE." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "req.fnf.ex2",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Finalidade do padrão IEEE na SRS",
+      "prompt": "Uma equipe adotou a estrutura IEEE (Introdução, Descrição Geral e Requisitos Específicos) para sua documentação. Qual é o principal objetivo dessa padronização?",
+      "difficulty": 1,
+      "skills": ["padrão IEEE SRS", "comunicação"],
+      "explanation": "A SRS baseada no IEEE organiza os requisitos de forma padronizada para melhorar a comunicação, servir de base a desenvolvimento e testes e facilitar manutenção futura.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "Definir a linguagem de programação e eliminar a necessidade de testes no projeto.", "misconceptionTag": "req.ieee-engessa", "feedback": "O padrão IEEE não impõe linguagem nem substitui testes; ele estrutura a especificação que servirá de base para construir e testar." },
+        { "id": "b", "text": "Padronizar a documentação e facilitar a comunicação entre envolvidos, desenvolvimento e testes.", "feedback": "Correto: padronização documental reduz ambiguidades e apoia todo o ciclo do software." },
+        { "id": "c", "text": "Garantir automaticamente que não existam contradições sem revisão humana.", "feedback": "O template organiza as seções, mas detectar inconsistências entre regras ainda exige inspeção ativa." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "req.fnf.ex3",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Auditoria de qualidade em trecho de especificação",
+      "prompt": "Marque todos os itens com DEFEITO de qualidade (ambiguidade, inconsistência ou falta de testabilidade) em um rascunho de requisitos.",
+      "difficulty": 2,
+      "skills": ["inspeção de qualidade", "consistência"],
+      "explanation": "R2 emprega adjetivos subjetivos ('moderna e intuitiva') não testáveis; R3 e R4 formam contradição direta de consistência sobre o bloqueio após 3 tentativas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "items": [
+        { "id": "i1", "text": "R1 (RF): O sistema deve emitir relatório mensal de vendas em formato PDF até o 1º dia útil." },
+        { "id": "i2", "text": "R2 (RNF): O sistema deve ter interface moderna e intuitiva para agradar aos usuários." },
+        { "id": "i3", "text": "R3 (RF) + R4 (RF): R3 bloqueia o usuário após 3 senhas inválidas; R4 permite tentativas ilimitadas." },
+        { "id": "i4", "text": "R5 (RNF): O sistema deve estar disponível 99,5% do tempo durante o horário comercial." }
+      ],
+      "solution": { "faultyItemIds": ["i2", "i3"] }
+    },
+    {
+      "id": "req.fnf.ex4",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Prever o diagnóstico IEEE de um par conflitante",
+      "prompt": "Analise o trecho escrito por um analista e preveja qual critério de qualidade do padrão IEEE foi violado em primeiro plano.",
+      "difficulty": 2,
+      "skills": ["análise IEEE", "consistência"],
+      "explanation": "RF01 autoriza exclusão de pedidos e RF02 proíbe qualquer exclusão; duas regras que não podem ser verdadeiras ao mesmo tempo quebram a consistência.",
+      "type": "PRIMM_PREDICT",
+      "code": "RF01 - O usuário pode excluir pedidos.\nRF02 - Nenhum pedido pode ser excluído.",
+      "solution": {
+        "output": "Falha de consistência (contradição direta entre RF01 e RF02)"
+      }
+    },
+    {
+      "id": "req.fnf.ex5",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Ordenar a estrutura da SRS IEEE",
+      "prompt": "Ordene os blocos para montar a sequência lógica de um documento SRS IEEE válido com um RF rastreado, descartando o bloco com requisito subjetivo inválido.",
+      "difficulty": 2,
+      "skills": ["estrutura SRS IEEE", "escrita de requisitos"],
+      "explanation": "A estrutura IEEE segue Introdução -> Descrição Geral -> Requisitos Específicos (com requisitos claros e verificáveis), rejeitando termos vagos como 'ser bem rápido'.",
+      "type": "PARSONS",
+      "blocks": [
+        { "id": "b1", "code": "1. Introdução: Objetivo e escopo do Sistema de Biblioteca", "distractor": false },
+        { "id": "b2", "code": "2. Descrição Geral: Perfis de usuário (alunos e bibliotecários) e restrições Web", "distractor": false },
+        { "id": "b3", "code": "3. Requisitos Específicos - RF01: O sistema deve registrar empréstimo de exemplar disponível por 7 dias.", "distractor": false },
+        { "id": "d1", "code": "3. Requisitos Específicos - RNF01: O sistema deve ser moderno e bem rápido sempre.", "distractor": true },
+        { "id": "b4", "code": "3. Requisitos Específicos - RNF01: O sistema deve confirmar registro de empréstimo em até 2 segundos (P95).", "distractor": false }
+      ],
+      "solution": {
+        "orders": [[
+          { "id": "b1", "indent": 0 },
+          { "id": "b2", "indent": 0 },
+          { "id": "b3", "indent": 0 },
+          { "id": "b4", "indent": 0 }
+        ]],
+        "output": "SRS IEEE consistente e verificável"
+      }
+    },
+    {
+      "id": "req.fnf.ex6",
+      "lessonId": "requisitos.funcionais-e-nao-funcionais.v1",
+      "topicId": "requisitos.funcionais-e-nao-funcionais",
+      "title": "Prever o efeito de reescrever um requisito vago",
+      "prompt": "Compare a afirmação original com a reescrita abaixo e preveja o ganho direto para testes e aceite.",
+      "difficulty": 2,
+      "skills": ["reescrita estruturada", "testabilidade"],
+      "explanation": "Ao incluir o formato (PDF) e o gatilho de negócio (conclusão do curso), o requisito ganha completude e um resultado verificável pela equipe de testes.",
+      "type": "PRIMM_PREDICT",
+      "code": "Antes: O sistema deve emitir documentos.\nDepois: O sistema deve emitir certificados em formato PDF após a conclusão do curso com frequência >= 75%.",
+      "solution": {
+        "output": "Requisito completo e testável (define tipo, formato PDF e condição de emissão)"
+      }
+    }
+  ]
+}

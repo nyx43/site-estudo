@@ -1,0 +1,10 @@
+{
+  "id": "mdn-http-methods",
+  "title": "MDN Web Docs — HTTP request methods, Safe e Idempotent",
+  "kind": "OFFICIAL_DOCUMENTATION",
+  "author": "Mozilla e colaboradores (MDN Web Docs)",
+  "edition": "Referência normativa HTTP",
+  "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods",
+  "checkedAt": "2026-11-13",
+  "note": "Conferido em 2026-11-13 para confirmar propriedades normativas de segurança (safe), cacheabilidade e idempotência de GET, HEAD, OPTIONS, PUT, DELETE, POST e PATCH em complemento aos slides da disciplina."
+}

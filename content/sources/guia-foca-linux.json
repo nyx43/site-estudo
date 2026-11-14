@@ -1,0 +1,9 @@
+{
+  "id": "guia-foca-linux",
+  "title": "Guia Foca GNU/Linux — Iniciante",
+  "kind": "TEXTBOOK",
+  "author": "Gleydson Mazioli da Silva",
+  "edition": "Versão 5.02 (27 de julho de 2020)",
+  "checkedAt": "2026-11-13",
+  "note": "Manual livre distribuído na pasta de Sistemas Operacionais 26.2 (143 p., copyleft) utilizado como referência complementar introdutória para fundamentos GNU/Linux, shell e sistema de arquivos."
+}

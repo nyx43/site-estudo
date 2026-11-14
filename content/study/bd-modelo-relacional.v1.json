@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "banco-de-dados.modelo-relacional.v1",
+    "topicId": "banco-de-dados.modelo-relacional",
+    "version": 1,
+    "title": "Modelo relacional, chaves e integridade em SQL e JPA",
+    "status": "AUTO_CHECKED",
+    "exampleMode": "STATIC_CODE",
+    "exampleLanguage": "SQL / Spring Data JPA",
+    "objectives": [
+      "Estruturar tabelas com atributos tipados, NOT NULL, CHECK e chaves primárias (PRIMARY KEY) garantindo unicidade.",
+      "Modelar relacionamentos com chaves estrangeiras (FOREIGN KEY / REFERENCES) para impedir registros órfãos.",
+      "Escolher entre ON DELETE RESTRICT/NO ACTION e ON DELETE CASCADE conforme regras de preservação ou composição.",
+      "Conectar o modelo relacional SQL às entidades JPA (@Entity, @Id) e repositórios Spring Data vistos no material de 26.2."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Armazenar dados em arquivos soltos ou em tabelas sem regras estruturais faz o próprio sistema aceitar registros duplicados, pedidos ligados a clientes inexistentes e saldos negativos. O modelo relacional resolve esse problema organizando dados em relações (tabelas) com tuplas (linhas), colunas tipadas e restrições impostas diretamente pelo SGBD.",
+        "Nota de curadoria e lacuna de 26.2: a pasta institucional de Gerenciamento de Banco de Dados disponibilizada neste período concentra materiais em Java, revisão OO e Spring Data JPA (`DW2-Modulo6-Intro-Web-Services-Spring.pdf` e projeto `demo1`), sem apostila própria de DDL SQL e modelagem relacional. Por isso, esta lição combina a documentação oficial do PostgreSQL sobre restrições (`PRIMARY KEY`, `FOREIGN KEY` e ações `ON DELETE`) ao mapeamento `@Entity`/`JpaRepository` visto em aula."
+      ],
+      "prerequisites": [],
+      "glossary": [
+        {
+          "term": "Tabela (Relação), Tupla e Coluna",
+          "meaning": "No modelo relacional, uma tabela representa um conjunto de entidades; cada linha (tupla) é um registro e cada coluna define um atributo com domínio tipado.",
+          "example": "A tabela produtos possui colunas id, nome e preco; cada produto cadastrado ocupa uma tupla."
+        },
+        {
+          "term": "PRIMARY KEY (Chave Primária)",
+          "meaning": "Restrição que garante que uma coluna ou grupo de colunas identifica unicamente cada linha da tabela, combinando unicidade (UNIQUE) com não nulidade (NOT NULL).",
+          "example": "id INT PRIMARY KEY impede dois produtos com o mesmo identificador ou com id nulo."
+        },
+        {
+          "term": "FOREIGN KEY / REFERENCES (Chave Estrangeira)",
+          "meaning": "Restrição que obriga cada valor não nulo em uma coluna (ou conjunto de colunas) a corresponder a um valor existente na chave referenciada de outra tabela.",
+          "example": "pedidos.produto_id REFERENCES produtos(id) impede gravar um pedido para um produto inexistente."
+        },
+        {
+          "term": "Integridade referencial e ON DELETE",
+          "meaning": "Garantia mantida pelo SGBD de que relacionamentos entre tabelas permaneçam consistentes, definindo com RESTRICT/NO ACTION ou CASCADE o que acontece se o pai for removido.",
+          "example": "ON DELETE RESTRICT bloqueia apagar um produto enquanto houver pedido apontando para ele."
+        },
+        {
+          "term": "ORM e @Entity (Spring Data JPA)",
+          "meaning": "Mapeamento Objeto-Relacional em que uma classe Java anotada com @Entity corresponde a uma tabela do banco e possui campo @Id equivalente à chave primária.",
+          "example": "JpaRepository<Produto, Long> gera consultas SQL sobre a tabela mapeada sem abrir conexões manualmente."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Definição de tabela com PRIMARY KEY, NOT NULL e CHECK",
+          "kind": "SYNTAX",
+          "syntax": "CREATE TABLE <nome> (<col> <tipo> PRIMARY KEY, <col2> <tipo> NOT NULL CHECK (<regra>));",
+          "explanation": "Declarar PRIMARY KEY e invariantes de domínio direto no DDL transfere a proteção de integridade para o SGBD, independentemente de qual API ou script acesse o banco.",
+          "whenToUse": "Na criação de qualquer tabela central do domínio antes de gerar entidades ORM ou endpoints REST.",
+          "pitfalls": [
+            "Confiar apenas em validação no front-end ou em DTO da API: importações em lote ou scripts manuais ainda quebram o banco sem CHECK e NOT NULL.",
+            "Criar tabelas sem PRIMARY KEY gera duplicatas idênticas impossíveis de distinguir ou referenciar por chave estrangeira."
+          ],
+          "examples": [
+            {
+              "id": "bd.rel.create-pk",
+              "title": "Criação da tabela produtos com restrições estruturais",
+              "purpose": "Mostrar identidade automática, chave primária, não nulidade e verificação de preço não negativo.",
+              "code": "CREATE TABLE produtos (\n    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    nome VARCHAR(120) NOT NULL,\n    preco NUMERIC(10, 2) NOT NULL CHECK (preco >= 0)\n);",
+              "expectedOutput": "Tabela produtos criada: id único e obrigatório; nome não aceita NULL; preco bloqueia valores negativos.",
+              "lineNotes": [
+                { "line": 1, "explanation": "Abre a definição DDL da tabela produtos." },
+                { "line": 2, "explanation": "Define id gerado pelo banco como PRIMARY KEY (equivale a UNIQUE + NOT NULL)." },
+                { "line": 3, "explanation": "Exige que todo produto possua nome não nulo até 120 caracteres." },
+                { "line": 4, "explanation": "Garante precisão decimal exata e rejeita preços negativos via CHECK." },
+                { "line": 5, "explanation": "Encerra o comando CREATE TABLE." }
+              ],
+              "takeaway": "Restrições no DDL funcionam como linha de defesa permanente para todas as aplicações que compartilham o banco."
+            }
+          ]
+        },
+        {
+          "name": "Chave estrangeira (FOREIGN KEY) e política ON DELETE",
+          "kind": "SYNTAX",
+          "syntax": "REFERENCES <tabela_pai>(<chave>) ON DELETE RESTRICT | CASCADE | SET NULL",
+          "explanation": "Conforme a documentação oficial de constraints do PostgreSQL, REFERENCES vincula a tabela filha à tabela referenciada, evitando registros órfãos na inserção e controlando exclusões na tabela pai.",
+          "whenToUse": "Em todo relacionamento 1:N ou N:N (ex.: pedido -> cliente/produto, matrícula -> aluno/turma).",
+          "pitfalls": [
+            "Usar ON DELETE CASCADE em entidades comerciais ou fiscais pode apagar silenciosamente todo o histórico de pedidos ao excluir um cadastro.",
+            "Deixar a coluna como INT comum sem REFERENCES permite gravar IDs inexistentes sem nenhum aviso."
+          ],
+          "examples": [
+            {
+              "id": "bd.rel.fk-restrict",
+              "title": "Relacionando pedidos a produtos com integridade referencial",
+              "purpose": "Evitar pedidos órfãos e proteger produtos vinculados contra exclusão acidental.",
+              "code": "CREATE TABLE pedidos (\n    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n    produto_id INT NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,\n    quantidade INT NOT NULL CHECK (quantidade > 0)\n);",
+              "expectedOutput": "Tabela pedidos criada: só aceita produto_id existente em produtos(id) e impede DELETE em produtos com pedidos ativos.",
+              "lineNotes": [
+                { "line": 1, "explanation": "Inicia a definição da tabela filha pedidos." },
+                { "line": 2, "explanation": "Chave primária própria de cada pedido." },
+                { "line": 3, "explanation": "Chave estrangeira aponta para produtos(id) e usa ON DELETE RESTRICT para bloquear exclusão do pai referenciado." },
+                { "line": 4, "explanation": "Garante quantidade estritamente positiva no banco." },
+                { "line": 5, "explanation": "Finaliza a definição DDL." }
+              ],
+              "takeaway": "ON DELETE RESTRICT preserva integridade histórica; só escolha CASCADE quando o ciclo de vida do filho realmente depender do desaparecimento do pai."
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "bd.rel.jpa-mapeamento",
+          "title": "Da tabela relacional à entidade @Entity no Spring Data JPA",
+          "purpose": "Conectar a estrutura de chave primária SQL ao modelo OO Java visto no módulo de Spring Data JPA e no projeto demo1.",
+          "code": "@Entity\npublic class SoftwareEngineer {\n    @Id\n    private Integer id;\n    private String name;\n    private String techStack;\n    protected SoftwareEngineer() {}\n}",
+          "expectedOutput": "Classe gerenciada pelo Hibernate/JPA correspondente à tabela software_engineer com chave primária mapeada por @Id.",
+          "lineNotes": [
+            { "line": 1, "explanation": "@Entity instrui o Spring Data JPA/Hibernate a mapear a classe diretamente para uma tabela do banco (DW2-Modulo6 p. 33)." },
+            { "line": 2, "explanation": "Classe pública não final que representa a entidade do projeto demo1 da disciplina." },
+            { "line": 3, "explanation": "@Id designa o atributo que corresponde à PRIMARY KEY da tabela relacional." },
+            { "line": 4, "explanation": "Tipo do identificador coincide com o segundo parâmetro de JpaRepository<SoftwareEngineer, Integer>." },
+            { "line": 5, "explanation": "Atributo de domínio persistido como coluna textual na tabela." },
+            { "line": 6, "explanation": "Outro atributo de coluna da entidade." },
+            { "line": 7, "explanation": "Construtor padrão sem argumentos exigido pela especificação JPA para instanciar resultados do banco." },
+            { "line": 8, "explanation": "Fecha a definição da classe entidade." }
+          ],
+          "takeaway": "ORM não substitui o modelo relacional: cada @Entity espelha uma tabela e cada @Id pressupõe chave primária consistente no SGBD."
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Bloqueio de exclusão na tabela pai quando existem dependentes",
+          "explanation": "Mesmo quando o valor de id existe em produtos, tentar remover uma linha ainda referenciada em pedidos dispara erro imediato de violação de chave estrangeira sob ON DELETE RESTRICT.",
+          "example": {
+            "id": "bd.rel.edge-fk-delete",
+            "title": "Exclusão bloqueada por chave estrangeira ativa",
+            "purpose": "Mostrar o momento exato em que o SGBD protege o relacionamento contra referências pendentes.",
+            "code": "INSERT INTO produtos (id, nome, preco) OVERRIDING SYSTEM VALUE VALUES (10, 'Teclado', 180.00);\nINSERT INTO pedidos (id, produto_id, quantidade) OVERRIDING SYSTEM VALUE VALUES (1, 10, 2);\nDELETE FROM produtos WHERE id = 10;",
+            "expectedOutput": "ERRO DE INTEGRIDADE REFERENCIAL: update or delete on table \"produtos\" violates foreign key constraint (produto 10 ainda possui pedido 1 vinculado).",
+            "lineNotes": [
+              { "line": 1, "explanation": "Insere o produto pai id = 10 usando OVERRIDING SYSTEM VALUE por causa da coluna GENERATED ALWAYS AS IDENTITY." },
+              { "line": 2, "explanation": "Registra o pedido 1 com OVERRIDING SYSTEM VALUE apontando para produto_id = 10 (chave válida)." },
+              { "line": 3, "explanation": "Tenta excluir o produto 10; o SGBD barra o DELETE para não deixar o pedido 1 órfão." }
+            ],
+            "takeaway": "Se um produto já participou de pedidos, arquive-o com coluna booleana `ativo = false` ou estude regras de preservação em vez de forçar exclusão física."
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "IA gera tabela filha sem FOREIGN KEY, aceitando IDs fantasmas",
+          "request": "Peça a uma IA o DDL SQL para armazenar itens de pedido referenciando a tabela produtos.",
+          "generated": {
+            "id": "bd.rel.ai-sem-fk",
+            "title": "Tabela sugerida apenas com coluna numérica solta sem REFERENCES",
+            "purpose": "Mostrar que omitir FOREIGN KEY cria integridade falsa controlada apenas no aplicativo.",
+            "code": "CREATE TABLE itens_pedido (\n    id INT PRIMARY KEY,\n    produto_id INT NOT NULL,\n    quantidade INT NOT NULL\n);",
+            "expectedOutput": "PERIGO SILENCIOSO: aceita produto_id = 999999 inexistente na tabela produtos, gerando registros orfaos sem erro imediato.",
+            "lineNotes": [
+              { "line": 1, "explanation": "Define tabela para itens de pedido." },
+              { "line": 2, "explanation": "Define chave primária da linha." },
+              { "line": 3, "explanation": "ERRO DE MODELAGEM: declara produto_id como inteiro simples, sem REFERENCES produtos(id)." },
+              { "line": 4, "explanation": "Permite quantidade zero ou negativa por ausência de CHECK (quantidade > 0)." },
+              { "line": 5, "explanation": "Sem foreign key, o banco nunca verifica se o produto existe." }
+            ],
+            "takeaway": "Nomear uma coluna como `produto_id` não cria vínculo relacional no banco; sem REFERENCES/FOREIGN KEY o SGBD não protege a ligação."
+          },
+          "diagnosis": [
+            "A coluna `produto_id INT NOT NULL` garante apenas que o campo é inteiro e não nulo, mas permite inserir `999999` mesmo sem produto correspondente.",
+            "Qualquer exclusão na tabela `produtos` passa sem aviso e transforma itens de pedido em órfãos que quebram JOINs e relatórios.",
+            "Falta `CHECK (quantidade > 0)` para barrar pedidos com zero ou quantidade negativa na camada de persistência."
+          ],
+          "correction": {
+            "id": "bd.rel.ai-com-fk",
+            "title": "Chave estrangeira com ON DELETE RESTRICT e restrição de quantidade",
+            "purpose": "Garantir integridade referencial e invariante de domínio diretamente no SGBD.",
+            "code": "CREATE TABLE itens_pedido (\n    id INT PRIMARY KEY,\n    produto_id INT NOT NULL REFERENCES produtos(id) ON DELETE RESTRICT,\n    quantidade INT NOT NULL CHECK (quantidade > 0)\n);",
+            "expectedOutput": "SGBD REJEITA ORFAOS E EXCLUSOES INDEVIDAS: INSERT com produto_id = 999999 falha na hora por foreign key; DELETE de produto referenciado também é bloqueado.",
+            "lineNotes": [
+              { "line": 1, "explanation": "Mantém a tabela itens_pedido." },
+              { "line": 2, "explanation": "Mantém a chave primária." },
+              { "line": 3, "explanation": "Adiciona REFERENCES produtos(id) ON DELETE RESTRICT impondo existência do produto e protegendo histórico." },
+              { "line": 4, "explanation": "Exige quantidade maior que zero diretamente no banco." },
+              { "line": 5, "explanation": "Fecha a criação protegida da tabela." }
+            ],
+            "takeaway": "Sempre confira no DDL gerado se todas as colunas terminadas em `_id` carregam `REFERENCES` explícito e política `ON DELETE` intencional."
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Tentar inserir item apontando para produto_id inexistente (999999)",
+              "expected": "SGBD aborta o INSERT com erro de constraint de chave estrangeira",
+              "why": "Impede dados órfãos vindos de bugs no código ou cargas manuais."
+            },
+            {
+              "scenario": "Tentar excluir produto que possui item de pedido registrado",
+              "expected": "SGBD recusa o DELETE por ON DELETE RESTRICT",
+              "why": "Preserva histórico comercial em vez de apagá-lo em cascata."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Normalização, JOINs e comportamento de NULL em consultas",
+          "explanation": "Chaves primárias e estrangeiras bem projetadas viabilizam eliminar redundâncias (1FN/2FN/3FN) e reconstruir entidades com JOINs confiáveis.",
+          "topicIds": ["banco-de-dados.normalizacao", "banco-de-dados.consultas-e-joins", "banco-de-dados.null-e-agregacoes"],
+          "caution": "Em LEFT JOIN, chaves estrangeiras opcionais produzem NULL nas colunas do lado ausente — não confunda NULL com zero ou string vazia."
+        },
+        {
+          "title": "Transações ACID, índices e consumo via API REST",
+          "explanation": "No módulo de Spring Data JPA, anotações como @Transactional garantem atomicidade sobre operações SQL, enquanto APIs REST expõem recursos derivados dessas tabelas.",
+          "topicIds": ["banco-de-dados.transacoes", "banco-de-dados.indices-e-migracoes", "web-dev.http-e-rest"],
+          "caution": "Chaves estrangeiras frequentemente exigem índice dedicado na tabela filha para evitar varredura completa ao validar DELETE na tabela pai."
+        }
+      ],
+      "reviewChecklist": [
+        "Toda tabela tem PRIMARY KEY garantindo unicidade e não nulidade?",
+        "Todas as referências entre tabelas usam FOREIGN KEY / REFERENCES em vez de inteiros soltos?",
+        "A opção ON DELETE (RESTRICT/NO ACTION vs. CASCADE vs. SET NULL) foi escolhida conscientemente pelo domínio?",
+        "Para uso com JPA, cada @Entity tem @Id alinhado à PRIMARY KEY e construtor sem argumentos?"
+      ],
+      "sources": [
+        {
+          "sourceId": "postgresql-ddl-constraints",
+          "locator": "PostgreSQL Documentation, Cap. 5.5 Constraints — 5.5.4 Primary Keys e 5.5.5 Foreign Keys",
+          "use": "Definições normativas de PRIMARY KEY, REFERENCES/FOREIGN KEY, NO ACTION/RESTRICT, CASCADE e SET NULL (suprindo lacuna de apostila SQL na pasta 26.2)."
+        },
+        {
+          "sourceId": "banco-de-dados-26-2-spring",
+          "locator": "DW2-Modulo6-Intro-Web-Services-Spring.pdf (p. 29–34) e demo1 (SoftwareEngineer.java)",
+          "use": "Relação entre tabelas/tuplas do modelo relacional, ORM com Hibernate/Spring Data JPA, @Entity, construtor padrão e JpaRepository."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "bd.rel.pre1",
+        "prompt": "Se uma coluna `pedido_id` na tabela `itens_pedido` for declarada apenas como `INT NOT NULL` sem `FOREIGN KEY`, o banco impede salvar um item apontando para o pedido 99999 que não existe?",
+        "modelAnswer": "Não. `INT NOT NULL` garante apenas que o campo contém um número inteiro diferente de NULL; somente uma restrição `FOREIGN KEY` (`REFERENCES`) obriga o SGBD a verificar se o identificador existe na tabela `pedidos`."
+      },
+      {
+        "id": "bd.rel.pre2",
+        "prompt": "O que uma anotação `@Entity` com `@Id` em Spring Data JPA representa em termos do modelo relacional?",
+        "modelAnswer": "A classe marcada com `@Entity` mapeia uma tabela do banco de dados, cada instância representa uma linha (tupla) em memória e o campo anotado com `@Id` corresponde à chave primária da tabela."
+      }
+    ],
+    "why": {
+      "problem": "Modelar tabelas como planilhas sem chaves primárias, estrangeiras e restrições deixa o código da aplicação sozinho contra dados duplicados e relacionamentos quebrados.",
+      "cost": "Bugs de concorrência, scripts SQL manuais ou integrações externas acabam gravando pedidos sem produto ou apagando cadastros inteiros em cascata sem rastro."
+    },
+    "mentalModel": {
+      "analogy": "Pense em PRIMARY KEY como o número único do prontuário de cada paciente em um hospital e em FOREIGN KEY como o carimbo de conferência na ficha de exame: ninguém registra exame para um prontuário inexistente, e ON DELETE RESTRICT impede arquivar/destruir o prontuário enquanto houver exames vinculados.",
+      "limits": "Chaves relacionais garantem integridade referencial estrutural dentro do banco, mas regras complexas entre múltiplos registros ou serviços externos ainda exigem transações e validação na camada de serviço.",
+      "trace": {
+        "headers": ["Restrição SQL", "Garantia no SGBD", "Ação em violação", "Equivalente / reflexo em JPA"],
+        "rows": [
+          ["PRIMARY KEY", "Unicidade + NOT NULL da tupla", "Rejeita id nulo ou repetido", "@Id na classe @Entity"],
+          ["FOREIGN KEY ... ON DELETE RESTRICT", "Filho deve apontar para pai existente", "Rejeita INSERT órfão e bloqueia DELETE no pai", "Relacionamento mapeado exige referência válida"],
+          ["FOREIGN KEY ... ON DELETE CASCADE", "Apagar pai apaga filhos dependentes", "Remove registros filhos em cadeia", "Equivalente conceitual a CascadeType.REMOVE"],
+          ["CHECK (condição)", "Invariante de coluna/linha", "Aborta INSERT/UPDATE fora da regra", "Complementa validações da camada @Service"]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "O modelo relacional representa dados em tabelas tipadas com tuplas identificadas por chaves primárias (PRIMARY KEY) e conectadas por chaves estrangeiras (FOREIGN KEY) cuja integridade referencial é aplicada pelo próprio SGBD.",
+      "parts": [
+        "Integridade de entidade e domínio: PRIMARY KEY (única e NOT NULL) somada a restrições CHECK e NOT NULL por coluna.",
+        "Integridade referencial e ORM: FOREIGN KEY com políticas ON DELETE define dependências entre tabelas que sustentam entidades @Entity e repositórios JpaRepository."
+      ],
+      "code": "CREATE TABLE cursos (\n    id INT PRIMARY KEY,\n    nome VARCHAR(100) NOT NULL\n);\nCREATE TABLE turmas (\n    id INT PRIMARY KEY,\n    curso_id INT NOT NULL REFERENCES cursos(id) ON DELETE RESTRICT\n);",
+      "expectedOutput": "Cada turma aponta obrigatoriamente para um curso existente; cursos com turmas não podem ser excluídos diretamente."
+    },
+    "workedExamples": [
+      {
+        "problem": "Definir tabelas `clientes` e `pedidos` garantindo que nenhum pedido exista sem cliente válido e que excluir um cliente com histórico seja barrado.",
+        "subgoals": [
+          {
+            "label": "Passo 1: Definir a tabela pai `clientes` com chave primária",
+            "code": "CREATE TABLE clientes (\n    id INT PRIMARY KEY,\n    nome VARCHAR(100) NOT NULL\n);",
+            "why": "Cria uma identidade única e não nula em clientes(id) capaz de servir como alvo de REFERENCES."
+          },
+          {
+            "label": "Passo 2: Referenciar `clientes(id)` em `pedidos` com ON DELETE RESTRICT",
+            "code": "CREATE TABLE pedidos (\n    id INT PRIMARY KEY,\n    cliente_id INT NOT NULL REFERENCES clientes(id) ON DELETE RESTRICT,\n    valor NUMERIC(10, 2) NOT NULL CHECK (valor > 0)\n);",
+            "why": "Exige cliente existente em cada pedido inserido, barra valores <= 0 e impede apagar cliente com pedidos."
+          }
+        ],
+        "expectedOutput": "Modelo íntegro: INSERT em pedidos com cliente_id inexistente falha; DELETE em clientes com pedidos é bloqueado."
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "bd.nome-id-basta",
+        "claim": "Dar à coluna o nome `cliente_id` já faz o banco garantir que o cliente existe.",
+        "refutation": "Para o SGBD, o nome da coluna é apenas um rótulo; sem a cláusula `FOREIGN KEY` / `REFERENCES`, qualquer número inteiro arbitrário pode ser inserido.",
+        "correct": "Declare explicitamente `REFERENCES tabela_pai(coluna_pk)` ou `FOREIGN KEY (...) REFERENCES ...` no DDL."
+      },
+      {
+        "tag": "bd.cascade-sempre-melhor",
+        "claim": "Usar ON DELETE CASCADE em toda chave estrangeira é melhor porque evita erros ao apagar registros.",
+        "refutation": "O erro lançado por RESTRICT existe para proteger dados: usar CASCADE em pedidos, notas fiscais ou logs de auditoria pode destruir registros financeiros críticos em silêncio ao deletar um único usuário.",
+        "correct": "Prefira ON DELETE RESTRICT / NO ACTION por padrão; só aplique CASCADE em itens puramente dependentes cuja remoção em bloco seja regra explícita."
+      },
+      {
+        "tag": "bd.orm-elimina-sql",
+        "claim": "Quando uso `@Entity` e `JpaRepository` em Java/Spring, não preciso mais entender tabelas, chaves nem SQL.",
+        "refutation": "Como o próprio material de Spring Data JPA destaca, `@Entity` corresponde a uma tabela e consultas complexas usam `@Query` com JPQL ou SQL nativo; erros de chave no banco continuam quebrando a aplicação.",
+        "correct": "Use JPA para produtividade no acesso a dados, mantendo domínio sólido de chaves primárias, estrangeiras, transações e SQL."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Preservação de integridade em sistemas multi-aplicação",
+        "description": "Mesmo quando API Web, script administrativo e rotina batch acessam o mesmo banco, as constraints SQL impedem estados inválidos."
+      },
+      {
+        "context": "Mapeamento fiel de camadas Service/Repository em Spring Boot",
+        "description": "Entidades @Entity alinhadas ao esquema relacional evitam erros em tempo de execução no Hibernate e facilitam Query Methods."
+      },
+      {
+        "context": "Auditoria e prevenção de registros órfãos em e-commerce e ensino",
+        "description": "Garantir referências válidas entre alunos, turmas, clientes e pedidos protege relatórios, cobranças e históricos."
+      }
+    ],
+    "efficiency": {
+      "naive": "-- Aplicacao checa em memoria antes de gravar:\nSELECT COUNT(*) FROM produtos WHERE id = 10;\nINSERT INTO pedidos (id, produto_id) VALUES (1, 10);",
+      "better": "-- Banco garante atomicamente na definicao:\nCREATE TABLE pedidos (\n    id INT PRIMARY KEY,\n    produto_id INT NOT NULL REFERENCES produtos(id)\n);",
+      "criterion": "Validar referência apenas via SELECT prévio no código sofre condição de corrida (outra transação pode apagar o produto 10 entre o SELECT e o INSERT) além de exigir duas viagens de rede; a FOREIGN KEY garante integridade atomicamente dentro do SGBD.",
+      "expectedOutput": "Garantia atômica sem janela de corrida entre consulta e inserção."
+    },
+    "summary": "Chaves primárias identificam cada tupla de forma única, chaves estrangeiras com políticas ON DELETE impõem integridade referencial diretamente no SGBD e entidades @Entity/@Id no Spring Data JPA espelham esse modelo relacional para persistência segura.",
+    "selfExplain": [
+      {
+        "id": "bd.rel.se1",
+        "prompt": "Explique por que validar a existência de um cliente no Java/Python antes do INSERT não substitui a restrição FOREIGN KEY no banco.",
+        "modelAnswer": "Entre o instante em que a aplicação consulta se o cliente existe e o instante em que executa o INSERT, outra conexão concorrente pode excluir aquele cliente — ou um script externo pode inserir direto no banco pulando o código. A FOREIGN KEY valida atomicamente dentro do próprio SGBD."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "bd.rel.ret1",
+        "prompt": "Quais duas restrições uma PRIMARY KEY combina em SQL?",
+        "modelAnswer": "Unicidade (UNIQUE) e não nulidade (NOT NULL), garantindo que toda linha da tabela possua identificador único e preenchido."
+      },
+      {
+        "id": "bd.rel.ret2",
+        "prompt": "Qual é a diferença entre ON DELETE RESTRICT e ON DELETE CASCADE numa chave estrangeira?",
+        "modelAnswer": "ON DELETE RESTRICT impede apagar uma linha na tabela pai enquanto houver linhas filhas referenciando-a; ON DELETE CASCADE apaga automaticamente todas as linhas filhas relacionadas junto com o pai."
+      },
+      {
+        "id": "bd.rel.ret3",
+        "prompt": "Segundo o módulo de Spring Data JPA, para que servem @Entity, @Id e JpaRepository?",
+        "modelAnswer": "@Entity mapeia a classe Java a uma tabela do banco, @Id indica o atributo correspondente à chave primária, e JpaRepository gera operações CRUD, Query Methods e suporte a @Query com SQL nativo."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "bd.rel.ex1",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Coluna `cliente_id` sem FOREIGN KEY",
+      "prompt": "Um esquema SQL declara `cliente_id INT NOT NULL` dentro da tabela `pedidos`, sem escrever `REFERENCES` nem `FOREIGN KEY`. O que acontece se alguém executar `INSERT INTO pedidos (id, cliente_id) VALUES (1, 99999)` quando não existe cliente 99999?",
+      "difficulty": 1,
+      "skills": ["chave estrangeira", "integridade referencial"],
+      "explanation": "Sem `REFERENCES clientes(id)` (FOREIGN KEY), `NOT NULL` verifica apenas se não é nulo; o SGBD aceita `99999` criando um pedido órfão.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "O SGBD reconhece o sufixo `_id` e bloqueia o INSERT automaticamente.", "misconceptionTag": "bd.nome-id-basta", "feedback": "Bancos relacionais não inferem relacionamentos por convenção de nome; é necessário declarar FOREIGN KEY / REFERENCES." },
+        { "id": "b", "text": "O INSERT é aceito pelo banco mesmo sem cliente 99999, criando um pedido órfão.", "feedback": "Correto! Apenas declarar `FOREIGN KEY` faz o SGBD validar a existência na tabela referenciada." },
+        { "id": "c", "text": "O SGBD cria automaticamente um cliente fantasma com id 99999.", "feedback": "SGBDs relacionais nunca fabricam registros pais ausentes para satisfazer inserções." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "bd.rel.ex2",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Escolher ON DELETE RESTRICT vs. CASCADE em notas fiscais",
+      "prompt": "A tabela `notas_fiscais` possui chave estrangeira apontando para `clientes(id)`. Por exigência legal, registros fiscais emitidos nunca podem desaparecer por acidente quando um cadastro tenta ser excluído. Qual cláusula aplicar?",
+      "difficulty": 1,
+      "skills": ["ON DELETE RESTRICT", "integridade histórica"],
+      "explanation": "ON DELETE RESTRICT bloqueia a exclusão do cliente enquanto existir nota fiscal vinculada; ON DELETE CASCADE destruiria os registros fiscais junto.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "ON DELETE CASCADE, para evitar mensagens de erro caso um operador clique em excluir cliente.", "misconceptionTag": "bd.cascade-sempre-melhor", "feedback": "Perigoso! CASCADE apagaria todas as notas fiscais daquele cliente silenciosamente." },
+        { "id": "b", "text": "ON DELETE RESTRICT, impedindo apagar clientes que já tenham notas fiscais referenciadas.", "feedback": "Correto! O banco protege os documentos fiscais exigindo preservar ou desativar logicamente o cliente." },
+        { "id": "c", "text": "Remover a chave estrangeira para poder apagar o cliente livremente.", "feedback": "Remover a FK deixa notas fiscais órfãs sem dono rastreável." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "bd.rel.ex3",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Revisar afirmações sobre chaves SQL e Spring Data JPA",
+      "prompt": "Marque todas as afirmações INCORRETAS encontradas em uma revisão de arquitetura de persistência.",
+      "difficulty": 2,
+      "skills": ["SQL DDL", "Spring Data JPA"],
+      "explanation": "PRIMARY KEY já implica NOT NULL + UNIQUE (não aceita NULL), e ON DELETE CASCADE não é inofensivo para histórico financeiro; já @Entity exige construtor sem argumentos.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "items": [
+        { "id": "i1", "text": "Uma PRIMARY KEY garante unicidade das linhas e impede valores NULL nessa chave." },
+        { "id": "i2", "text": "Em SQL padrão, uma PRIMARY KEY aceita múltiplas linhas com valor NULL para cadastros provisórios." },
+        { "id": "i3", "text": "No Spring Data JPA, uma classe anotada com @Entity mapeia uma tabela e exige construtor padrão sem argumentos." },
+        { "id": "i4", "text": "Ao usar JpaRepository, a camada de aplicação nunca sofre mais efeitos de restrições UNIQUE ou FOREIGN KEY do banco." }
+      ],
+      "solution": { "faultyItemIds": ["i2", "i4"] }
+    },
+    {
+      "id": "bd.rel.ex4",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Prever o resultado de DELETE sob ON DELETE CASCADE vs. RESTRICT",
+      "prompt": "Observe o esquema com `ON DELETE CASCADE` entre `categorias` e `itens` e preveja quantas linhas restam em `itens` após o comando DELETE.",
+      "difficulty": 2,
+      "skills": ["rastreamento DDL", "ON DELETE CASCADE"],
+      "explanation": "Como a FK usa ON DELETE CASCADE, apagar a categoria id = 1 remove automaticamente os dois itens associados a categoria_id = 1.",
+      "type": "PRIMM_PREDICT",
+      "code": "CREATE TABLE categorias (id INT PRIMARY KEY);\nCREATE TABLE itens (id INT PRIMARY KEY, categoria_id INT REFERENCES categorias(id) ON DELETE CASCADE);\nINSERT INTO categorias VALUES (1), (2);\nINSERT INTO itens VALUES (10, 1), (11, 1), (12, 2);\nDELETE FROM categorias WHERE id = 1;",
+      "solution": {
+        "output": "Resta 1 linha em itens (id = 12, categoria_id = 2); linhas 10 e 11 foram apagadas em cascata"
+      }
+    },
+    {
+      "id": "bd.rel.ex5",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Ordenar definição DDL com integridade referencial",
+      "prompt": "Ordene as linhas para criar a tabela `matriculas` com chave primária e chave estrangeira válida referenciando `alunos(id)`, descartando a linha que rompe integridade referencial.",
+      "difficulty": 2,
+      "skills": ["sintaxe SQL DDL", "chaves"],
+      "explanation": "A tabela abre com CREATE TABLE, declara a PRIMARY KEY, vincula `aluno_id` com `REFERENCES alunos(id) ON DELETE RESTRICT` e fecha com `);`.",
+      "type": "PARSONS",
+      "blocks": [
+        { "id": "b1", "code": "CREATE TABLE matriculas (", "distractor": false },
+        { "id": "b2", "code": "id INT PRIMARY KEY,", "distractor": false },
+        { "id": "d1", "code": "aluno_id INT,", "distractor": true },
+        { "id": "b3", "code": "aluno_id INT NOT NULL REFERENCES alunos(id) ON DELETE RESTRICT", "distractor": false },
+        { "id": "b4", "code": ");", "distractor": false }
+      ],
+      "solution": {
+        "orders": [[
+          { "id": "b1", "indent": 0 },
+          { "id": "b2", "indent": 1 },
+          { "id": "b3", "indent": 1 },
+          { "id": "b4", "indent": 0 }
+        ]],
+        "output": "Tabela matriculas criada com PK e FK protegida por ON DELETE RESTRICT"
+      }
+    },
+    {
+      "id": "bd.rel.ex6",
+      "lessonId": "banco-de-dados.modelo-relacional.v1",
+      "topicId": "banco-de-dados.modelo-relacional",
+      "title": "Prever a tradução de Query Method no Spring Data JPA",
+      "prompt": "Com base nas convenções vistas na Aula de Spring Data JPA (DW2-Modulo6 p. 31), preveja a condição SQL WHERE gerada para a assinatura de repositório abaixo.",
+      "difficulty": 2,
+      "skills": ["Spring Data JPA", "SQL"],
+      "explanation": "O Spring analisa o prefixo `findBy` seguido dos nomes de propriedades ligados por `And`, gerando consulta parametrizada correspondente às duas colunas.",
+      "type": "PRIMM_PREDICT",
+      "code": "public interface ProdutoRepository extends JpaRepository<Produto, Long> {\n    List<Produto> findByMarcaAndQdeEstoque(String marca, Integer qdeEstoque);\n}",
+      "solution": {
+        "output": "SELECT * FROM produto WHERE marca = ? AND qde_estoque = ?"
+      }
+    }
+  ]
+}

@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "web-dev.http-e-rest.v1",
+    "topicId": "web-dev.http-e-rest",
+    "version": 1,
+    "title": "HTTP, códigos de status e contratos REST",
+    "status": "AUTO_CHECKED",
+    "exampleMode": "STATIC_CODE",
+    "exampleLanguage": "HTTP / JSON / REST",
+    "objectives": [
+      "Descrever o ciclo requisição-resposta HTTP entre cliente, DNS, TCP/TLS e servidor de API.",
+      "Escolher métodos HTTP (GET, POST, PUT, PATCH, DELETE, HEAD e OPTIONS) considerando segurança (safe) e idempotência.",
+      "Interpretar famílias de códigos de status HTTP (2xx, 3xx, 4xx, 5xx) sem mascarar falhas sob 200 OK.",
+      "Distinguir APIs ad hoc de APIs RESTful baseadas em recursos no plural, interface uniforme e comunicação stateless."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Quando um navegador ou cliente React busca dados em um back-end Django ou Spring, a comunicação segue o protocolo HTTP em ciclos de requisição (request) e resposta (response). Primeiro o cliente resolve o domínio via DNS para descobrir o IP do servidor, abre uma conexão TCP (com handshake TLS no HTTPS) e envia método, caminho, cabeçalhos e, quando aplicável, corpo em JSON.",
+        "Nesta aula da disciplina de Desenvolvimento de Software para WEB (Aulas 01–02 e apostila V2-2026), combinadas à especificação normativa da MDN Web Docs, examinamos como verbos HTTP, códigos de status, formatos JSON e restrições REST formam contratos previsíveis — e por que responder 200 OK para um erro de negócio quebra o tratamento automático no cliente."
+      ],
+      "prerequisites": [
+        {
+          "topicId": "web-dev.javascript-fundamentos",
+          "reason": "Os exemplos de cliente esperam compreensão básica de objetos, strings e tipos primitivos antes de serializar JSON e inspecionar respostas."
+        }
+      ],
+      "glossary": [
+        {
+          "term": "Endpoint e Recurso",
+          "meaning": "Rota exposta pela API para representar uma entidade ou coleção do domínio (preferencialmente substantivos no plural, como /produtos/10).",
+          "example": "GET /api/produtos/10 solicita a representação do produto de identificador 10."
+        },
+        {
+          "term": "Método seguro (Safe)",
+          "meaning": "Método HTTP somente leitura que não deve modificar o estado do recurso no servidor quando invocado.",
+          "example": "GET, HEAD e OPTIONS são seguros segundo a especificação HTTP; POST, PUT, PATCH e DELETE não são."
+        },
+        {
+          "term": "Idempotência",
+          "meaning": "Propriedade em que repetir a mesma requisição várias vezes produz no servidor o mesmo estado final de executá-la uma única vez.",
+          "example": "PUT e DELETE são idempotentes; repetir POST /pedidos pode criar múltiplos pedidos duplicados."
+        },
+        {
+          "term": "Stateless (sem estado de sessão no servidor)",
+          "meaning": "Restrição REST segundo a qual cada requisição carrega todas as informações necessárias (identificadores, parâmetros e credenciais) para ser processada de forma independente.",
+          "example": "Enviar Authorization: Bearer <token> em cada chamada à API em vez de depender de variáveis soltas em memória do servidor."
+        },
+        {
+          "term": "JSON (JavaScript Object Notation)",
+          "meaning": "Formato textual leve baseado em pares chave-valor e listas, independente de linguagem, usado como padrão para troca de dados em APIs REST.",
+          "example": "{\"id\": 10, \"nome\": \"Mouse\", \"ativo\": true}"
+        }
+      ],
+      "commands": [
+        {
+          "name": "Requisição e resposta HTTP com JSON",
+          "kind": "CONCEPT",
+          "syntax": "<MÉTODO> <CAMINHO> HTTP/1.1 + Cabeçalhos + [Corpo JSON]",
+          "explanation": "Toda mensagem HTTP separa a linha inicial (método e recurso ou código de status), os cabeçalhos de metadados e uma linha em branco obrigatória antes do corpo quando há payload.",
+          "whenToUse": "Sempre que precisar diagnosticar no cliente HTTP, no DevTools (aba Network) ou no Insomnia/Postman o que cliente e servidor realmente trocaram.",
+          "pitfalls": [
+            "Esquecer o cabeçalho Content-Type: application/json faz o servidor rejeitar ou não interpretar o corpo JSON.",
+            "Colocar dados sensíveis na query string de um GET expõe credenciais no histórico do navegador e nos logs de proxies."
+          ],
+          "examples": [
+            {
+              "id": "web.http.req-res-basico",
+              "title": "Consulta GET autenticada retornando representação JSON",
+              "purpose": "Mostrar linha de requisição, cabeçalhos de negociação e resposta HTTP/JSON completa.",
+              "code": "GET /api/produtos/10 HTTP/1.1\nHost: api.loja.local\nAccept: application/json\nAuthorization: Bearer token-leitura",
+              "expectedOutput": "HTTP/1.1 200 OK\nContent-Type: application/json\nCache-Control: max-age=60\n\n{\"id\": 10, \"nome\": \"Teclado Mecanico\", \"estoque\": 4}",
+              "lineNotes": [
+                { "line": 1, "explanation": "Usa o método seguro GET para ler o recurso identificado por /api/produtos/10." },
+                { "line": 2, "explanation": "Cabeçalho Host indica o domínio de destino após a resolução DNS." },
+                { "line": 3, "explanation": "Accept informa ao servidor que o cliente espera JSON na resposta." },
+                { "line": 4, "explanation": "Authorization envia a credencial nesta requisição, respeitando o princípio stateless." }
+              ],
+              "takeaway": "GET não envia corpo: o recurso vai na URI, metadados nos headers e o JSON retornado acompanha 200 OK."
+            }
+          ]
+        },
+        {
+          "name": "POST vs. PUT vs. PATCH e criação de recursos",
+          "kind": "CONCEPT",
+          "syntax": "POST /colecao (201 Created) | PUT /colecao/{id} (substituição completa) | PATCH /colecao/{id} (parcial)",
+          "explanation": "POST cria um novo recurso sob uma coleção (não é idempotente), enquanto PUT substitui integralmente o recurso endereçado e PATCH aplica alteração parcial.",
+          "whenToUse": "Para decidir o verbo adequado na modelagem de rotas e no uso do fetch no front-end.",
+          "pitfalls": [
+            "Tratar PATCH ou POST como sempre idempotente pode gerar cobranças ou cadastros duplicados em retentativas de rede.",
+            "Usar GET para criar ou apagar registros permite que pré-carregadores, links ou bots modifiquem dados indevidamente."
+          ],
+          "examples": [
+            {
+              "id": "web.http.post-created",
+              "title": "Criação de recurso com POST e status 201 Created",
+              "purpose": "Demonstrar o envio de JSON no corpo e o retorno padronizado com Location e status 201.",
+              "code": "POST /api/produtos HTTP/1.1\nContent-Type: application/json\n\n{\"nome\": \"Monitor 24\", \"preco\": 890.0}",
+              "expectedOutput": "HTTP/1.1 201 Created\nLocation: /api/produtos/15\nContent-Type: application/json\n\n{\"id\": 15, \"nome\": \"Monitor 24\", \"preco\": 890.0}",
+              "lineNotes": [
+                { "line": 1, "explanation": "POST direcionado à coleção /api/produtos solicita a criação de um novo item." },
+                { "line": 2, "explanation": "Content-Type declara que o corpo da requisição está serializado em JSON." },
+                { "line": 4, "explanation": "Payload JSON enviado no corpo (sem expor dados na URL nem sofrer limite de query string)." }
+              ],
+              "takeaway": "Criações bem-sucedidas devem responder 201 Created (e idealmente Location com o endereço do novo recurso), não um 200 genérico sem contexto."
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "web.http.restful-put",
+          "title": "Atualização idempotente com PUT sobre recurso RESTful",
+          "purpose": "Rastrear como um cliente atualiza um pedido existente seguindo interface uniforme e propriedades REST.",
+          "code": "PUT /api/pedidos/42 HTTP/1.1\nAuthorization: Bearer sessao-stateless\nContent-Type: application/json\n\n{\"status\": \"PAGO\", \"itens\": [10, 12]}",
+          "expectedOutput": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"id\": 42, \"status\": \"PAGO\", \"itens\": [10, 12], \"idempotente\": true}",
+          "lineNotes": [
+            { "line": 1, "explanation": "Substantivo no plural (/pedidos/42) identifica o recurso alvo sem verbos na URL." },
+            { "line": 2, "explanation": "Credencial via cabeçalho permite escalar múltiplas instâncias sem sessão presa no servidor." },
+            { "line": 3, "explanation": "Informa o formato JSON do payload de substituição." },
+            { "line": 5, "explanation": "Representação completa do pedido; repetir esta mesma chamada PUT mantém o recurso idêntico no servidor." }
+          ],
+          "takeaway": "Interface uniforme une substantivos nas URIs, verbos HTTP semânticos e status codes coerentes com o desfecho."
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "401 Unauthorized vs. 403 Forbidden na autorização",
+          "explanation": "Autenticação (quem você é) difere de autorização (o que seu perfil pode fazer). Quando o usuário já está autenticado como USER e tenta excluir um recurso restrito a ADMIN, o código correto é 403 Forbidden, não 401.",
+          "example": {
+            "id": "web.http.401-vs-403",
+            "title": "Tentativa autenticada sem permissão administrativa",
+            "purpose": "Evitar confundir ausência de login (401) com falta de privilégio para o recurso (403).",
+            "code": "DELETE /api/games/7 HTTP/1.1\nAuthorization: Bearer perfil-user-comum\nAccept: application/json",
+            "expectedOutput": "HTTP/1.1 403 Forbidden\nContent-Type: application/json\n\n{\"erro\": \"Autenticado, porem sem permissao de ADMIN para excluir o jogo 7.\"}",
+            "lineNotes": [
+              { "line": 1, "explanation": "DELETE expressa intenção explícita de remover o recurso /api/games/7." },
+              { "line": 2, "explanation": "O token existe e identifica um usuário válido com perfil USER (não faltou autenticação)." },
+              { "line": 3, "explanation": "Cliente solicita resposta estruturada em JSON mesmo em caso de erro." }
+            ],
+            "takeaway": "Use 401 quando faltar credencial válida; use 403 quando a identidade foi verificada mas não possui permissão."
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "Armadilha clássica: retornar 200 OK com { \"success\": false } e verbo na rota",
+          "request": "Peça a uma IA o contrato HTTP de criação de usuário para o caso em que o campo obrigatório `nome` chega vazio.",
+          "generated": {
+            "id": "web.http.ai-200-success-false",
+            "title": "Resposta enganosa sugerida: POST com verbo na rota e erro mascarado em 200 OK",
+            "purpose": "Demonstrar por que retornar status 200 com flag success: false rompe clientes fetch() e viola contratos RESTful.",
+            "code": "POST /api/users/create HTTP/1.1\nContent-Type: application/json\n\n{\"email\": \"ana@exemplo.org\", \"nome\": \"\"}",
+            "expectedOutput": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\"success\": false, \"message\": \"Nome obrigatorio\"}",
+            "lineNotes": [
+              { "line": 1, "explanation": "DESVIO REST: /create coloca verbo na URL em vez de usar POST sobre /api/users." },
+              { "line": 2, "explanation": "Define payload JSON." },
+              { "line": 4, "explanation": "O campo `nome` chegou vazio e deveria falhar na validação de entrada." }
+            ],
+            "takeaway": "Quando o servidor devolve 200 OK para um erro, `response.ok` no navegador avalia `true`, proxies podem tratar como sucesso e todo consumidor precisa adivinhar campos proprietários."
+          },
+          "diagnosis": [
+            "A rota `/api/users/create` duplica a ação que já está expressa pelo verbo `POST`, afastando-se da interface uniforme RESTful.",
+            "Responder `200 OK` com `\"success\": false` oculta um erro do cliente (faixa 4xx) sob um código da família de sucesso (2xx).",
+            "No front-end, verificações padrão baseadas em `response.ok` tratam 200 como cadastro concluído, exigindo gambiarras extras e confundindo monitoramento HTTP."
+          ],
+          "correction": {
+            "id": "web.http.ai-fixed-400",
+            "title": "Rota RESTful /api/users com status 400 Bad Request na falha de validação",
+            "purpose": "Usar substantivo no plural para a coleção e devolver 400 Bad Request quando dados obrigatórios forem inválidos.",
+            "code": "POST /api/users HTTP/1.1\nContent-Type: application/json\n\n{\"email\": \"ana@exemplo.org\", \"nome\": \"\"}",
+            "expectedOutput": "HTTP/1.1 400 Bad Request\nContent-Type: application/json\n\n{\"erro\": \"VALIDACAO\", \"campo\": \"nome\", \"detalhe\": \"Campo obrigatorio nao pode ser vazio.\"}",
+            "lineNotes": [
+              { "line": 1, "explanation": "Substantivo no plural (/api/users) + método POST expressam criação sem verbo redundante." },
+              { "line": 2, "explanation": "Mantém cabeçalho JSON padronizado." },
+              { "line": 4, "explanation": "Mesma entrada inválida submetida à validação do servidor." }
+            ],
+            "takeaway": "Combine verbo + recurso no plural e deixe o status HTTP refletir a realidade: 201 Created se criou, 400 Bad Request se o cliente enviou dados inválidos."
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Enviar POST /api/users com nome vazio",
+              "expected": "Status 400 Bad Request e JSON indicando o campo inválido (response.ok === false)",
+              "why": "Garante que cliente e ferramentas de monitoramento percebam a falha de validação na camada HTTP."
+            },
+            {
+              "scenario": "Enviar POST /api/users com nome e email válidos",
+              "expected": "Status 201 Created e recurso retornado com identificador atribuído",
+              "why": "Confirma aderência completa da criação ao contrato RESTful."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Consumo assíncrono com fetch, CORS e tratamento de erros no front-end",
+          "explanation": "O código cliente em React usa `fetch()` para ler `response.ok` e `response.status`; por isso contratos HTTP corretos simplificam estados de loading e erro na UI.",
+          "topicIds": ["web-dev.assincrono-e-fetch", "web-dev.validacao-e-seguranca"],
+          "caution": "Mesmo quando o servidor envia 400 ou 500, `fetch()` só rejeita a Promise em falha de rede; sempre cheque `response.ok`."
+        },
+        {
+          "title": "Autenticação JWT, autorização baseada em papéis e cache HTTP",
+          "explanation": "A diferença prática entre 401/403, o princípio Stateless com tokens e a diretiva Cacheable preparam rotas protegidas e seguras.",
+          "topicIds": ["web-dev.autenticacao-e-autorizacao", "web-dev.cache-e-idempotencia"],
+          "caution": "Respostas autenticadas com dados pessoais não devem ficar em caches públicos compartilhados (ex.: prefira Cache-Control: private ou no-store)."
+        }
+      ],
+      "reviewChecklist": [
+        "Os endpoints usam substantivos no plural em vez de verbos como /create ou /delete?",
+        "Consultas de leitura usam GET (sem alterar estado e sem expor senhas na URL)?",
+        "Os status HTTP correspondem ao resultado real (201, 400, 401, 403, 404, 500) em vez de mascarar erros dentro de 200 OK?",
+        "Considerei se uma retentativa de rede em POST/PATCH pode duplicar efeitos colaterais?"
+      ],
+      "sources": [
+        {
+          "sourceId": "web-dev-26-2-slides",
+          "locator": "Aula 2 (p. 10–18, 24–25) e apostila V2-2026 sem sufixo (p. 15–31, 33–49)",
+          "use": "Ciclo request-response (DNS/TCP/TLS), verbos HTTP, códigos 2xx–5xx, caso 200 OK com success:false, princípios RESTful e JSON."
+        },
+        {
+          "sourceId": "mdn-http-methods",
+          "locator": "MDN HTTP Request Methods Reference (Safe e Idempotent)",
+          "use": "Definição normativa de métodos seguros (GET/HEAD/OPTIONS) e idempotentes (GET/HEAD/OPTIONS/PUT/DELETE vs POST/PATCH)."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "web.http.pre1",
+        "prompt": "Se um cliente clicar duas vezes em um botão que dispara POST /api/pedidos e a rede oscilar na primeira resposta, o que pode acontecer no servidor?",
+        "modelAnswer": "Como POST não é idempotente por natureza, duas requisições idênticas podem gerar dois pedidos duplicados, a menos que exista controle específico no servidor (como chave de idempotência)."
+      },
+      {
+        "id": "web.http.pre2",
+        "prompt": "Por que retornar HTTP 200 OK com o JSON {\"success\": false} é problemático para clientes web?",
+        "modelAnswer": "Porque na camada HTTP 200 significa sucesso: `fetch` considera `response.ok === true`, caches/gateways interpretam como operação válida e cada consumidor precisaria conhecer regras proprietárias no JSON."
+      }
+    ],
+    "why": {
+      "problem": "Sem dominar verbos, status codes e interface uniforme, equipes criam APIs imprevisíveis cheias de rotas POST /getDados retornando 200 OK mesmo quando ocorrem erros.",
+      "cost": "O front-end acumula condicionais frágeis, ações de leitura disparam efeitos colaterais perigosos em pré-carregamento e falhas de autorização (403) se confundem com sessão expirada (401)."
+    },
+    "mentalModel": {
+      "analogy": "Pense no HTTP como um balcão de protocolo padronizado: o envelope informa a ação desejada (verbo) e o guichê/arquivo (substantivo da URI), e o carimbo oficial da resposta (código de status) já anuncia se deu certo, se faltou documento ou se faltou permissão antes mesmo de abrir o conteúdo JSON.",
+      "limits": "HTTP define semântica e regras de transporte; ele não valida sozinho regras complexas de negócio nem garante sozinho idempotência de POST sem cooperação da aplicação.",
+      "trace": {
+        "headers": ["Método", "Uso principal", "Safe (somente leitura)?", "Idempotente?"],
+        "rows": [
+          ["GET", "Ler representação de recurso", "Sim", "Sim"],
+          ["POST", "Criar recurso ou processar ação", "Não", "Não"],
+          ["PUT", "Substituir recurso completo por URI", "Não", "Sim"],
+          ["PATCH", "Atualizar parcialmente um recurso", "Não", "Não garantido"],
+          ["DELETE", "Remover recurso identificado", "Não", "Sim"]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "HTTP organiza trocas cliente-servidor em mensagens sem estado com verbos semânticos, cabeçalhos e status codes; uma API RESTful aplica esses recursos de forma uniforme e previsível sobre entidades endereçáveis.",
+      "parts": [
+        "Ciclo request-response: resolução DNS do domínio para IP, conexão TCP (e handshake TLS no HTTPS), envio da requisição e retorno da resposta.",
+        "Contrato semântico: substantivos no plural na URI + verbos HTTP com garantias de segurança/idempotência + status HTTP coerentes com JSON."
+      ],
+      "code": "GET /api/jogos/?nome=mario HTTP/1.1\nHost: api.exemplo.local\nAccept: application/json",
+      "expectedOutput": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n[{\"id\": 3, \"nome\": \"Super Mario\", \"zerado\": true}]"
+    },
+    "workedExamples": [
+      {
+        "problem": "Modelar duas operações de um catálogo de biblioteca via API RESTful: consultar um livro inexistente e cadastrar um novo livro.",
+        "subgoals": [
+          {
+            "label": "Passo 1: Buscar recurso ausente com GET e responder 404 Not Found",
+            "code": "GET /api/livros/999 HTTP/1.1\nAccept: application/json",
+            "why": "Leitura deve usar GET sobre o recurso /livros/999 e sinalizar ausência real com 404 em vez de 200 com lista vazia ambígua."
+          },
+          {
+            "label": "Passo 2: Cadastrar livro válido com POST na coleção e responder 201 Created",
+            "code": "POST /api/livros HTTP/1.1\nContent-Type: application/json\n\n{\"titulo\": \"Redes de Computadores\", \"disponivel\": true}",
+            "why": "Criação ocorre na coleção /api/livros sem verbo na URL e devolve 201 Created com o registro gerado."
+          }
+        ],
+        "expectedOutput": "HTTP/1.1 404 Not Found -> {\"erro\": \"Livro 999 nao encontrado\"}\nHTTP/1.1 201 Created -> {\"id\": 42, \"titulo\": \"Redes de Computadores\", \"disponivel\": true}"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "web.get-para-tudo",
+        "claim": "GET e POST fazem a mesma coisa; basta colocar parâmetros na URL quando quiser simplicidade.",
+        "refutation": "GET é seguro (não deve alterar estado), tem limite prático de tamanho na URL, expõe parâmetros em histórico/logs e pode ser cacheado ou disparado automaticamente por navegadores.",
+        "correct": "Use GET apenas para leitura/filtros seguros; envie payloads de criação ou atualização no corpo com POST, PUT ou PATCH."
+      },
+      {
+        "tag": "web.200-com-erro",
+        "claim": "Se o servidor conseguiu rodar até o fim e devolver um JSON válido, o status deve ser 200 OK mesmo que a operação tenha falhado.",
+        "refutation": "Códigos HTTP representam o desfecho semântico da requisição na arquitetura Web, não apenas se o processo da linguagem subiu sem exceção não tratada.",
+        "correct": "Sinalize erros de entrada com 400, falta de autenticação com 401, falta de permissão com 403, ausência com 404 e falhas internas com 500."
+      },
+      {
+        "tag": "web.401-403-iguais",
+        "claim": "401 Unauthorized e 403 Forbidden significam exatamente a mesma falha de acesso.",
+        "refutation": "401 trata de autenticação (quem faz a chamada não provou identidade válida), enquanto 403 ocorre após autenticar quando o perfil não tem autorização para aquela operação.",
+        "correct": "Solicite login ou credencial em 401; bloqueie privilégio insuficiente (como USER tentando rota de ADMIN) com 403."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Integração entre front-end React e back-end REST",
+        "description": "Permite atualizar o estado da interface usando fetch e códigos de status reais (loading, 201 criado, 400 validação) sem recarregar a página."
+      },
+      {
+        "context": "Depuração isolada com Insomnia ou Postman",
+        "description": "Testar métodos, cabeçalhos e payloads JSON antes mesmo de construir formulários no navegador reduz erros de integração."
+      },
+      {
+        "context": "Comunicação padronizada entre sistemas e microsserviços",
+        "description": "Contratos RESTful stateless facilitam reutilizar a mesma API em web, mobile e rotinas automatizadas."
+      }
+    ],
+    "efficiency": {
+      "naive": "POST /api/buscarProdutoPorId HTTP/1.1\nContent-Type: application/json\n\n{\"id\": 10}",
+      "better": "GET /api/produtos/10 HTTP/1.1\nAccept: application/json",
+      "criterion": "Usar POST com verbo na URL para leitura bloqueia cacheabilidade HTTP e esconde a semântica de consulta; GET no recurso específico aproveita cache intermediário, é seguro/idempotente e reduz processamento repetido no servidor.",
+      "expectedOutput": "HTTP/1.1 200 OK -> {\"id\": 10, \"nome\": \"Mouse\"}"
+    },
+    "summary": "Uma API RESTful sólida combina o ciclo HTTP request-response, verbos alinhados a segurança e idempotência, JSON estruturado e códigos de status fiéis ao resultado — evitando rotas com verbos e respostas 200 OK que escondem erros.",
+    "selfExplain": [
+      {
+        "id": "web.http.se1",
+        "prompt": "Explique por que um endpoint de listagem ou consulta deve usar GET e retornar status coerentes (como 404 ou 400) em vez de concentrar tudo em POST com resposta 200 OK.",
+        "modelAnswer": "GET declara leitura segura e cacheável pela infraestrutura Web, enquanto verbos e status codes formam uma interface uniforme compreendida por clientes fetch, proxies e ferramentas de teste; responder 200 OK para erros mascara falhas e força cada cliente a decifrar flags proprietárias."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "web.http.ret1",
+        "prompt": "Quais verbos HTTP são considerados seguros (safe) e quais entre GET, POST, PUT e DELETE são idempotentes?",
+        "modelAnswer": "GET, HEAD e OPTIONS são seguros (somente leitura). Entre os citados, GET, PUT e DELETE são idempotentes; POST não é idempotente."
+      },
+      {
+        "id": "web.http.ret2",
+        "prompt": "Qual é a diferença prática entre os códigos 401 Unauthorized e 403 Forbidden?",
+        "modelAnswer": "401 indica ausência ou invalidez de autenticação (identidade não comprovada); 403 indica que o cliente está autenticado, porém não tem permissão/privilégio para executar aquela operação."
+      },
+      {
+        "id": "web.http.ret3",
+        "prompt": "Cite três princípios que distinguem uma API RESTful de uma API ad hoc.",
+        "modelAnswer": "Separação Client-Server, comunicação Stateless (requisições independentes), interface uniforme com substantivos/verbos/status adequados e suporte explícito a cache (Cacheable) e camadas intermediárias (Layered System)."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "web.http.ex1",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "A resposta 200 OK com success: false",
+      "prompt": "Durante a integração de um formulário React, o front-end envia POST /api/users/create com email em branco e recebe status HTTP 200 OK com corpo {\"success\": false, \"erro\": \"Email invalido\"}. Qual é o diagnóstico correto do contrato HTTP?",
+      "difficulty": 1,
+      "skills": ["status HTTP", "contratos REST"],
+      "explanation": "Um erro de validação enviado pelo cliente pertence à família 4xx (400 Bad Request), e o caminho RESTful usa substantivo (/api/users) com verbo POST sem /create.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "O contrato está correto porque o servidor não caiu e devolveu um JSON legível.", "misconceptionTag": "web.200-com-erro", "feedback": "Devolver JSON não torna 200 OK adequado para falhas de validação: clientes baseados em `response.ok` interpretarão o erro como sucesso." },
+        { "id": "b", "text": "Há dois problemas: o verbo /create na URI e o mascaramento de erro do cliente (400 Bad Request) sob status 200 OK.", "feedback": "Correto! Em RESTful, usa-se POST /api/users e devolve-se 400 Bad Request para dados inválidos." },
+        { "id": "c", "text": "O servidor deveria ter respondido 500 Internal Server Error para qualquer campo vazio.", "feedback": "500 indica erro interno inesperado no servidor; entrada inválida do cliente corresponde a 400." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "web.http.ex2",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "Autenticação vs. permissão de administrador",
+      "prompt": "Um usuário autenticado com perfil comum (USER) envia DELETE /api/games/9, operação permitida apenas para ADMIN. Qual código HTTP o servidor deve retornar?",
+      "difficulty": 1,
+      "skills": ["autorização", "códigos 4xx"],
+      "explanation": "A identidade já foi autenticada, logo não falta login (401), mas falta permissão de perfil ADMIN, caracterizando 403 Forbidden.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "401 Unauthorized, pois qualquer bloqueio de acesso deve usar 401.", "misconceptionTag": "web.401-403-iguais", "feedback": "401 se aplica quando a autenticação falta ou falhou. Aqui o usuário já está autenticado como USER." },
+        { "id": "b", "text": "403 Forbidden, porque a identidade é conhecida, mas não possui privilégio de ADMIN.", "feedback": "Correto: 403 separa falha de permissão da ausência de credencial (401)." },
+        { "id": "c", "text": "301 Moved Permanently redirecionando para a página de login.", "feedback": "301 indica redirecionamento permanente de endereço, não recusa de autorização em API REST." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "web.http.ex3",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "Auditar afirmações sobre REST, GET e POST",
+      "prompt": "Marque todas as afirmações INCORRETAS presentes em uma revisão técnica de API.",
+      "difficulty": 2,
+      "skills": ["métodos HTTP", "RESTful"],
+      "explanation": "GET não envia credenciais de forma protegida na URL nem aceita dados ilimitados, e repetir POST não garante estado idempotente no servidor.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "items": [
+        { "id": "i1", "text": "Métodos seguros (como GET e HEAD) não devem alterar estado persistente no servidor." },
+        { "id": "i2", "text": "Repetir o mesmo POST /api/pedidos cinco vezes tem efeito idempotente garantido pelo protocolo HTTP." },
+        { "id": "i3", "text": "Enviar senhas na URL via GET mantém os dados ocultos de históricos e logs de proxies." },
+        { "id": "i4", "text": "O princípio Stateless exige que cada requisição contenha todas as informações necessárias ao seu processamento." }
+      ],
+      "solution": { "faultyItemIds": ["i2", "i3"] }
+    },
+    {
+      "id": "web.http.ex4",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "Prever a resposta RESTful adequada",
+      "prompt": "Analise a requisição abaixo para uma coleção existente onde nenhum jogo com id 999 existe no banco. Preveja a linha de status e o corpo JSON esperados.",
+      "difficulty": 2,
+      "skills": ["rastreamento HTTP", "status 404"],
+      "explanation": "A busca por um identificador específico inexistente deve retornar 404 Not Found e JSON descritivo, em vez de 200 OK.",
+      "type": "PRIMM_PREDICT",
+      "code": "GET /api/games/999 HTTP/1.1\nHost: api.ugb.local\nAccept: application/json",
+      "solution": {
+        "output": "HTTP/1.1 404 Not Found\nContent-Type: application/json\n\n{\"erro\": \"Recurso nao encontrado\"}"
+      }
+    },
+    {
+      "id": "web.http.ex5",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "Ordenar uma requisição HTTP POST válida",
+      "prompt": "Ordene os blocos para montar uma requisição HTTP POST válida em formato JSON para criar um novo jogo, descartando o bloco com erro de contrato REST.",
+      "difficulty": 2,
+      "skills": ["sintaxe HTTP", "JSON"],
+      "explanation": "A requisição HTTP/1.1 inicia pela linha método + URI + versão, segue com Host, Content-Type e Content-Length para delimitar o payload, separa cabeçalhos do corpo por uma linha em branco e termina com o JSON.",
+      "type": "PARSONS",
+      "blocks": [
+        { "id": "b1", "code": "POST /api/games HTTP/1.1", "distractor": false },
+        { "id": "d1", "code": "GET /api/games/create HTTP/1.1", "distractor": true },
+        { "id": "b2", "code": "Host: api.ugb.local", "distractor": false },
+        { "id": "b3", "code": "Content-Type: application/json", "distractor": false },
+        { "id": "b4", "code": "Content-Length: 35", "distractor": false },
+        { "id": "b5", "code": "\n{\"nome\": \"Celeste\", \"zerado\": true}", "distractor": false }
+      ],
+      "solution": {
+        "orders": [[
+          { "id": "b1", "indent": 0 },
+          { "id": "b2", "indent": 0 },
+          { "id": "b3", "indent": 0 },
+          { "id": "b4", "indent": 0 },
+          { "id": "b5", "indent": 0 }
+        ]],
+        "output": "HTTP/1.1 201 Created"
+      }
+    },
+    {
+      "id": "web.http.ex6",
+      "lessonId": "web-dev.http-e-rest.v1",
+      "topicId": "web-dev.http-e-rest",
+      "title": "Prever o efeito de repetição de PUT vs. POST",
+      "prompt": "Um cliente envia PUT /api/games/4 com {\"preco\": 150} duas vezes seguidas após uma queda momentânea de Wi-Fi. Preveja o estado final esperado para o registro 4 e o status retornado.",
+      "difficulty": 2,
+      "skills": ["idempotência", "PUT"],
+      "explanation": "Como PUT é idempotente sobre um recurso endereçado (/games/4), executar a mesma substituição duas vezes mantém um único registro com preço 150 e resposta 200 OK.",
+      "type": "PRIMM_PREDICT",
+      "code": "PUT /api/games/4 HTTP/1.1\nContent-Type: application/json\n\n{\"nome\": \"Elden Ring\", \"preco\": 150}",
+      "solution": {
+        "output": "1 registro com id 4 e preco 150 (HTTP/1.1 200 OK)"
+      }
+    }
+  ]
+}

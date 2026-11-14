@@ -1,0 +1,8 @@
+{
+  "id": "web-dev-26-2-slides",
+  "title": "Desenvolvimento de Software para WEB — slides e práticas V2-2026",
+  "kind": "LECTURE_SLIDES",
+  "author": "Thailan DEV (material institucional UGB)",
+  "edition": "V2-2026 — Período 26.2",
+  "note": "Slides e pacotes de apoio inspecionados em 26.2: Aula 1 (ementa), Aula 2 (cliente-servidor, DNS, HTTP/HTTPS/TLS, arquitetura em camadas e MVC), apostila V2-2026 sem sufixo (APIs, verbos HTTP, códigos de status, REST vs RESTful e JSON), prática de laboratório React + API Django e projeto conceitos-react. Explicações são autorais e sem reprodução literal de imagens ou páginas brutas."
+}

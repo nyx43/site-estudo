@@ -1,0 +1,10 @@
+{
+  "id": "postgresql-ddl-constraints",
+  "title": "PostgreSQL Documentation — Chapter 5.5 Constraints (Primary and Foreign Keys)",
+  "kind": "OFFICIAL_DOCUMENTATION",
+  "author": "The PostgreSQL Global Development Group",
+  "edition": "Documentação oficial (Seção 5.5.4 e 5.5.5)",
+  "url": "https://www.postgresql.org/docs/current/ddl-constraints.html",
+  "checkedAt": "2026-11-13",
+  "note": "Referência complementar oficial consultada em 2026-11-13 para suprir a ausência de apostila de DDL relacional na pasta de Banco de Dados 26.2, cobrindo PRIMARY KEY, REFERENCES (FOREIGN KEY), ON DELETE RESTRICT/NO ACTION, CASCADE e SET NULL."
+}

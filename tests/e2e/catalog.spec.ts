@@ -69,6 +69,9 @@ test("API pública, recurso ausente e página de evolução", async ({ request, 
   await page.goto("/disciplinas/sistemas-operacionais");
   await expect(page.getByRole("heading", { name: "Sistemas Operacionais", level: 1, exact: true })).toBeVisible();
   await expect(page.locator(".detail-meta")).toContainText("Em desenvolvimento");
-  await expect(page.locator(".detail-meta")).toContainText("Conteúdo planejado");
+  await expect(page.locator(".detail-meta")).toContainText("1 aula disponível");
   await expect(page.locator(".academic-track-banner")).toContainText("PERÍODO 26.2");
+  await page.goto("/disciplinas/redes");
+  await expect(page.getByRole("heading", { name: "Redes de Computadores", level: 1, exact: true })).toBeVisible();
+  await expect(page.locator(".detail-meta")).toContainText("Conteúdo planejado");
 });

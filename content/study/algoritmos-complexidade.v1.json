@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "algoritmos.complexidade.v1",
+    "topicId": "algoritmos.complexidade",
+    "version": 1,
+    "title": "Complexidade e tamanho da entrada",
+    "status": "AUTO_CHECKED",
+    "exampleMode": "PYTHON_SANDBOX",
+    "exampleLanguage": "Python 3",
+    "objectives": [
+      "Relacionar a contagem de operações relevantes ao tamanho n da entrada.",
+      "Distinguir notação assintótica (O, Ω e Θ) de medição isolada em segundos.",
+      "Diferenciar complexidade de tempo e espaço auxiliar em funções iterativas e recursivas.",
+      "Diagnosticar alegações incorretas sobre custo quadrático ou ganhos prematuros em revisão de código."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Cronometrar um código uma única vez em um notebook rápido pode esconder um algoritmo que trava quando a entrada multiplica por mil. Análise de complexidade existe para prever como o esforço cresce em função do tamanho da entrada (n), independentemente do processador.",
+        "Neste recorte da disciplina de Complexidade de Algoritmos (Aulas 01 a 03), observaremos cada exemplo como um programa completo em Python 3, contando comparações e atribuições de forma determinística e separando tempo de execução de memória auxiliar."
+      ],
+      "prerequisites": [],
+      "glossary": [
+        {
+          "term": "Tamanho da entrada (n)",
+          "meaning": "Quantidade de elementos ou dígitos que determina o volume de trabalho de um algoritmo.",
+          "example": "Em uma lista de 100 pedidos, n = 100."
+        },
+        {
+          "term": "Operação relevante",
+          "meaning": "Passo dominante escolhido para contagem (como comparação entre elementos ou acesso a índice).",
+          "example": "Na busca linear, contar quantas vezes arr[i] == alvo foi avaliado."
+        },
+        {
+          "term": "Notação Big O — O(f(n))",
+          "meaning": "Limite assintótico superior que descreve como o custo cresce no pior caso quando n aumenta.",
+          "example": "Busca linear é O(n) no pior caso quando o alvo está no fim ou ausente."
+        },
+        {
+          "term": "Ômega (Ω) e Teta (Θ)",
+          "meaning": "Ω indica o limite assintótico inferior e Θ o limite justo de uma função de custo escolhida (como tempo no pior caso ou no melhor caso), quando os limites inferior e superior têm a mesma ordem.",
+          "example": "Na busca linear, o custo no pior caso é Θ(n) e o custo no melhor caso é Θ(1); somar todos os n itens é sempre Θ(n)."
+        },
+        {
+          "term": "Complexidade de espaço",
+          "meaning": "Memória adicional consumida pelo algoritmo durante a execução, além dos dados de entrada.",
+          "example": "Uma função recursiva fatorial(n) usa O(n) quadros na pilha de chamadas."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Contagem de laço simples vs. aninhado",
+          "kind": "CONCEPT",
+          "syntax": "1 laço até n -> c * n -> O(n); 2 laços aninhados até n -> c * n^2 -> O(n^2)",
+          "explanation": "Um laço percorre n itens linearmente; um laço interno dependente de n executa aproximadamente n vezes para cada passo do laço externo, multiplicando o trabalho.",
+          "whenToUse": "Sempre que precisar estimar rapidamente se um trecho escala linearmente ou quadraticamente antes de rodar testes grandes.",
+          "pitfalls": [
+            "Dois laços sequenciais (um após o outro, sem aninhamento) somam n + n = 2n, que continua O(n), não O(n^2).",
+            "Funções prontas dentro de um loop (como in ou sum em sublistas) podem esconder um segundo percurso linear."
+          ],
+          "examples": [
+            {
+              "id": "alg.complex.seq-vs-nested",
+              "title": "Laços sequenciais vs. laços aninhados na prática",
+              "purpose": "Mostrar numericamente por que somar dois laços separados cresce diferente de aninhá-los.",
+              "code": "def passos_sequenciais(n):\n    passos = 0\n    for _ in range(n):\n        passos += 1\n    for _ in range(n):\n        passos += 1\n    return passos\n\ndef passos_aninhados(n):\n    passos = 0\n    for _ in range(n):\n        for _ in range(n):\n            passos += 1\n    return passos\n\nfor tamanho in [5, 10, 20]:\n    print(tamanho, passos_sequenciais(tamanho), passos_aninhados(tamanho))",
+              "expectedOutput": "5 10 25\n10 20 100\n20 40 400",
+              "lineNotes": [
+                { "line": 1, "explanation": "Define função com dois laços separados sobre n." },
+                { "line": 2, "explanation": "Inicializa o contador de operações." },
+                { "line": 3, "explanation": "Primeiro laço executa n iterações." },
+                { "line": 4, "explanation": "Soma 1 operação por passo do primeiro laço." },
+                { "line": 5, "explanation": "Segundo laço executa após o primeiro terminar, também n vezes." },
+                { "line": 6, "explanation": "Soma 1 operação por passo do segundo laço." },
+                { "line": 7, "explanation": "Retorna 2n no total." },
+                { "line": 9, "explanation": "Define função com um laço dentro de outro." },
+                { "line": 10, "explanation": "Inicializa contador do caso aninhado." },
+                { "line": 11, "explanation": "Laço externo repete n vezes." },
+                { "line": 12, "explanation": "Para cada passo externo, o laço interno repete n vezes." },
+                { "line": 13, "explanation": "Executa n * n = n^2 vezes no total." },
+                { "line": 14, "explanation": "Retorna n^2." },
+                { "line": 16, "explanation": "Testa entradas dobrando de tamanho: 5, 10 e 20." },
+                { "line": 17, "explanation": "Imprime o crescimento: linear (10->20->40) contra quadrático (25->100->400)." }
+              ],
+              "takeaway": "Ao dobrar n de 10 para 20, passos_sequenciais apenas dobra (20 para 40), enquanto passos_aninhados quadruplica (100 para 400)."
+            }
+          ]
+        },
+        {
+          "name": "Espaço auxiliar vs. recursão (pilha de chamadas)",
+          "kind": "CONCEPT",
+          "syntax": "acumulador único -> O(1) espaço; recursão de profundidade n -> O(n) espaço na pilha",
+          "explanation": "Mesmo quando nenhuma lista extra é criada, cada chamada recursiva ativa ocupa um quadro na memória até alcançar o caso-base.",
+          "whenToUse": "Ao escolher entre iteração e recursão ou ao comparar ordenação in-place com algoritmos que alocam subvetores.",
+          "pitfalls": [
+            "Ignorar a pilha de chamadas leva a achar que toda função sem listas auxiliares usa espaço O(1).",
+            "Recursão profunda em Python pode atingir o limite de recursão do interpretador."
+          ],
+          "examples": [
+            {
+              "id": "alg.complex.space-recursion",
+              "title": "Rastreando profundidade da pilha na recursão vs. laço",
+              "purpose": "Medir quantos quadros simultâneos ficam abertos na recursão do fatorial em contraste com a versão iterativa.",
+              "code": "def fatorial_rec(n, prof=1):\n    if n <= 1:\n        return 1, prof\n    valor, max_prof = fatorial_rec(n - 1, prof + 1)\n    return n * valor, max_prof\n\ndef fatorial_iter(n):\n    resp = 1\n    for k in range(2, n + 1):\n        resp *= k\n    return resp, 1\n\nprint(fatorial_rec(5))\nprint(fatorial_iter(5))",
+              "expectedOutput": "(120, 5)\n(120, 1)",
+              "lineNotes": [
+                { "line": 1, "explanation": "Recebe n e registra a profundidade atual de chamadas aninhadas." },
+                { "line": 2, "explanation": "Caso-base interrompe a recursão quando n chega a 1 ou menos." },
+                { "line": 3, "explanation": "Retorna 1 e o pico de quadros abertos simultaneamente." },
+                { "line": 4, "explanation": "Chama a si mesma antes de multiplicar, mantendo o quadro atual vivo na memória." },
+                { "line": 5, "explanation": "Multiplica n pelo retorno após o desempilhamento." },
+                { "line": 7, "explanation": "Versão iterativa que calcula o mesmo resultado." },
+                { "line": 8, "explanation": "Usa apenas uma variável acumuladora fixa." },
+                { "line": 9, "explanation": "Percorre de 2 até n em um único laço." },
+                { "line": 10, "explanation": "Atualiza o acumulador no lugar, sem novos quadros." },
+                { "line": 11, "explanation": "Retorna o resultado com apenas 1 quadro de chamada ativo." },
+                { "line": 13, "explanation": "Para n=5, a versão recursiva empilha 5 quadros ativos simultâneos." },
+                { "line": 14, "explanation": "A versão iterativa mantém memória auxiliar constante (O(1))." }
+              ],
+              "takeaway": "Ambas fazem n multiplicações no tempo, mas diferem na complexidade de espaço: O(n) na recursão linear contra O(1) no laço."
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "alg.complex.busca-comparacao",
+          "title": "Comparação passo a passo: busca linear vs. busca binária",
+          "purpose": "Verificar com contagem real por que O(log n) cresce muito mais devagar do que O(n) quando a lista já está ordenada.",
+          "code": "def busca_linear(arr, alvo):\n    comparacoes = 0\n    for i in range(len(arr)):\n        comparacoes += 1\n        if arr[i] == alvo:\n            return i, comparacoes\n    return -1, comparacoes\n\ndef busca_binaria(arr, alvo):\n    esq, dir = 0, len(arr) - 1\n    comparacoes = 0\n    while esq <= dir:\n        meio = (esq + dir) // 2\n        comparacoes += 1\n        if arr[meio] == alvo:\n            return meio, comparacoes\n        if arr[meio] < alvo:\n            esq = meio + 1\n        else:\n            dir = meio - 1\n    return -1, comparacoes\n\ndados = list(range(0, 32))\nprint(\"linear:\", busca_linear(dados, 31))\nprint(\"binaria:\", busca_binaria(dados, 31))",
+          "expectedOutput": "linear: (31, 32)\nbinaria: (31, 6)",
+          "lineNotes": [
+            { "line": 1, "explanation": "Define a busca sequencial sobre uma lista qualquer." },
+            { "line": 2, "explanation": "Inicia o contador de comparações executadas." },
+            { "line": 3, "explanation": "Percorre os índices do início ao fim da lista." },
+            { "line": 4, "explanation": "Contabiliza a comparação deste elemento." },
+            { "line": 5, "explanation": "Verifica se o item na posição i é o alvo." },
+            { "line": 6, "explanation": "Devolve índice encontrado e total de comparações." },
+            { "line": 7, "explanation": "Se sair do laço sem achar, retorna -1 com n comparações." },
+            { "line": 9, "explanation": "Define a busca binária (pressupõe lista previamente ordenada)." },
+            { "line": 10, "explanation": "Delimita os extremos ativos de busca com esq e dir." },
+            { "line": 11, "explanation": "Inicializa o contador de comparações da busca binária." },
+            { "line": 12, "explanation": "Repete enquanto houver intervalo válido entre esq e dir." },
+            { "line": 13, "explanation": "Calcula o índice central por divisão inteira." },
+            { "line": 14, "explanation": "Registra mais uma iteração de comparação." },
+            { "line": 15, "explanation": "Checa se o elemento do meio já é o alvo." },
+            { "line": 16, "explanation": "Encerra imediatamente ao encontrar o alvo." },
+            { "line": 17, "explanation": "Se o valor central for menor que o alvo, descarta a metade esquerda." },
+            { "line": 18, "explanation": "Move o limite esquerdo para depois do meio." },
+            { "line": 19, "explanation": "Caso contrário, o valor central é maior e descarta a metade direita." },
+            { "line": 20, "explanation": "Move o limite direito para antes do meio." },
+            { "line": 21, "explanation": "Retorna -1 caso o intervalo se torne vazio." },
+            { "line": 23, "explanation": "Cria lista ordenada de 32 elementos (índices 0 a 31)." },
+            { "line": 24, "explanation": "Pior caso positivo na última posição consome 32 comparações lineares." },
+            { "line": 25, "explanation": "A busca binária encontra o mesmo alvo em apenas 6 comparações." }
+          ],
+          "takeaway": "Cada passo da busca binária corta o problema pela metade; o ganho vem da redução exponencial do intervalo, desde que a pré-condição de ordenação seja verdadeira."
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Lista vazia (n = 0) e alvo fora do intervalo",
+          "explanation": "Analisar limites evita erros de índice e confirma o comportamento em entradas vazias antes de testar vetores gigantes.",
+          "example": {
+            "id": "alg.complex.empty-edge",
+            "title": "Busca binária com lista vazia",
+            "purpose": "Confirmar que n = 0 não entra no laço nem acessa arr[0] indevidamente.",
+            "code": "def busca_binaria(arr, alvo):\n    esq, dir = 0, len(arr) - 1\n    while esq <= dir:\n        meio = (esq + dir) // 2\n        if arr[meio] == alvo:\n            return meio\n        if arr[meio] < alvo:\n            esq = meio + 1\n        else:\n            dir = meio - 1\n    return -1\n\nprint(busca_binaria([], 10))",
+            "expectedOutput": "-1",
+            "lineNotes": [
+              { "line": 1, "explanation": "Função de busca binária padrão." },
+              { "line": 2, "explanation": "Para lista vazia, esq recebe 0 e dir recebe -1." },
+              { "line": 3, "explanation": "Condição esq <= dir (0 <= -1) é imediatamente falsa." },
+              { "line": 4, "explanation": "Cálculo do meio não chega a ser executado." },
+              { "line": 5, "explanation": "Acesso ao índice não ocorre quando vazia." },
+              { "line": 6, "explanation": "Retorno antecipado não executado." },
+              { "line": 7, "explanation": "Desvio à direita não executado." },
+              { "line": 8, "explanation": "Atualização de esq não executada." },
+              { "line": 9, "explanation": "Ramo else não executado." },
+              { "line": 10, "explanation": "Atualização de dir não executada." },
+              { "line": 11, "explanation": "Retorna -1 diretamente em tempo O(1)." },
+              { "line": 13, "explanation": "Invoca com lista vazia e exibe -1." }
+            ],
+            "takeaway": "Com n = 0, dir inicia em -1, a guarda esq <= dir falha na entrada e impede IndexError."
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "Operação O(n) escondida dentro de um laço aparentemente simples",
+          "request": "Peça a uma IA uma função que conte quantos elementos de uma lista de entradas também aparecem numa lista de bloqueados, assumindo complexidade O(n).",
+          "generated": {
+            "id": "alg.complex.ai-bad",
+            "title": "Implementação gerada com busca linear implícita",
+            "purpose": "Mostrar como usar `in` sobre lista dentro de um `for` transforma o algoritmo em O(n * m), e não O(n).",
+            "code": "def contar_bloqueados(entradas, bloqueados):\n    total = 0\n    for item in entradas:\n        if item in bloqueados:\n            total += 1\n    return total\n\nprint(contar_bloqueados([1, 2, 3, 4], [2, 4, 9]))",
+            "expectedOutput": "2",
+            "lineNotes": [
+              { "line": 1, "explanation": "Recebe duas listas: entradas e bloqueados." },
+              { "line": 2, "explanation": "Inicializa acumulador." },
+              { "line": 3, "explanation": "Itera pelos n elementos de entradas." },
+              { "line": 4, "explanation": "ERRO DE COMPLEXIDADE: `item in bloqueados` percorre até m elementos da lista em CADA passo do for." },
+              { "line": 5, "explanation": "Incrementa quando há correspondência." },
+              { "line": 6, "explanation": "Devolve o total encontrado." },
+              { "line": 8, "explanation": "Em lista de 4 itens retorna 2 corretamente, mas o custo escala para n * m em listas grandes." }
+            ],
+            "takeaway": "Funcionar para entrada pequena não comprova O(n): uma operação linear disfarçada pelo operador `in` cria complexidade quadrática quando m cresce com n."
+          },
+          "diagnosis": [
+            "O código retorna o valor correto para entradas pequenas, mascarando o gargalo assintótico.",
+            "Na linha 4, `item in bloqueados` sobre uma `list` faz uma busca linear de custo O(m) para cada uma das n iterações do `for`.",
+            "Se ambas as listas tiverem tamanho n, o custo de tempo sobe de O(n) para O(n^2)."
+          ],
+          "correction": {
+            "id": "alg.complex.ai-fixed",
+            "title": "Pré-indexação em conjunto (hash set) para consulta em tempo médio O(1)",
+            "purpose": "Substituir a lista de bloqueados por `set` antes do laço, tornando o percurso O(n + m) em tempo médio.",
+            "code": "def contar_bloqueados(entradas, bloqueados):\n    bloqueio_set = set(bloqueados)\n    total = 0\n    for item in entradas:\n        if item in bloqueio_set:\n            total += 1\n    return total\n\nprint(contar_bloqueados([1, 2, 3, 4], [2, 4, 9]))",
+            "expectedOutput": "2",
+            "lineNotes": [
+              { "line": 1, "explanation": "Mantém a assinatura original da função." },
+              { "line": 2, "explanation": "Converte `bloqueados` uma única vez para conjunto (tabela hash), usando O(m) de tempo e espaço extra." },
+              { "line": 3, "explanation": "Inicializa contador." },
+              { "line": 4, "explanation": "Percorre n elementos de `entradas`." },
+              { "line": 5, "explanation": "Consulta em `set` tem custo médio O(1), evitando o segundo laço." },
+              { "line": 6, "explanation": "Incrementa total ao detectar bloqueio." },
+              { "line": 7, "explanation": "Retorna o resultado esperado em O(n + m) no caso médio." },
+              { "line": 9, "explanation": "Produz a mesma saída 2 preservando desempenho em entradas grandes." }
+            ],
+            "takeaway": "Trade-off explícito: gastamos O(m) de espaço adicional no conjunto para reduzir o tempo total de O(n * m) para O(n + m)."
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Aumentar n e m de 100 para 10.000",
+              "expected": "Contagem de comparações cresce ~100x, não ~10.000x",
+              "why": "Confirma eliminação do produto n * m no caminho quente."
+            },
+            {
+              "scenario": "Lista de bloqueados vazia ([])",
+              "expected": "Retorna 0 sem falhas",
+              "why": "Garante caso de fronteira com conjunto vazio."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Algoritmos de ordenação quadráticos e divisão e conquista",
+          "explanation": "A análise de contagem de laços e espaço auxiliar fundamenta por que Selection/Insertion são O(n^2), enquanto Merge Sort troca memória O(n) por tempo O(n log n).",
+          "topicIds": ["algoritmos.ordenacao", "algoritmos.guloso-e-divisao"],
+          "caution": "Algoritmos assintoticamente mais rápidos como Merge Sort ainda usam espaço extra e constantes maiores para vetores minúsculos."
+        },
+        {
+          "title": "Consultas O(1) em tabelas hash",
+          "explanation": "A redução obtida na revisão de IA usa tabelas de dispersão para sair da busca linear.",
+          "topicIds": ["estruturas-de-dados.hashes", "algoritmos.busca"],
+          "caution": "O(1) em tabelas hash refere-se ao caso médio esperado com boa função de espalhamento, não a garantia absoluta sem colisões."
+        }
+      ],
+      "reviewChecklist": [
+        "Identifiquei claramente o que representa o tamanho n (e se há outra variável m)?",
+        "Procurei operações embutidas dentro de loops (`in` em lista, ordenação repetida, slicing)?",
+        "Distingui análise de casos (melhor, médio e pior caso) dos limites assintóticos O (superior), Ω (inferior) e Θ (justo), além do espaço auxiliar?"
+      ],
+      "sources": [
+        {
+          "sourceId": "algoritmos-26-2-slides",
+          "locator": "Complexidade de Algoritmos - Aula 01.pdf (p. 1, 4–13), Aula 02.pdf (p. 1, 11–20) e Aula 03.pdf (p. 1, 3–21)",
+          "use": "Definições de tempo/espaço, notações O, Ω e Θ, contagem passo a passo em loops e buscas linear/binária."
+        },
+        {
+          "sourceId": "python-datastructures",
+          "locator": "Estruturas set e operações de pertencimento (Python 3.12 Tutorial, cap. 5.4)",
+          "use": "Base para substituição de busca em lista por conjunto em tempo médio constante na correção da IA."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "alg.comp.pre1",
+        "prompt": "Se um programa levou 0,05 segundos no seu computador para 100 itens, isso garante que ele será instantâneo para 1.000.000 de itens?",
+        "modelAnswer": "Não. Se o algoritmo for quadrático (O(n^2)), aumentar n por um fator de 10.000 multiplica o trabalho por 100.000.000, passando de milissegundos para horas."
+      },
+      {
+        "id": "alg.comp.pre2",
+        "prompt": "Um algoritmo que executa dois laços `for` de tamanho n um após o outro é mais próximo de O(n) ou de O(n^2)?",
+        "modelAnswer": "Mais próximo de O(n), pois o número de passos é 2n (soma), e na notação assintótica constantes multiplicativas como 2 não mudam a classe de crescimento."
+      }
+    ],
+    "why": {
+      "problem": "Testar apenas uma entrada pequena não revela como o programa reage quando a quantidade de dados reais do sistema cresce por 100 ou 10.000 vezes.",
+      "cost": "Sem separar crescimento linear, logarítmico e quadrático nem contar espaço auxiliar, escolhas apressadas provocam lentidão severa ou estouro de memória em produção."
+    },
+    "mentalModel": {
+      "analogy": "Pense em procurar um nome em um catálogo telefônico de n páginas: ler folha por folha cresce na mesma proporção de n; abrir sempre ao meio exige apenas dobrar de página um número logarítmico de vezes.",
+      "limits": "Notação assintótica ignora constantes multiplicativas e custo de hardware: para entradas minúsculas (como n = 8), constantes baixas podem vencer algoritmos assintoticamente melhores.",
+      "trace": {
+        "headers": ["Tamanho n", "O(1)", "O(log2 n)", "O(n)", "O(n^2)"],
+        "rows": [
+          ["8", "1", "3", "8", "64"],
+          ["64", "1", "6", "64", "4096"],
+          ["1024", "1", "10", "1024", "1048576"]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "A complexidade descreve a taxa de crescimento dos recursos (operações de tempo e memória auxiliar) em função do tamanho n da entrada.",
+      "parts": [
+        "Tempo de execução modelado por contagem de instruções dominantes (atribuições, testes, iterações), resumido por Big O (limite superior), Ω (inferior) e Θ (justo).",
+        "Complexidade de espaço medida por memória extra alocada em variáveis, estruturas auxiliares e profundidade da pilha de recursão."
+      ],
+      "code": "def somar_e_contar(numeros):\n    total = 0\n    passos = 0\n    for x in numeros:\n        total += x\n        passos += 1\n    return total, passos\n\nprint(somar_e_contar([10, 20, 30, 40]))",
+      "expectedOutput": "(100, 4)"
+    },
+    "workedExamples": [
+      {
+        "problem": "Comparar quantas comparações ocorrem ao procurar um número ausente em uma lista ordenada de 16 elementos com busca linear e com busca binária.",
+        "subgoals": [
+          {
+            "label": "Contar passos na busca linear (O(n))",
+            "code": "def contar_linear(arr, alvo):\n    c = 0\n    for x in arr:\n        c += 1\n        if x == alvo:\n            return c\n    return c",
+            "why": "Sem encontrar o alvo, o laço precisa inspecionar todos os n = 16 elementos antes de concluir ausência."
+          },
+          {
+            "label": "Contar passos na busca binária (O(log n))",
+            "code": "def contar_binaria(arr, alvo):\n    esq, dir, c = 0, len(arr) - 1, 0\n    while esq <= dir:\n        c += 1\n        meio = (esq + dir) // 2\n        if arr[meio] == alvo:\n            return c\n        if arr[meio] < alvo:\n            esq = meio + 1\n        else:\n            dir = meio - 1\n    return c\n\ndados = list(range(16))\nprint(contar_linear(dados, 99), contar_binaria(dados, 99))",
+            "why": "A cada comparação o intervalo de busca cai pela metade (16 -> 8 -> 4 -> 2 -> 1), encerrando em poucos passos."
+          }
+        ],
+        "expectedOutput": "16 5"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "alg.sequencial-quadratico",
+        "claim": "Qualquer função com dois laços for tem complexidade O(n^2).",
+        "refutation": "O produto n * n só acontece quando um laço está aninhado dentro do outro e ambos escalam com n. Dois laços sequenciais executam n + n = 2n operações.",
+        "correct": "Laços sequenciais somam seus custos e permanecem na maior ordem individual: O(n) + O(n) = O(n)."
+      },
+      {
+        "tag": "alg.tempo-relogio",
+        "claim": "Big O diz exatamente quantos milissegundos o programa levará para rodar.",
+        "refutation": "Medições absolutas mudam conforme linguagem, compilador, carga do sistema e CPU; a mesma função O(n) pode demorar 1 ms ou 50 ms mantendo crescimento linear.",
+        "correct": "Big O mede como o número de passos varia quando n cresce, servindo para comparar escalabilidade entre algoritmos."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Escolha entre estrutura sequencial e busca binária",
+        "description": "Em catálogos consultados milhões de vezes, manter ordenação ou índice evita percorrer registros um por um."
+      },
+      {
+        "context": "Diagnóstico de gargalos em filtros e cruzamentos de listas",
+        "description": "Substituir verificação `in lista` dentro de loops por `set` ou dicionário evita explosões O(n^2) com tráfego real."
+      },
+      {
+        "context": "Controle de memória em algoritmos recursivos",
+        "description": "Avaliar o consumo da pilha impede estouro de memória em árvores desbalanceadas ou entradas profundas."
+      }
+    ],
+    "efficiency": {
+      "naive": "def tem_duplicado_lento(itens):\n    n = len(itens)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if itens[i] == itens[j]:\n                return True\n    return False\n\nprint(tem_duplicado_lento([3, 7, 1, 7]))",
+      "better": "def tem_duplicado_rapido(itens):\n    vistos = set()\n    for x in itens:\n        if x in vistos:\n            return True\n        vistos.add(x)\n    return False\n\nprint(tem_duplicado_rapido([3, 7, 1, 7]))",
+      "criterion": "Ambas detectam duplicatas com o mesmo resultado, porém a versão com pares aninhados cresce em O(n^2) de tempo e O(1) de espaço extra, enquanto a versão com `set` reduz o tempo médio para O(n) gastando O(n) de memória auxiliar.",
+      "expectedOutput": "True"
+    },
+    "summary": "Medir tempo de relógio em testes minúsculos engana; contar operações em função do tamanho n da entrada e acompanhar a memória auxiliar revela se um algoritmo suporta escala real, evitando laços aninhados ocultos e suposições erradas sobre recursão ou `O(n)`.",
+    "selfExplain": [
+      {
+        "id": "alg.comp.se1",
+        "prompt": "Explique com suas palavras por que buscar em `set` dentro de um `for` reduz a complexidade em comparação a buscar em `list`.",
+        "modelAnswer": "Em uma lista, o operador `in` faz uma busca linear de custo O(m), transformando o loop externo de n passos em n * m operações. Em um conjunto (`set`), a tabela hash permite consultar pertinência em tempo médio constante O(1), mantendo o percurso total em O(n + m)."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "alg.comp.ret1",
+        "prompt": "Qual é a diferença entre O(f(n)), Ω(f(n)) e Θ(f(n))?",
+        "modelAnswer": "As três notações delimitam uma função de custo escolhida (por exemplo, pior caso ou melhor caso): Big O é limite assintótico superior, Ω é limite assintótico inferior e Θ indica limite justo quando essa mesma função tem a mesma ordem por cima e por baixo."
+      },
+      {
+        "id": "alg.comp.ret2",
+        "prompt": "Por que fatorial(n) recursivo tem complexidade de espaço O(n) mesmo sem criar listas?",
+        "modelAnswer": "Porque cada chamada pendente mantém um quadro ativo na pilha de execução até que o caso-base retorne; para entrada n, há n quadros simultâneos em memória."
+      },
+      {
+        "id": "alg.comp.ret3",
+        "prompt": "Qual pré-condição torna a busca binária válida e qual é sua complexidade no pior caso?",
+        "modelAnswer": "Os dados precisam estar ordenados; no pior caso (elemento ausente ou encontrado na última divisão), executa O(log n) comparações."
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "alg.complex.ex1",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Dois laços sequenciais vs. aninhados",
+      "prompt": "Qual é a complexidade assintótica de tempo de uma função que percorre uma lista de tamanho n uma vez para calcular a soma e depois uma segunda vez (em laço separado) para contar itens acima da média?",
+      "difficulty": 1,
+      "skills": ["notação Big O", "análise de laços"],
+      "explanation": "Laços sequenciais somam seus passos: n + n = 2n, cuja ordem assintótica permanece O(n). O termo quadrático O(n^2) só ocorre quando um laço depende de n dentro do outro.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "O(n^2), porque há dois comandos `for` na função.", "misconceptionTag": "alg.sequencial-quadratico", "feedback": "Nem sempre dois loops geram n^2. Observe se o segundo loop está dentro do primeiro ou apenas depois dele." },
+        { "id": "b", "text": "O(n), pois dois percursos consecutivos somam 2n operações.", "feedback": "Correto: somar custos lineares mantém a classe linear O(n)." },
+        { "id": "c", "text": "O(log n), porque os dados já estão em memória.", "misconceptionTag": "alg.tempo-relogio", "feedback": "Estar em memória não corta o problema pela metade; ainda é necessário visitar cada um dos n itens." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "alg.complex.ex2",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Limitações da medição com time()",
+      "prompt": "Uma função demorou 2 ms para n = 50 no computador do desenvolvedor. Por que essa medição sozinha não prova que a função é O(1)?",
+      "difficulty": 1,
+      "skills": ["medição empírica", "taxa de crescimento"],
+      "explanation": "Complexidade mede a variação do trabalho com o aumento de n, não um ponto isolado em milissegundos.",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        { "id": "a", "text": "Porque O(1) exige que qualquer execução leve menos de 1 milissegundo.", "feedback": "O(1) indica tempo independente de n, não um limite fixo em milissegundos." },
+        { "id": "b", "text": "Porque um único valor pequeno de n não revela como os passos crescem quando n aumenta.", "feedback": "Correto: até algoritmos O(n^2) ou exponenciais são rápidos quando n é minúsculo." },
+        { "id": "c", "text": "Porque Python não mede tempo em blocos `for`.", "feedback": "O módulo time e timeit medem duração normalmente; o problema é metodológico, não técnico." }
+      ],
+      "solution": { "optionId": "b" }
+    },
+    {
+      "id": "alg.complex.ex3",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Revisar afirmações sobre complexidade",
+      "prompt": "Marque todas as afirmações INCORRETAS encontradas na revisão de um relatório de desempenho.",
+      "difficulty": 2,
+      "skills": ["crítica assintótica", "espaço auxiliar"],
+      "explanation": "A busca binária não funciona em lista não ordenada (precisa ordenação prévia), e a recursão sem listas auxiliares consome O(n) de pilha de chamadas.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "items": [
+        { "id": "i1", "text": "Uma função recursiva sem vetores extras sempre usa O(1) de memória total." },
+        { "id": "i2", "text": "A busca binária reduz o espaço de busca pela metade a cada passo válido." },
+        { "id": "i3", "text": "Busca binária encontra qualquer valor em O(log n) mesmo em listas completamente embaralhadas." },
+        { "id": "i4", "text": "Notação Big O descreve o limite superior de crescimento com o aumento de n." }
+      ],
+      "solution": { "faultyItemIds": ["i1", "i3"] }
+    },
+    {
+      "id": "alg.complex.ex4",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Prever contagem de comparações na busca binária",
+      "prompt": "Leia o programa e preveja exatamente o que será impresso.",
+      "difficulty": 2,
+      "skills": ["rastreamento", "busca binária"],
+      "explanation": "Na primeira iteração meio = (0 + 6)//2 = 3 (valor 40 < 60 -> esq=4); na segunda, meio = (4 + 6)//2 = 5 (valor 60 == 60 -> retorna índice 5 e 2 comparações).",
+      "type": "PRIMM_PREDICT",
+      "code": "arr = [10, 20, 30, 40, 50, 60, 70]\nesq, dir, comp = 0, len(arr) - 1, 0\nachou = -1\nwhile esq <= dir:\n    comp += 1\n    meio = (esq + dir) // 2\n    if arr[meio] == 60:\n        achou = meio\n        break\n    elif arr[meio] < 60:\n        esq = meio + 1\n    else:\n        dir = meio - 1\nprint(achou, comp)",
+      "solution": { "output": "5 2" }
+    },
+    {
+      "id": "alg.complex.ex5",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Monte o contador de comparações O(log n)",
+      "prompt": "Ordene e indente os blocos para contar quantas divisões a busca binária faz até achar 15 na lista ordenada, descartando o bloco distrator.",
+      "difficulty": 2,
+      "skills": ["algoritmo de busca binária", "controle de fluxo"],
+      "explanation": "O laço usa divisões inteiras sucessivas (`// 2`); incrementar `esq` diretamente por +1 transformaria em busca linear O(n).",
+      "type": "PARSONS",
+      "blocks": [
+        { "id": "b1", "code": "nums = [3, 6, 9, 12, 15]", "distractor": false },
+        { "id": "b2", "code": "esq, dir, c = 0, len(nums) - 1, 0", "distractor": false },
+        { "id": "b3", "code": "while esq <= dir:", "distractor": false },
+        { "id": "b4", "code": "c += 1", "distractor": false },
+        { "id": "b5", "code": "meio = (esq + dir) // 2", "distractor": false },
+        { "id": "d1", "code": "meio = esq + 1", "distractor": true },
+        { "id": "b6", "code": "if nums[meio] == 15: break", "distractor": false },
+        { "id": "b7", "code": "if nums[meio] < 15: esq = meio + 1", "distractor": false },
+        { "id": "b8", "code": "else: dir = meio - 1", "distractor": false },
+        { "id": "b9", "code": "print(c)", "distractor": false }
+      ],
+      "solution": {
+        "orders": [[
+          { "id": "b1", "indent": 0 },
+          { "id": "b2", "indent": 0 },
+          { "id": "b3", "indent": 0 },
+          { "id": "b4", "indent": 1 },
+          { "id": "b5", "indent": 1 },
+          { "id": "b6", "indent": 1 },
+          { "id": "b7", "indent": 1 },
+          { "id": "b8", "indent": 1 },
+          { "id": "b9", "indent": 0 }
+        ]],
+        "output": "3"
+      }
+    },
+    {
+      "id": "alg.complex.ex6",
+      "lessonId": "algoritmos.complexidade.v1",
+      "topicId": "algoritmos.complexidade",
+      "title": "Prever uso de set contra laço oculto",
+      "prompt": "Preveja a saída deste programa que conta interseção usando `set`.",
+      "difficulty": 2,
+      "skills": ["tabelas hash", "complexidade O(n)"],
+      "explanation": "Os elementos 4 e 6 de `a` pertencem ao conjunto `b_set = {2, 4, 6, 8}`, totalizando 2 ocorrências.",
+      "type": "PRIMM_PREDICT",
+      "code": "a = [1, 4, 5, 6]\nb_set = set([2, 4, 6, 8])\nachados = sum(1 for item in a if item in b_set)\nprint(achados)",
+      "solution": { "output": "2" }
+    }
+  ]
+}

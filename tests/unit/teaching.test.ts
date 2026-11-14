@@ -14,10 +14,27 @@ const topicIds = new Set((await loadCurriculum()).flatMap((subject) => subject.m
 const example = current[0].lesson.teaching!.commands[0].examples[0];
 
 describe("autoria aprofundada", () => {
-  it("mantém quatro aulas aprofundadas e preserva a versão anterior", () => {
-    expect(current.map((seed) => seed.lesson.topicId).sort()).toEqual(["python.condicionais", "python.lacos-de-repeticao", "python.listas-e-dicionarios", "python.variaveis-e-tipos"]);
+  it("mantém aulas aprofundadas de Python e integra as seis primeiras aulas do período 26.2", () => {
+    const topicIds = current.map((seed) => seed.lesson.topicId).sort();
+    const pythonTopics = ["python.condicionais", "python.lacos-de-repeticao", "python.listas-e-dicionarios", "python.variaveis-e-tipos"];
+    const phase3Topics = [
+      "algoritmos.complexidade",
+      "banco-de-dados.modelo-relacional",
+      "estruturas-de-dados.pilhas-e-filas",
+      "requisitos.funcionais-e-nao-funcionais",
+      "sistemas-operacionais.modo-usuario-e-kernel",
+      "web-dev.http-e-rest",
+    ];
+    expect(topicIds).toEqual([...pythonTopics, ...phase3Topics].sort());
+    expect(seeds).toHaveLength(11);
     expect(seeds.some((seed) => seed.lesson.id === "python.lacos-de-repeticao.v1")).toBe(true);
-    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(32);
+    const pythonCurrent = current.filter((seed) => seed.lesson.topicId.startsWith("python."));
+    expect(pythonCurrent.flatMap((seed) => seed.exercises)).toHaveLength(32);
+    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(68);
+    expect(current.find((seed) => seed.lesson.topicId === "web-dev.http-e-rest")?.lesson.exampleMode).toBe("STATIC_CODE");
+    expect(current.find((seed) => seed.lesson.topicId === "banco-de-dados.modelo-relacional")?.lesson.exampleMode).toBe("STATIC_CODE");
+    expect(current.find((seed) => seed.lesson.topicId === "requisitos.funcionais-e-nao-funcionais")?.lesson.exampleMode).toBe("CONCEPTUAL_ARTIFACT");
+    expect(current.find((seed) => seed.lesson.topicId === "sistemas-operacionais.modo-usuario-e-kernel")?.lesson.exampleMode).toBe("CONCEPTUAL_ARTIFACT");
   });
   it("exige explicação de toda linha não vazia e referências válidas", () => {
     expect(ExplainedExampleSchema.safeParse({ ...example, lineNotes: example.lineNotes.slice(1) }).success).toBe(false);

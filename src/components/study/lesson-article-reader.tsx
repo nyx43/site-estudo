@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import type { PublicLesson } from "@/lib/study/public";
 import { articleSections } from "@/lib/study/labels";
 import { toStableTtsId } from "@/lib/study/tts";
+import { getExampleIntroText, getLessonEntryIntroText } from "@/lib/study/verification";
 import { LessonContent } from "./lesson-content";
 import { Glossary } from "./teaching-content";
 import { TtsBlock } from "./tts-block";
@@ -38,11 +39,14 @@ export function LessonArticleReader({
   const teaching = lesson.teaching;
   const lessonPrefix = toStableTtsId(lesson.id);
 
+  const entryIntro = getLessonEntryIntroText(lesson);
+  const exampleIntro = getExampleIntroText(lesson);
+
   const prerequisitesText = teaching?.prerequisites.length
     ? `O que vem antes. ${teaching.prerequisites
         .map((item) => `${topicLinks[item.topicId]?.title ?? item.topicId}: ${item.reason}`)
         .join(" ")}`
-    : "O que vem antes. Esta é uma aula de entrada. Não pressupõe experiência anterior com programação.";
+    : `O que vem antes. ${entryIntro}`;
 
   const sourcesText = teaching
     ? `Fontes e referências. A explicação é autoral. As referências abaixo permitem conferir os conceitos e aprofundar os detalhes. ${citedSources
@@ -62,12 +66,9 @@ export function LessonArticleReader({
           <TtsBlock
             id={`${lessonPrefix}.objetivos`}
             label="Objetivos da aula"
-            text={`O que você vai conseguir explicar. Os exemplos atuais são programas independentes em Python 3. Acompanhe a entrada, o estado de cada linha e a saída esperada. A página não executa seu código. ${lesson.objectives.join(" ")}`}
+            text={`O que você vai conseguir explicar. ${exampleIntro} ${lesson.objectives.join(" ")}`}
           >
-            <p>
-              Os exemplos atuais são programas independentes em Python 3. Acompanhe a entrada, o estado de cada linha e a
-              saída esperada. A página não executa seu código.
-            </p>
+            <p>{exampleIntro}</p>
             <ul>
               {lesson.objectives.map((objective) => (
                 <li key={objective}>{objective}</li>
@@ -93,7 +94,7 @@ export function LessonArticleReader({
                 ))}
               </ul>
             ) : (
-              <p>Esta é uma aula de entrada. Não pressupõe experiência anterior com programação.</p>
+              <p>{entryIntro}</p>
             )}
           </TtsBlock>
         </section>

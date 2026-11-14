@@ -1,0 +1,8 @@
+{
+  "id": "sistemas-operacionais-26-2-slides",
+  "title": "Sistemas Operacionais — slides de arquitetura, núcleo e roteiro da disciplina",
+  "kind": "LECTURE_SLIDES",
+  "author": "Prof. Fabio dos Santos Gonçalves",
+  "edition": "Período 26.2 (UGB)",
+  "note": "Conjunto de slides Aulas 2–5 (classificação, arquitetura monolítica/camadas/microkernel, mono e multiprogramação, kernel, drivers, chamadas de sistema, processos, semáforos/monitores e sistemas de arquivos), Unix_History.pdf e roteiro textual de introdução e CLI Linux. Ausência de PDF específico para Aula 1 suprida pelo roteiro textual e pelo Guia Foca Linux."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "algoritmos-26-2-slides",
+  "title": "Complexidade de Algoritmos e Estruturas Básicas — slides e scripts da disciplina",
+  "kind": "LECTURE_SLIDES",
+  "author": "Prof. Fabio dos Santos Gonçalves",
+  "edition": "Período 26.2 (UGB)",
+  "note": "Conjunto de slides e scripts em Python do semestre 26.2: Aulas 01–04 de Complexidade de Algoritmos (tempo, espaço, timeit, Ω/Θ/O, busca linear/binária e ordenação), Estrutura de Dados - Estruturas Básicas (pilha, fila e fila circular em Python) e planilha Fila_Circular. Observação registrada: Aula 04 traz título interno de metadado divergente ('Árvores Binárias de Pesquisa'), embora os slides tratem de ordenação; o script de fila circular possui mensagem de erro invertida tratada na revisão de IA."
+}

@@ -1,0 +1,8 @@
+{
+  "id": "banco-de-dados-26-2-spring",
+  "title": "Gerenciamento de Banco de Dados — revisão OO Java, Web Services Spring Data JPA e projeto demo",
+  "kind": "LECTURE_SLIDES",
+  "author": "Daniel Furtado e David Ricci",
+  "edition": "Período 26.2 (UGB)",
+  "note": "Materiais presentes na pasta de 26.2: DW2-Modulo6-Intro-Web-Services-Spring.pdf (p. 29–34 sobre ORM, JpaRepository, Query Methods, @Query com SQL nativo, @Entity correspondendo a tabela e @Transactional), revisaoPOOSpring.pdf, Aula - OO [Java].pdf e projeto Maven Spring Boot/MySQL demo1. Registrada lacuna explícita de apostila própria de DDL SQL e modelagem relacional nesta pasta."
+}
