@@ -5,7 +5,7 @@ import { catalog } from "@/lib/catalog";
 import { SUBJECT_LIFECYCLE_LABELS } from "@/lib/catalog/filter";
 import type { CatalogSubject, SubjectLifecycleStatus } from "@/lib/catalog/types";
 import { getStudyService } from "@/lib/study";
-import { levelLabels } from "@/components/study/teaching-content";
+import { levelLabels } from "@/lib/study/labels";
 
 export const dynamic = "force-dynamic";
 

@@ -3,7 +3,7 @@ import { ArrowRight, BookOpen } from "lucide-react";
 import { catalog } from "@/lib/catalog";
 import { getStudyService } from "@/lib/study";
 import { orderLessons } from "@/lib/study/catalog";
-import { levelLabels } from "@/components/study/teaching-content";
+import { levelLabels } from "@/lib/study/labels";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Aulas completas" };
