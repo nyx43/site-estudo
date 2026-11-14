@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-description: "Fluxo obrigatório pós-tarefa de programação da plataforma Estudo ES (revisão, Context7, testes, Chrome DevTools, CodeRabbit, commit seletivo, autorização de push e sigilo de credenciais)."
+description: "Fluxo obrigatório pós-tarefa de programação da plataforma Estudo ES (revisão, Context7, testes, Chrome DevTools, CodeRabbit, commit seletivo, push pós-validação e sigilo de credenciais)."
 ---
 
 # Fluxo de desenvolvimento — Estudo ES
@@ -58,7 +58,9 @@ Ao concluir qualquer tarefa de programação neste projeto, siga este fluxo em o
 - Antes de executar `git commit`, verifique se `git config user.name` e `git config user.email` estão definidos; caso faltem, peça confirmação/dados ao usuário em vez de inventar autoria.
 - (Caso o usuário tenha solicitado explicitamente "não fazer commit" naquela tarefa, respeite a solicitação e pare no staging/revisão.)
 
-## 9. Autorização obrigatória antes de `git push`
+## 9. Push após commit validado (e preservação de trabalhos paralelos)
 
-- **Nunca** execute `git push` (nem publique PRs/alterações no repositório remoto via `gh` ou MCP `github`) automaticamente após criar o commit.
-- Após o commit local, apresente ao usuário: resumo das alterações, resultados exatos dos testes/verificações, mensagem/hash do commit criado e peça **autorização explícita** antes de rodar `git push`.
+- Conforme autorização permanente do usuário para a conta configurada (`nyx43`), após concluir todas as verificações e criar o commit seletivo com apenas os arquivos da tarefa, execute `git push` para atualizar a branch remota correspondente (exceto quando o usuário pedir explicitamente para não enviar naquela tarefa).
+- Caso haja alterações paralelas de outra tarefa na árvore de trabalho, nunca as misture ao commit nem faça push de conteúdo não validado; mantenha o commit e o push restritos aos arquivos da tarefa atual.
+- **Nunca** use `--force`, não altere proteção de branches remotas e nunca envie arquivos sensíveis (`.env`, chaves, tokens ou `data/estudo.db`).
+- Ao finalizar, informe no relatório final: resumo das alterações, resultados exatos dos testes/verificações, mensagem/hash do commit e confirmação do `git push`.
