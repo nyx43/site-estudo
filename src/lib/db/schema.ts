@@ -3,6 +3,7 @@ import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqli
 import type { AcademicTrack, SubjectDefinition, TopicPlan, ModuleGuide } from "../catalog/schema";
 import type { Exercise, Lesson, Answer } from "../study/schema";
 import type { LessonProgress } from "../study/progress";
+import type { SelfAssessment } from "../study/repository";
 import { sql } from "drizzle-orm";
 
 export const subjects = sqliteTable("Subject", {
@@ -55,6 +56,8 @@ export const attempts = sqliteTable("Attempt", {
   id: text().primaryKey(), exerciseId: text().notNull().references(() => exercises.id, { onDelete: "restrict" }),
   createdAt: text().notNull(), closedAt: text(), isCorrect: integer({ mode: "boolean" }).notNull().default(false),
   gaveUp: integer({ mode: "boolean" }).notNull().default(false),
+  revealedHintCount: integer().notNull().default(0),
+  selfAssessment: text({ mode: "json" }).$type<SelfAssessment | null>(),
 }, (table) => [uniqueIndex("Attempt_one_open").on(table.exerciseId).where(sql`${table.closedAt} IS NULL`), index("Attempt_exercise_created").on(table.exerciseId, table.createdAt)]);
 
 export const submissions = sqliteTable("Submission", {

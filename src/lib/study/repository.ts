@@ -4,8 +4,14 @@ import type { LessonProgress } from "./progress";
 export interface Submission {
   requestId: string; attemptId: string; answer: Answer; isCorrect: boolean; feedback: string; createdAt: string;
 }
+export interface SelfAssessment {
+  checkedCriterionIds: string[];
+  updatedAt: string;
+}
 export interface Attempt {
   id: string; exerciseId: string; createdAt: string; closedAt: string | null; isCorrect: boolean; gaveUp: boolean;
+  revealedHintCount?: number;
+  selfAssessment?: SelfAssessment | null;
   submissions: Submission[];
 }
 export interface StudyOperations {
@@ -14,6 +20,7 @@ export interface StudyOperations {
   findLesson(id: string): Promise<Lesson | null>;
   listExercises(lessonId: string): Promise<Exercise[]>;
   findExercise(id: string): Promise<Exercise | null>;
+  listAttemptedLessonIds(lessonIds: string[]): Promise<string[]>;
   getProgress(lessonId: string): Promise<LessonProgress>;
   saveProgress(lessonId: string, progress: LessonProgress): Promise<void>;
   findAttempt(id: string): Promise<Attempt | null>;

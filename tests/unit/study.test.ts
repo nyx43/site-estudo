@@ -11,6 +11,18 @@ function correctAnswer(exercise: Exercise): Answer {
     case "PARSONS": return { type: exercise.type, order: exercise.solution.orders[0] };
     case "ERRONEOUS_EXAMPLE": return { type: exercise.type, itemIds: exercise.solution.faultyItemIds };
     case "PRIMM_PREDICT": return { type: exercise.type, output: exercise.solution.output };
+    case "STRUCTURED_RESPONSE": {
+      const values = Object.fromEntries(
+        Object.entries(exercise.solution.expected).map(([k, accepted]) => [k, accepted[0]]),
+      );
+      return { type: exercise.type, values };
+    }
+    case "OPEN_RESPONSE": {
+      const fields = Object.fromEntries(
+        exercise.fields.map((f) => [f.id, "Resposta suficientemente detalhada para validação estrutural."]),
+      );
+      return { type: exercise.type, fields };
+    }
   }
 }
 

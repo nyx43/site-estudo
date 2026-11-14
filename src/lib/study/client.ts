@@ -12,13 +12,17 @@ export class StudyClientError extends Error {
 }
 
 /** Small HTTP client shared by study interactions; rules remain in the service. */
-export async function studyRequest<T>(url: string, body?: unknown, options?: { signal?: AbortSignal }): Promise<T> {
+export async function studyRequest<T>(
+  url: string,
+  body?: unknown,
+  options?: { method?: "POST" | "PUT"; signal?: AbortSignal },
+): Promise<T> {
   const response = await fetch(
     url,
     body === undefined
       ? { cache: "no-store", signal: options?.signal }
       : {
-          method: "POST",
+          method: options?.method ?? "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
           signal: options?.signal,

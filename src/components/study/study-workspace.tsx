@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Terminal } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Lock, Play, Terminal } from "lucide-react";
 import { lessonSteps, type Answer } from "@/lib/study/schema";
 import { canCompleteStep } from "@/lib/study/progress";
+import { attemptStatusLabels, layerLabels, scopeLabels } from "@/lib/study/labels";
 import type { AttemptView, LessonView, ProgressChange } from "@/lib/study/service";
 import type { PublicExercise } from "@/lib/study/public";
 import { studyRequest } from "@/lib/study/client";
@@ -30,19 +31,71 @@ const stepLabels = [
 ];
 type ExerciseState = { exercise: PublicExercise; attempt: AttemptView | null };
 
-export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonView; hasLab?: boolean }) {
+export function StudyWorkspace({
+  initial,
+  hasLab = false,
+  initialExerciseId,
+  initialPractice,
+}: {
+  initial: LessonView;
+  hasLab?: boolean;
+  initialExerciseId?: string;
+  initialPractice?: boolean;
+}) {
   const [view, setView] = useState(initial);
   const firstPending = Math.max(0, lessonSteps.findIndex((step) => !view.progress.completedSteps.includes(step)));
   const [stepIndex, setStepIndex] = useState(firstPending);
-  const [practice, setPractice] = useState(Boolean(initial.progress.completedAt));
+  const [practice, setPractice] = useState(initialPractice ?? Boolean(initial.progress.completedAt));
   const [selected, setSelected] = useState<ExerciseState | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const mainRef = useRef<HTMLDivElement>(null);
   const lastPosition = useRef({ stepIndex, practice });
   const pendingSubmission = useRef<{ key: string; requestId: string } | null>(null);
+  const selectionRequestRef = useRef(0);
+  const selectionControllerRef = useRef<AbortController | null>(null);
   const { lesson, progress } = view;
   const step = lessonSteps[stepIndex];
+
+  function beginSelection() {
+    selectionControllerRef.current?.abort();
+    const controller = new AbortController();
+    selectionControllerRef.current = controller;
+    const requestSeq = ++selectionRequestRef.current;
+    return { controller, requestSeq };
+  }
+
+  function updateAttemptIfCurrent(exerciseId: string, attemptId: string | null, nextAttempt: AttemptView) {
+    setSelected((current) => {
+      if (!current || current.exercise.id !== exerciseId) return current;
+      if (attemptId !== null && current.attempt?.id !== attemptId) return current;
+      return { ...current, attempt: nextAttempt };
+    });
+  }
+
+  useEffect(() => {
+    if (!initialExerciseId) return;
+    const { controller, requestSeq } = beginSelection();
+    void (async () => {
+      try {
+        const data = await studyRequest<ExerciseState>(`/api/exercises/${initialExerciseId}`, undefined, {
+          signal: controller.signal,
+        });
+        if (!controller.signal.aborted && selectionRequestRef.current === requestSeq) {
+          pendingSubmission.current = null;
+          setSelected(data);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted && selectionRequestRef.current === requestSeq) {
+          setError(err instanceof Error ? err.message : "Não foi possível carregar o exercício.");
+        }
+      }
+    })();
+    return () => {
+      controller.abort();
+      if (selectionControllerRef.current === controller) selectionControllerRef.current = null;
+    };
+  }, [initialExerciseId]);
 
   useEffect(() => {
     if (lastPosition.current.stepIndex === stepIndex && lastPosition.current.practice === practice) return;
@@ -65,7 +118,11 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
 
   async function update(change: ProgressChange) {
     const result = await studyRequest<Pick<LessonView, "lesson" | "progress">>(`/api/lessons/${lesson.id}/progress`, change);
-    setView((current) => ({ ...current, ...result }));
+    if (result.progress.completedAt && !view.progress.completedAt) {
+      await refresh();
+    } else {
+      setView((current) => ({ ...current, ...result }));
+    }
     return result;
   }
 
@@ -74,16 +131,66 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
   }
 
   async function selectExercise(id: string) {
+    const { controller, requestSeq } = beginSelection();
     await run(async () => {
-      const data = await studyRequest<ExerciseState>(`/api/exercises/${id}`);
-      if (!data.attempt) data.attempt = await studyRequest<AttemptView>("/api/attempts", { exerciseId: id });
+      try {
+        const data = await studyRequest<ExerciseState>(`/api/exercises/${id}`, undefined, {
+          signal: controller.signal,
+        });
+        if (controller.signal.aborted || selectionRequestRef.current !== requestSeq) return;
+        const target = view.exercises.find((item) => item.id === id);
+        if (!data.attempt && progress.completedAt && target?.accessible !== false) {
+          data.attempt = await studyRequest<AttemptView>("/api/attempts", { exerciseId: id });
+          if (controller.signal.aborted || selectionRequestRef.current !== requestSeq) return;
+          await refresh();
+          if (controller.signal.aborted || selectionRequestRef.current !== requestSeq) return;
+        }
+        pendingSubmission.current = null;
+        setSelected(data);
+      } catch (err) {
+        if (controller.signal.aborted) return;
+        throw err;
+      }
+    });
+  }
+
+  async function startAttempt(exerciseId: string) {
+    await run(async () => {
+      const created = await studyRequest<AttemptView>("/api/attempts", { exerciseId });
       pendingSubmission.current = null;
-      setSelected(data);
+      updateAttemptIfCurrent(exerciseId, null, created);
+      await refresh();
+    });
+  }
+
+  async function revealHint(hintNumber: number) {
+    if (!selected?.attempt) return;
+    const targetExerciseId = selected.exercise.id;
+    const attemptId = selected.attempt.id;
+    await run(async () => {
+      const result = await studyRequest<AttemptView>(`/api/attempts/${attemptId}/hints`, { hintNumber });
+      updateAttemptIfCurrent(targetExerciseId, attemptId, result);
+    });
+  }
+
+  async function saveSelfAssessment(checkedCriterionIds: string[]) {
+    if (!selected?.attempt) return;
+    const targetExerciseId = selected.exercise.id;
+    const attemptId = selected.attempt.id;
+    await run(async () => {
+      const result = await studyRequest<AttemptView>(
+        `/api/attempts/${attemptId}/self-assessment`,
+        { checkedCriterionIds },
+        { method: "PUT" },
+      );
+      updateAttemptIfCurrent(targetExerciseId, attemptId, result);
+      await refresh();
     });
   }
 
   async function submit(answer: Answer) {
     if (!selected?.attempt) return;
+    const targetExerciseId = selected.exercise.id;
     const attemptId = selected.attempt.id;
     const key = JSON.stringify({ attemptId, answer });
     if (pendingSubmission.current?.key !== key) pendingSubmission.current = { key, requestId: crypto.randomUUID() };
@@ -91,17 +198,18 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
     await run(async () => {
       const result = await studyRequest<AttemptView>(`/api/attempts/${attemptId}/submissions`, { requestId, answer });
       pendingSubmission.current = null;
-      setSelected((current) => (current ? { ...current, attempt: result } : null));
+      updateAttemptIfCurrent(targetExerciseId, attemptId, result);
       await refresh();
     });
   }
 
   async function giveUp() {
     if (!selected?.attempt) return;
+    const targetExerciseId = selected.exercise.id;
     const attemptId = selected.attempt.id;
     await run(async () => {
       const result = await studyRequest<AttemptView>(`/api/attempts/${attemptId}/give-up`, {});
-      setSelected((current) => (current ? { ...current, attempt: result } : null));
+      updateAttemptIfCurrent(targetExerciseId, attemptId, result);
       await refresh();
     });
   }
@@ -111,11 +219,21 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
     const exerciseId = selected.exercise.id;
     await run(async () => {
       const result = await studyRequest<AttemptView>("/api/attempts", { exerciseId });
-      setSelected((current) => (current ? { ...current, attempt: result } : null));
+      pendingSubmission.current = null;
+      updateAttemptIfCurrent(exerciseId, null, result);
+      await refresh();
     });
   }
 
   const completedExercises = view.exercises.filter((exercise) => exercise.isCorrect).length;
+  const completedPracticeExercises = view.exercises.filter(
+    (exercise) => exercise.isCorrect || (exercise.type === "OPEN_RESPONSE" && exercise.status === "SELF_ASSESSED"),
+  ).length;
+  const openReviewedExercises = view.exercises.filter(
+    (exercise) => exercise.status === "SUBMITTED_FOR_REVIEW" || exercise.status === "SELF_ASSESSED",
+  ).length;
+  const hasDirectPractice = view.exercises.some((exercise) => exercise.allowDirectPractice);
+  const selectedMeta = selected ? view.exercises.find((item) => item.id === selected.exercise.id) : undefined;
   const ttsScopeKey = `${lesson.id}:${practice ? `practice:${selected?.exercise.id ?? "none"}` : step}`;
 
   return (
@@ -156,7 +274,7 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
         </ol>
         <button
           className={`practice-tab ${practice ? "selected" : ""}`}
-          disabled={!progress.completedAt || busy}
+          disabled={busy || (!progress.completedAt && !hasDirectPractice)}
           onClick={() => setPractice(true)}
         >
           Prática{" "}
@@ -184,25 +302,52 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
               <div className="practice-intro">
                 <span className="eyebrow">AGORA É COM VOCÊ</span>
                 <h2>Transforme a ideia em raciocínio.</h2>
-                <p>Escolha um exercício. As respostas são conferidas por regras objetivas, sem executar o seu código.</p>
-                <span className="status-pill">
-                  {completedExercises} de {view.exercises.length} exercícios resolvidos
-                </span>
+                <p>Escolha um exercício. Atividades objetivas têm conferência automática; respostas abertas seguem autoavaliação por rubrica.</p>
+                <div className="practice-status-row">
+                  <span className="status-pill">
+                    {completedExercises} de {view.exercises.length} exercícios resolvidos
+                  </span>
+                  {openReviewedExercises > 0 && (
+                    <span className="status-pill">
+                      {openReviewedExercises}{" "}
+                      {openReviewedExercises === 1 ? "enviada para autoavaliação" : "enviadas para autoavaliação"}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="exercise-selector" aria-label="Escolher exercício">
-                {view.exercises.map((exercise, index) => (
-                  <button
-                    key={exercise.id}
-                    disabled={busy}
-                    className={selected?.exercise.id === exercise.id ? "selected" : ""}
-                    aria-label={`Exercício ${index + 1}: ${exercise.title}${exercise.isCorrect ? ", resolvido" : ""}`}
-                    aria-pressed={selected?.exercise.id === exercise.id}
-                    onClick={() => void selectExercise(exercise.id)}
-                  >
-                    {exercise.isCorrect ? <Check size={15} /> : index + 1}
-                  </button>
-                ))}
+                {view.exercises.map((exercise, index) => {
+                  const locked = !exercise.accessible;
+                  const statusText = locked ? "bloqueado até concluir a aula" : attemptStatusLabels[exercise.status].toLowerCase();
+                  return (
+                    <button
+                      key={exercise.id}
+                      disabled={busy || locked}
+                      className={`${selected?.exercise.id === exercise.id ? "selected" : ""} ${locked ? "locked" : ""} ${exercise.status === "SUBMITTED_FOR_REVIEW" || exercise.status === "SELF_ASSESSED" ? "open-reviewed" : ""}`.trim()}
+                      aria-label={`Exercício ${index + 1}: ${exercise.title}${exercise.layer ? ` (${exercise.layer})` : ""}, ${statusText}`}
+                      aria-pressed={selected?.exercise.id === exercise.id}
+                      title={locked ? "Conclua todas as etapas desta versão para liberar esta atividade." : exercise.title}
+                      onClick={() => void selectExercise(exercise.id)}
+                    >
+                      {locked ? (
+                        <Lock size={14} aria-hidden="true" />
+                      ) : exercise.isCorrect || exercise.status === "SELF_ASSESSED" ? (
+                        <Check size={15} />
+                      ) : (
+                        index + 1
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              {!progress.completedAt && hasDirectPractice && (
+                <div className="practice-access-note" role="note">
+                  <p>
+                    Atividades <strong>C1</strong> podem ser praticadas diretamente durante a leitura (sem concluir etapas da aula).{" "}
+                    <strong>C2, C3 e demais exercícios</strong> são liberados ao concluir o percurso guiado desta versão — sem exigir acerto prévio em C1.
+                  </p>
+                </div>
+              )}
               {selected?.attempt && <TtsToolbar compact />}
               {selected?.attempt ? (
                 <ExercisePanel
@@ -213,15 +358,71 @@ export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonVie
                   onSubmit={submit}
                   onGiveUp={giveUp}
                   onRestart={restart}
+                  onRevealHint={revealHint}
+                  onSaveSelfAssessment={saveSelfAssessment}
                 />
+              ) : selected ? (
+                <div className="practice-preview">
+                  <div className="exercise-meta-pills">
+                    {selected.exercise.layer && <span className="status-pill">{layerLabels[selected.exercise.layer]}</span>}
+                    {selected.exercise.scope && <span className="meta-pill">{scopeLabels[selected.exercise.scope]}</span>}
+                  </div>
+                  <h3>{selected.exercise.title}</h3>
+                  {selected.exercise.objective && (
+                    <p className="exercise-objective">
+                      <strong>Objetivo:</strong> {selected.exercise.objective}
+                    </p>
+                  )}
+                  {selected.exercise.context && (
+                    <p className="exercise-context">
+                      <strong>Contexto:</strong> {selected.exercise.context}
+                    </p>
+                  )}
+                  {selected.exercise.prerequisites?.length ? (
+                    <div className="exercise-prerequisites">
+                      <strong>Pré-requisitos recomendados:</strong>
+                      <ul>
+                        {selected.exercise.prerequisites.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  <p className="exercise-prompt">{selected.exercise.prompt}</p>
+                  {selectedMeta?.accessible !== false ? (
+                    <button
+                      type="button"
+                      className="button primary"
+                      disabled={busy}
+                      onClick={() => void startAttempt(selected.exercise.id)}
+                    >
+                      <Play size={16} aria-hidden="true" /> Iniciar prática
+                    </button>
+                  ) : (
+                    <div className="study-error" role="status">
+                      <p>Conclua todas as etapas do estudo guiado desta versão para iniciar esta atividade.</p>
+                      <button
+                        type="button"
+                        className="button secondary"
+                        onClick={() => setPractice(false)}
+                      >
+                        Voltar ao percurso guiado
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <div className="practice-empty">
                   <CheckCircle2 size={29} />
-                  <h3>A aula está concluída.</h3>
-                  <p>Escolha um dos {view.exercises.length} exercícios acima para começar a prática.</p>
+                  <h3>{progress.completedAt ? "A aula está concluída." : "Prática antecipada de C1"}</h3>
+                  <p>
+                    {progress.completedAt
+                      ? `Escolha um dos ${view.exercises.length} exercícios acima para começar a prática.`
+                      : "Selecione o exercício C1 disponível acima para visualizar e iniciar a prática."}
+                  </p>
                 </div>
               )}
-              {completedExercises === view.exercises.length && (
+              {completedPracticeExercises === view.exercises.length && (
                 <div className="all-complete">
                   <CheckCircle2 size={24} />
                   <div>

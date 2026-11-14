@@ -36,6 +36,13 @@
       "when": 1794611218491,
       "tag": "0004_subject-lifecycle-track",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794626096365,
+      "tag": "0005_pilot-hints-self-assessment",
+      "breakpoints": true
     }
   ]
 }

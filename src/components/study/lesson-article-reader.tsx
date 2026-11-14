@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { PublicLesson } from "@/lib/study/public";
-import { articleSections } from "@/lib/study/labels";
+import type { LessonView } from "@/lib/study/service";
+import { articleSections, layerLabels } from "@/lib/study/labels";
 import { toStableTtsId } from "@/lib/study/tts";
 import { getExampleIntroText, getLessonEntryIntroText } from "@/lib/study/verification";
 import { LessonContent } from "./lesson-content";
@@ -31,10 +32,12 @@ export function LessonArticleReader({
   lesson,
   citedSources,
   topicLinks,
+  exercises = [],
 }: {
   lesson: PublicLesson;
   citedSources: CitedSourceItem[];
   topicLinks: Record<string, TopicLinkItem>;
+  exercises?: LessonView["exercises"];
 }) {
   const teaching = lesson.teaching;
   const lessonPrefix = toStableTtsId(lesson.id);
@@ -98,6 +101,72 @@ export function LessonArticleReader({
             )}
           </TtsBlock>
         </section>
+
+        {Boolean(lesson.layerSections?.length) && (
+          <section id="camadas">
+            <h2>Camadas de aprofundamento (C1–C3)</h2>
+            <p className="layer-intro">
+              Cada camada pode ser estudada independentemente. Nos pilotos, a atividade C1 pode ser aberta diretamente
+              durante a leitura (sem marcar etapas do estudo guiado), enquanto C2 e C3 ficam disponíveis após concluir
+              esta versão da aula.
+            </p>
+            <div className="layer-section-list">
+              {lesson.layerSections?.map((layerSection) => {
+                const directExercise = exercises.find(
+                  (ex) => ex.allowDirectPractice && ex.layer === layerSection.layer,
+                );
+                const speechText = [
+                  layerSection.title,
+                  layerSection.summary,
+                  ...layerSection.explanation,
+                  ...(layerSection.callout ? [`${layerSection.callout.label}: ${layerSection.callout.text}`] : []),
+                ].join(" ");
+                return (
+                  <TtsBlock
+                    key={layerSection.id}
+                    className={`layer-section-card ${layerSection.isComplementary ? "complementary" : ""}`}
+                    id={toStableTtsId(lessonPrefix, "camada", layerSection.id)}
+                    label={layerSection.title}
+                    text={speechText}
+                  >
+                    <div className="layer-section-header">
+                      <span className="status-pill">{layerLabels[layerSection.layer]}</span>
+                      {layerSection.isComplementary && (
+                        <span className="layer-badge-complementary">Explicação complementar</span>
+                      )}
+                    </div>
+                    <h3>{layerSection.title}</h3>
+                    <p className="layer-summary">{layerSection.summary}</p>
+                    {layerSection.explanation.map((paragraph, idx) => (
+                      <p key={idx}>{paragraph}</p>
+                    ))}
+                    {layerSection.callout && (
+                      <div className="layer-callout">
+                        <strong>{layerSection.callout.label}: </strong>
+                        <span>{layerSection.callout.text}</span>
+                      </div>
+                    )}
+                    <div className="layer-section-action">
+                      {directExercise ? (
+                        <Link
+                          className="button primary"
+                          href={`/estudar/${lesson.topicId}?version=${lesson.version}&mode=practice&exercise=${directExercise.id}`}
+                        >
+                          Praticar {layerSection.layer}: {directExercise.title} <ArrowRight size={16} />
+                        </Link>
+                      ) : (
+                        <small>
+                          Atividades desta camada abrem no Estudo Guiado após concluir esta versão da aula (sem exigir
+                          acerto prévio em C1).
+                        </small>
+                      )}
+                    </div>
+                  </TtsBlock>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {teaching && (
           <section id="vocabulario">

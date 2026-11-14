@@ -1,0 +1,10 @@
+{
+  "id": "python-collections-deque",
+  "title": "Python Standard Library — collections.deque (maxlen, append e popleft)",
+  "kind": "OFFICIAL_DOCUMENTATION",
+  "author": "Python Software Foundation e colaboradores",
+  "edition": "Python 3.12",
+  "url": "https://docs.python.org/3.12/library/collections.html#collections.deque",
+  "checkedAt": "2026-11-14",
+  "note": "Conferido em 2026-11-14 via Context7 no texto oficial CPython v3.12.16 (Doc/library/collections.rst) para fundamentar o comportamento de deque limitada com maxlen (descarte automático do item mais antigo na extremidade oposta) e popleft() em fila O(1) na explicação complementar do piloto de Fila Circular (C3)."
+}

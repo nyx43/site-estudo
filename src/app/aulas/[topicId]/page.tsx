@@ -15,10 +15,18 @@ import {
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Leitura completa" };
 
-export default async function LessonArticle({ params }: { params: Promise<{ topicId: string }> }) {
-  const result = await getStudyService().lesson((await params).topicId);
+export default async function LessonArticle({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ topicId: string }>;
+  searchParams: Promise<{ version?: string }>;
+}) {
+  const requested = (await searchParams).version;
+  if (requested !== undefined && (!/^[1-9]\d*$/.test(requested) || Number(requested) > 1000000)) notFound();
+  const result = await getStudyService().lesson((await params).topicId, requested === undefined ? undefined : Number(requested));
   if (!result) notFound();
-  const { lesson, exercises } = result;
+  const { lesson, exercises, versions } = result;
   const lab = await loadLabByTopic(lesson.topicId);
   const teaching = lesson.teaching;
   const sources = await loadSources();
@@ -87,6 +95,11 @@ export default async function LessonArticle({ params }: { params: Promise<{ topi
             <li>
               <a href="#objetivos">Objetivos e pré-requisitos</a>
             </li>
+            {Boolean(lesson.layerSections?.length) && (
+              <li>
+                <a href="#camadas">Camadas de estudo (C1–C3)</a>
+              </li>
+            )}
             {teaching && (
               <li>
                 <a href="#vocabulario">Vocabulário</a>
@@ -105,8 +118,22 @@ export default async function LessonArticle({ params }: { params: Promise<{ topi
             </li>
           </ul>
         </nav>
-        <LessonArticleReader lesson={lesson} citedSources={citedSources} topicLinks={topicLinks} />
+        <LessonArticleReader lesson={lesson} citedSources={citedSources} topicLinks={topicLinks} exercises={exercises} />
       </div>
+      {versions.length > 1 && (
+        <div className="version-switcher" aria-label="Versões da leitura">
+          <span>Versões desta aula:</span>
+          {versions.map((item) => (
+            <Link
+              key={item.id}
+              className={item.version === lesson.version ? "selected" : ""}
+              href={`/aulas/${lesson.topicId}?version=${item.version}`}
+            >
+              Versão {item.version}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

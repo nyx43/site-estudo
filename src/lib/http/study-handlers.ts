@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AnswerSchema, lessonSteps } from "../study/schema";
+import { AnswerSchema, MAX_SUBMIT_BODY_BYTES, lessonSteps } from "../study/schema";
 import { StudyError, type createStudyService } from "../study/service";
 
 type Service = ReturnType<typeof createStudyService>;
@@ -113,9 +113,17 @@ export function createStudyHandlers(service: Service) {
     exercise: (id: string) => studyResponse(() => service.exercise(id)),
     start: (request: Request) => studyResponse(async () => service.start(z.object({ exerciseId: z.string().min(1).max(200) }).strict().parse(await readStudyJson(request)).exerciseId)),
     submit: (request: Request, attemptId: string) => studyResponse(async () => {
-      const input = z.object({ requestId: z.uuid(), answer: AnswerSchema }).strict().parse(await readStudyJson(request));
+      const input = z.object({ requestId: z.uuid(), answer: AnswerSchema }).strict().parse(await readStudyJson(request, MAX_SUBMIT_BODY_BYTES));
       return service.submit(attemptId, input.requestId, input.answer);
     }),
     giveUp: (request: Request, attemptId: string) => studyResponse(async () => { checkOrigin(request); return service.giveUp(attemptId); }),
+    revealHint: (request: Request, attemptId: string) => studyResponse(async () => {
+      const input = z.object({ hintNumber: z.number().int().min(1).max(10) }).strict().parse(await readStudyJson(request));
+      return service.revealHint(attemptId, input.hintNumber);
+    }),
+    saveSelfAssessment: (request: Request, attemptId: string) => studyResponse(async () => {
+      const input = z.object({ checkedCriterionIds: z.array(z.string().min(1).max(100)).max(20) }).strict().parse(await readStudyJson(request));
+      return service.saveSelfAssessment(attemptId, input.checkedCriterionIds);
+    }),
   };
 }

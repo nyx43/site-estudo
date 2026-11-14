@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { publicExercise, publicLesson } from "./public";
-import { canCompleteStep, isLessonComplete } from "./progress";
+import { canCompleteStep, isLessonComplete, type LessonProgress } from "./progress";
 import { lessonSteps, type Answer, type Exercise } from "./schema";
 import type { Attempt, StudyRepository } from "./repository";
 import { evaluate, InvalidAnswerError } from "../pedagogy/evaluator";
@@ -10,24 +10,90 @@ export class StudyError extends Error {
 }
 const missing = () => new StudyError(404, "Conteúdo de estudo não encontrado.");
 
+export type ExerciseProgressStatus =
+  | "PENDING"
+  | "IN_PROGRESS"
+  | "SOLVED"
+  | "SUBMITTED_FOR_REVIEW"
+  | "SELF_ASSESSED"
+  | "GAVE_UP";
+
+export function canAccessExercise(
+  exercise: Pick<Exercise, "allowDirectPractice">,
+  progress: Pick<LessonProgress, "completedAt">,
+) {
+  return Boolean(progress.completedAt) || exercise.allowDirectPractice === true;
+}
+
+function formatStructuredSolution(exercise: Extract<Exercise, { type: "STRUCTURED_RESPONSE" }>) {
+  const lines = exercise.groups.map((group) => {
+    const parts = group.fields.map((field) => {
+      const expected = exercise.solution.expected[`${group.id}.${field.id}`] ?? [];
+      const labels = expected.map((val) =>
+        field.kind === "select" ? (field.options.find((opt) => opt.value === val)?.label ?? String(val)) : String(val),
+      );
+      return `${field.label}: ${labels.join(" ou ")}`;
+    });
+    return `${group.label} -> ${parts.join(", ")}`;
+  });
+  if (exercise.notes?.length) {
+    lines.push(...exercise.notes.map((note) => `${note.label}: ${note.sampleAnswer}`));
+  }
+  return lines.join("\n");
+}
+
 function solutionText(exercise: Exercise) {
   switch (exercise.type) {
     case "MISCONCEPTION_QUIZ": return exercise.options.find((option) => option.id === exercise.solution.optionId)!.text;
     case "PARSONS": return exercise.solution.orders[0].map((block) => `${"    ".repeat(block.indent)}${exercise.blocks.find((item) => item.id === block.id)!.code}`).join("\n");
     case "ERRONEOUS_EXAMPLE": return exercise.items.filter((item) => exercise.solution.faultyItemIds.includes(item.id)).map((item) => item.text).join("\n");
     case "PRIMM_PREDICT": return exercise.solution.output;
+    case "STRUCTURED_RESPONSE": return formatStructuredSolution(exercise);
+    case "OPEN_RESPONSE":
+      return [
+        ...exercise.solution.referenceSections.map((sec) => `${sec.label}:\n${sec.content}`),
+        ...(exercise.solution.criticalFailureNote ? [`Atenção crítica: ${exercise.solution.criticalFailureNote}`] : []),
+      ].join("\n\n");
   }
+}
+
+export function deriveAttemptStatus(exercise: Exercise, attempt: Attempt | null, solvedPreviously = false): ExerciseProgressStatus {
+  if (exercise.type === "OPEN_RESPONSE") {
+    if (!attempt) return "PENDING";
+    if (!attempt.closedAt) return "IN_PROGRESS";
+    if (attempt.gaveUp) return "GAVE_UP";
+    if (attempt.selfAssessment) return "SELF_ASSESSED";
+    if (attempt.submissions.length > 0) return "SUBMITTED_FOR_REVIEW";
+    return "PENDING";
+  }
+  if (solvedPreviously || attempt?.isCorrect) return "SOLVED";
+  if (!attempt) return "PENDING";
+  if (attempt.gaveUp) return "GAVE_UP";
+  return attempt.closedAt ? "PENDING" : "IN_PROGRESS";
 }
 
 function attemptView(attempt: Attempt, exercise: Exercise) {
   const last = attempt.submissions.at(-1);
+  const revealedHintCount = attempt.revealedHintCount ?? 0;
+  const revealedHints = exercise.hints ? exercise.hints.slice(0, revealedHintCount) : [];
+  const attemptStatus = deriveAttemptStatus(exercise, attempt, attempt.isCorrect);
+  const canSelfAssess = exercise.type === "OPEN_RESPONSE" && Boolean(attempt.closedAt) && !attempt.gaveUp && attempt.submissions.length > 0;
   return {
     id: attempt.id, exerciseId: attempt.exerciseId, createdAt: attempt.createdAt, closedAt: attempt.closedAt,
     isCorrect: attempt.isCorrect, gaveUp: attempt.gaveUp, attemptsCount: attempt.submissions.length,
-    solvedWithoutHelp: attempt.isCorrect && attempt.submissions.length === 1 && !attempt.gaveUp,
+    attemptStatus,
+    revealedHintCount,
+    revealedHints,
+    selfAssessment: attempt.selfAssessment ?? null,
+    solvedWithoutHelp: attempt.isCorrect && attempt.submissions.length === 1 && !attempt.gaveUp && revealedHintCount === 0,
     timeSpentSeconds: Math.max(0, Math.floor(((attempt.closedAt ? Date.parse(attempt.closedAt) : Date.now()) - Date.parse(attempt.createdAt)) / 1000)),
     ...(last ? { lastAnswer: last.answer, feedback: last.feedback } : {}),
-    ...(attempt.closedAt ? { solutionText: solutionText(exercise), explanation: exercise.explanation } : {}),
+    ...(attempt.closedAt ? {
+      solutionText: solutionText(exercise),
+      explanation: exercise.explanation,
+      ...(exercise.type === "OPEN_RESPONSE" ? { openSolution: exercise.solution } : {}),
+      ...(canSelfAssess && exercise.type === "OPEN_RESPONSE" ? { rubric: exercise.rubric } : {}),
+    } : {}),
   };
 }
 export type AttemptView = ReturnType<typeof attemptView>;
@@ -46,11 +112,33 @@ export function createStudyService(repository: StudyRepository, clock = () => ne
       const progress = await repository.getProgress(lesson.id);
       const exercises = await Promise.all((await repository.listExercises(lesson.id)).map(async (exercise) => {
         const attempt = await repository.latestAttempt(exercise.id);
-        return { id: exercise.id, title: exercise.title, type: exercise.type, isCorrect: await repository.hasSolved(exercise.id), gaveUp: attempt?.gaveUp ?? false };
+        const isCorrect = exercise.type === "OPEN_RESPONSE" ? false : await repository.hasSolved(exercise.id);
+        const status = deriveAttemptStatus(exercise, attempt, isCorrect);
+        return {
+          id: exercise.id,
+          title: exercise.title,
+          type: exercise.type,
+          ...(exercise.layer ? { layer: exercise.layer } : {}),
+          ...(exercise.scope ? { scope: exercise.scope } : {}),
+          ...(exercise.allowDirectPractice ? { allowDirectPractice: true } : {}),
+          accessible: canAccessExercise(exercise, progress),
+          status,
+          isCorrect,
+          gaveUp: attempt?.gaveUp ?? false,
+        };
       }));
-      const versions = await Promise.all((await repository.listLessons()).filter((item) => item.topicId === topicId).map(async (item) => {
+      const topicLessons = (await repository.listLessons()).filter((item) => item.topicId === topicId);
+      const attemptedLessons = new Set(await repository.listAttemptedLessonIds(topicLessons.map((item) => item.id)));
+      const versions = await Promise.all(topicLessons.map(async (item) => {
         const saved = await repository.getProgress(item.id);
-        return { id: item.id, version: item.version, hasProgress: saved.completedSteps.length > 0 || Object.keys(saved.answers).length > 0, completedAt: saved.completedAt };
+        const hasAttempts = attemptedLessons.has(item.id);
+        return {
+          id: item.id,
+          version: item.version,
+          hasProgress: saved.completedSteps.length > 0 || Object.keys(saved.answers).length > 0 || hasAttempts,
+          hasAttempts,
+          completedAt: saved.completedAt,
+        };
       }));
       return { lesson: publicLesson(lesson, progress.answers, progress.completedSteps), progress, exercises, versions };
     },
@@ -83,10 +171,21 @@ export function createStudyService(repository: StudyRepository, clock = () => ne
       return repository.transaction(async (tx) => {
         const exercise = await tx.findExercise(exerciseId);
         if (!exercise) throw missing();
-        if (!(await tx.getProgress(exercise.lessonId)).completedAt) throw new StudyError(409, "Conclua a aula antes de iniciar a prática.");
+        const progress = await tx.getProgress(exercise.lessonId);
+        if (!canAccessExercise(exercise, progress)) throw new StudyError(409, "Conclua a aula antes de iniciar a prática.");
         const existing = await tx.latestAttempt(exerciseId);
         if (existing && !existing.closedAt) return attemptView(existing, exercise);
-        const attempt: Attempt = { id: uuid(), exerciseId, createdAt: clock().toISOString(), closedAt: null, isCorrect: false, gaveUp: false, submissions: [] };
+        const attempt: Attempt = {
+          id: uuid(),
+          exerciseId,
+          createdAt: clock().toISOString(),
+          closedAt: null,
+          isCorrect: false,
+          gaveUp: false,
+          revealedHintCount: 0,
+          selfAssessment: null,
+          submissions: [],
+        };
         await tx.createAttempt(attempt);
         return attemptView(attempt, exercise);
       });
@@ -111,7 +210,15 @@ export function createStudyService(repository: StudyRepository, clock = () => ne
         const submission = { requestId, attemptId, answer, ...result, createdAt: clock().toISOString() };
         await tx.createSubmission(submission);
         attempt.submissions.push(submission);
-        if (result.isCorrect) { attempt.isCorrect = true; attempt.closedAt = clock().toISOString(); await tx.saveAttempt(attempt); }
+        if (exercise.type === "OPEN_RESPONSE") {
+          attempt.isCorrect = false;
+          attempt.closedAt = clock().toISOString();
+          await tx.saveAttempt(attempt);
+        } else if (result.isCorrect) {
+          attempt.isCorrect = true;
+          attempt.closedAt = clock().toISOString();
+          await tx.saveAttempt(attempt);
+        }
         return attemptView(attempt, exercise);
       });
     },
@@ -122,6 +229,53 @@ export function createStudyService(repository: StudyRepository, clock = () => ne
         const exercise = await tx.findExercise(attempt.exerciseId);
         if (!exercise) throw missing();
         if (!attempt.closedAt) { attempt.gaveUp = true; attempt.closedAt = clock().toISOString(); await tx.saveAttempt(attempt); }
+        return attemptView(attempt, exercise);
+      });
+    },
+    async revealHint(attemptId: string, hintNumber: number) {
+      return repository.transaction(async (tx) => {
+        const attempt = await tx.findAttempt(attemptId);
+        if (!attempt) throw missing();
+        const exercise = await tx.findExercise(attempt.exerciseId);
+        if (!exercise) throw missing();
+        const totalHints = exercise.hints?.length ?? 0;
+        if (!Number.isInteger(hintNumber) || hintNumber < 1 || hintNumber > totalHints) {
+          throw new StudyError(400, "Dica solicitada não existe nesta atividade.");
+        }
+        const current = attempt.revealedHintCount ?? 0;
+        if (hintNumber <= current) return attemptView(attempt, exercise);
+        if (attempt.closedAt) {
+          throw new StudyError(409, "A tentativa já foi encerrada; não é possível revelar novas dicas.");
+        }
+        if (hintNumber !== current + 1) {
+          throw new StudyError(409, "Revele as dicas na ordem, começando pela próxima disponível.");
+        }
+        attempt.revealedHintCount = hintNumber;
+        await tx.saveAttempt(attempt);
+        return attemptView(attempt, exercise);
+      });
+    },
+    async saveSelfAssessment(attemptId: string, checkedCriterionIds: string[]) {
+      return repository.transaction(async (tx) => {
+        const attempt = await tx.findAttempt(attemptId);
+        if (!attempt) throw missing();
+        const exercise = await tx.findExercise(attempt.exerciseId);
+        if (!exercise) throw missing();
+        if (exercise.type !== "OPEN_RESPONSE") {
+          throw new StudyError(409, "Autoavaliação por rubrica se aplica apenas a atividades abertas.");
+        }
+        if (!attempt.closedAt || attempt.gaveUp || attempt.submissions.length === 0) {
+          throw new StudyError(409, "Envie sua resposta aberta antes de registrar a autoavaliação.");
+        }
+        const validIds = new Set(exercise.rubric.map((item) => item.id));
+        if (
+          new Set(checkedCriterionIds).size !== checkedCriterionIds.length ||
+          checkedCriterionIds.some((id) => !validIds.has(id))
+        ) {
+          throw new StudyError(400, "Critérios de rubrica inválidos para esta atividade.");
+        }
+        attempt.selfAssessment = { checkedCriterionIds, updatedAt: clock().toISOString() };
+        await tx.saveAttempt(attempt);
         return attemptView(attempt, exercise);
       });
     },

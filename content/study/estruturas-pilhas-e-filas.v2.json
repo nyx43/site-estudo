@@ -1,0 +1,1511 @@
+{
+  "schemaVersion": 1,
+  "lesson": {
+    "id": "estruturas-de-dados.pilhas-e-filas.v2",
+    "topicId": "estruturas-de-dados.pilhas-e-filas",
+    "version": 2,
+    "title": "Pilhas e filas",
+    "status": "AUTO_CHECKED",
+    "exampleMode": "PYTHON_SANDBOX",
+    "exampleLanguage": "Python 3",
+    "objectives": [
+      "Distinguir a política de remoção LIFO (pilha) da política FIFO (fila).",
+      "Rastrear operações em fila circular usando `inicio`/`fim`/`tamanho` (equivalentes a `rpos`/`spos`/`qtd`).",
+      "Investigar falhas de fronteira (fila vazia, cheia sem sobrescrita e reaproveitamento circular) com testes reproduzíveis.",
+      "Comparar buffer circular fixo, deque limitada e lista sem limite diante de sobrecarga e recuperação após reinício."
+    ],
+    "teaching": {
+      "level": "FOUNDATION",
+      "introduction": [
+        "Nem toda coleção serve para acessar o elemento do meio por índice. Em compiladores, filas de impressão e buffers de rede, o contrato de acesso exige que apenas as extremidades sejam usadas em uma ordem estrita: o último que entrou (LIFO) ou o primeiro que chegou (FIFO).",
+        "Baseado no material de Estruturas Básicas (PDF e planilha da fila circular da disciplina), vamos rastrear essas estruturas em Python 3, desde os testes explícitos de vazio e capacidade até o motivo pelo qual uma fila linear comum desperdiça posições e leva à fila circular."
+      ],
+      "prerequisites": [],
+      "glossary": [
+        {
+          "term": "Pilha (LIFO — Last-In, First-Out)",
+          "meaning": "Estrutura linear onde inserções (`push`) e remoções (`pop`) ocorrem exclusivamente em uma extremidade chamada topo.",
+          "example": "Empilhar 10 depois 20 faz o próximo `pop()` remover 20."
+        },
+        {
+          "term": "Fila (FIFO — First-In, First-Out)",
+          "meaning": "Estrutura linear onde inserções acontecem no fim (`spos`) e remoções acontecem na frente (`rpos`).",
+          "example": "Enfileirar 10 depois 20 faz o próximo `pop()` remover 10."
+        },
+        {
+          "term": "Fila circular (buffer circular)",
+          "meaning": "Implementação em arranjo fixo na qual os ponteiros dão a volta ao atingir `MAX - 1`, reaproveitando posições já liberadas.",
+          "example": "Com `MAX = 5`, depois do índice 4 o próximo avanço volta para o índice 0 usando `(pos + 1) % MAX`."
+        },
+        {
+          "term": "Underflow / Estrutura vazia",
+          "meaning": "Tentativa de remover um item quando não existem elementos válidos armazenados.",
+          "example": "Um `pop()` seguro em pilha vazia retorna `None` em vez de quebrar com `IndexError`."
+        },
+        {
+          "term": "Overflow / Capacidade cheia",
+          "meaning": "Tentativa de inserir quando todas as posições reservadas na capacidade máxima estão ocupadas.",
+          "example": "Quando `len(pilha) == MAX`, nova inserção deve ser rejeitada."
+        },
+        {
+          "term": "inicio / fim / tamanho (equivalentes a rpos / spos / qtd)",
+          "meaning": "Nomenclatura alternativa usada nos exercícios do piloto para índice de remoção (`inicio`=`rpos`), índice de inserção (`fim`=`spos`) e contagem de válidos (`tamanho`=`qtd`).",
+          "example": "(inicio=2, fim=3, tamanho=1) equivale a (rpos=2, spos=3, qtd=1)."
+        }
+      ],
+      "commands": [
+        {
+          "name": "Pilha limitada com encapsulamento",
+          "kind": "CONCEPT",
+          "syntax": "push -> adiciona ao topo se len < cap; pop -> remove do topo se não vazia",
+          "explanation": "Em Python, `lista.append(v)` insere no topo e `lista.pop()` remove o último elemento em O(1) amortizado, desde que os limites de capacidade e vazio sejam checados antes.",
+          "whenToUse": "Quando o último item inserido precisa ser processado primeiro, como casamento de parênteses e histórico de desfazer.",
+          "pitfalls": [
+            "Chamar `.pop()` em lista vazia dispara `IndexError` se você não verificar antes.",
+            "Usar variáveis globais sem retorno dificulta testar múltiplas pilhas isoladamente."
+          ],
+          "examples": [
+            {
+              "id": "ed.pf.pilha-casos",
+              "title": "Pilha com push, pop e proteção de limite",
+              "purpose": "Mostrar o comportamento completo da pilha com capacidade máxima e retorno seguro ao esvaziar.",
+              "code": "def criar_pilha(cap):\n    return {\"cap\": cap, \"itens\": []}\n\ndef push(pilha, valor):\n    if len(pilha[\"itens\"]) == pilha[\"cap\"]:\n        return False\n    pilha[\"itens\"].append(valor)\n    return True\n\ndef pop(pilha):\n    if not pilha[\"itens\"]:\n        return None\n    return pilha[\"itens\"].pop()\n\np = criar_pilha(2)\nprint(push(p, 10), push(p, 5), push(p, 99))\nprint(pop(p), pop(p), pop(p))",
+              "expectedOutput": "True True False\n5 10 None",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Cria estrutura explícita guardando capacidade e lista interna."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Retorna o dicionário da pilha inicializado vazio."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Define operação `push` recebendo a pilha e o novo valor."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Checa se a pilha já atingiu sua capacidade máxima."
+                },
+                {
+                  "line": 6,
+                  "explanation": "Recusa inserção retornando `False` sem corromper o estado."
+                },
+                {
+                  "line": 7,
+                  "explanation": "Adiciona o elemento no topo (final da lista)."
+                },
+                {
+                  "line": 8,
+                  "explanation": "Confirma sucesso da inserção."
+                },
+                {
+                  "line": 10,
+                  "explanation": "Define operação `pop` segura."
+                },
+                {
+                  "line": 11,
+                  "explanation": "Verifica se a pilha está vazia antes de remover."
+                },
+                {
+                  "line": 12,
+                  "explanation": "Retorna `None` no underflow em vez de lançar `IndexError`."
+                },
+                {
+                  "line": 13,
+                  "explanation": "Remove e devolve o último elemento inserido (topo)."
+                },
+                {
+                  "line": 15,
+                  "explanation": "Cria pilha com capacidade 2."
+                },
+                {
+                  "line": 16,
+                  "explanation": "10 e 5 entram; 99 é bloqueado por excesso de capacidade."
+                },
+                {
+                  "line": 17,
+                  "explanation": "Remove em ordem LIFO (5 depois 10) e retorna `None` ao tentar vazio."
+                }
+              ],
+              "takeaway": "A ordem de saída (5, 10) inverte exatamente a ordem de entrada (10, 5), e checar os limites impede perda ou exceções."
+            }
+          ]
+        },
+        {
+          "name": "Casamento de delimitadores com pilha",
+          "kind": "CONCEPT",
+          "syntax": "empilhar abertura -> ao ver fechamento, conferir topo da pilha",
+          "explanation": "Aplicação clássica citada no slide 6 da disciplina: cada parêntese ou colchete que abre deve casar com o fechamento correspondente aberto mais recentemente.",
+          "whenToUse": "Validação de expressões matemáticas, tags HTML/XML ou blocos sintáticos.",
+          "pitfalls": [
+            "Contar apenas quantidades totais de `(` e `)` falha em `)(`, onde as quantidades batem mas a ordem é inválida.",
+            "Esquecer de verificar ao final se a pilha terminou vazia deixa aberturas pendentes passarem."
+          ],
+          "examples": [
+            {
+              "id": "ed.pf.delimitadores",
+              "title": "Validador de parênteses e colchetes",
+              "purpose": "Demonstrar o algoritmo de casamento de delimitadores tratado na aula usando pilha.",
+              "code": "def delimitadores_validos(expr):\n    pares = {\")\": \"(\", \"]\": \"[\"}\n    pilha = []\n    for ch in expr:\n        if ch in \"([\":\n            pilha.append(ch)\n        elif ch in \")]\":\n            if not pilha or pilha.pop() != pares[ch]:\n                return False\n    return len(pilha) == 0\n\nprint(delimitadores_validos(\"([a+b])\"), delimitadores_validos(\"([)]\"), delimitadores_validos(\"(()\"))",
+              "expectedOutput": "True False False",
+              "lineNotes": [
+                {
+                  "line": 1,
+                  "explanation": "Recebe texto contendo uma expressão com delimitadores."
+                },
+                {
+                  "line": 2,
+                  "explanation": "Mapeia cada símbolo de fechamento à abertura correspondente."
+                },
+                {
+                  "line": 3,
+                  "explanation": "Inicializa pilha vazia de aberturas pendentes."
+                },
+                {
+                  "line": 4,
+                  "explanation": "Percorre caractere por caractere da esquerda para a direita."
+                },
+                {
+                  "line": 5,
+                  "explanation": "Se for símbolo de abertura, registra no topo da pilha."
+                },
+                {
+                  "line": 6,
+                  "explanation": "Empilha abertura pendente."
+                },
+                {
+                  "line": 7,
+                  "explanation": "Se for símbolo de fechamento, precisa validar o topo."
+                },
+                {
+                  "line": 8,
+                  "explanation": "Rejeita imediatamente se a pilha estiver vazia ou se o topo não casar."
+                },
+                {
+                  "line": 9,
+                  "explanation": "Retorna `False` diante de fechamento sem abertura compatível."
+                },
+                {
+                  "line": 10,
+                  "explanation": "Só é válida se todas as aberturas tiverem sido fechadas (pilha vazia)."
+                },
+                {
+                  "line": 12,
+                  "explanation": "Confirma válido `([a+b])` e rejeita cruzado `([)]` e incompleto `(()`."
+                }
+              ],
+              "takeaway": "A pilha garante que o último delimitador aberto seja sempre o primeiro a ser fechado."
+            }
+          ]
+        }
+      ],
+      "walkthroughs": [
+        {
+          "id": "ed.pf.fila-circular-walk",
+          "title": "Rastreamento da fila circular com rpos, spos e reaproveitamento de slots",
+          "purpose": "Mostrar por que `spos` e `rpos` dão a volta com aritmética modular sem mover os demais elementos do vetor.",
+          "code": "class FilaCircular:\n    def __init__(self, cap):\n        self.cap = cap\n        self.dados = [None] * cap\n        self.rpos = 0\n        self.spos = 0\n        self.qtd = 0\n\n    def push(self, valor):\n        if self.qtd == self.cap:\n            return \"Fila cheia\"\n        self.dados[self.spos] = valor\n        self.spos = (self.spos + 1) % self.cap\n        self.qtd += 1\n        return \"OK\"\n\n    def pop(self):\n        if self.qtd == 0:\n            return \"Fila vazia\"\n        valor = self.dados[self.rpos]\n        self.dados[self.rpos] = None\n        self.rpos = (self.rpos + 1) % self.cap\n        self.qtd -= 1\n        return valor\n\nfc = FilaCircular(3)\nprint(fc.push(10), fc.push(20), fc.push(30), fc.push(40))\nprint(fc.pop(), fc.push(40), fc.rpos, fc.spos, fc.dados)",
+          "expectedOutput": "OK OK OK Fila cheia\n10 OK 1 1 [40, 20, 30]",
+          "lineNotes": [
+            {
+              "line": 1,
+              "explanation": "Encapsula estado da fila circular em um objeto próprio."
+            },
+            {
+              "line": 2,
+              "explanation": "Construtor recebe capacidade máxima fixa."
+            },
+            {
+              "line": 3,
+              "explanation": "Guarda o limite máximo de posições."
+            },
+            {
+              "line": 4,
+              "explanation": "Reserva arranjo de tamanho fixo preenchido com `None`."
+            },
+            {
+              "line": 5,
+              "explanation": "`rpos` aponta para o próximo índice de remoção."
+            },
+            {
+              "line": 6,
+              "explanation": "`spos` aponta para o próximo índice de escrita."
+            },
+            {
+              "line": 7,
+              "explanation": "Manter contador explícito `qtd` distingue fila cheia de fila vazia mesmo quando `rpos == spos`."
+            },
+            {
+              "line": 9,
+              "explanation": "Operação para enfileirar novo item."
+            },
+            {
+              "line": 10,
+              "explanation": "Quando `qtd` iguala `cap`, recusa nova gravação."
+            },
+            {
+              "line": 11,
+              "explanation": "Retorna aviso claro de capacidade esgotada."
+            },
+            {
+              "line": 12,
+              "explanation": "Escreve o valor no índice indicado por `spos`."
+            },
+            {
+              "line": 13,
+              "explanation": "Avança `spos` em círculo com `% self.cap`."
+            },
+            {
+              "line": 14,
+              "explanation": "Incrementa o número de itens ativos."
+            },
+            {
+              "line": 15,
+              "explanation": "Confirma inserção."
+            },
+            {
+              "line": 17,
+              "explanation": "Operação para desenfileirar o item mais antigo."
+            },
+            {
+              "line": 18,
+              "explanation": "Quando `qtd == 0`, impede leitura inválida."
+            },
+            {
+              "line": 19,
+              "explanation": "Informa que não há itens."
+            },
+            {
+              "line": 20,
+              "explanation": "Lê o elemento na posição `rpos`."
+            },
+            {
+              "line": 21,
+              "explanation": "Limpa explicitamente a posição liberada com `None`."
+            },
+            {
+              "line": 22,
+              "explanation": "Avança `rpos` circularmente."
+            },
+            {
+              "line": 23,
+              "explanation": "Decrementa o contador de elementos."
+            },
+            {
+              "line": 24,
+              "explanation": "Devolve o valor removido."
+            },
+            {
+              "line": 26,
+              "explanation": "Instancia fila circular de capacidade 3."
+            },
+            {
+              "line": 27,
+              "explanation": "Insere 10, 20, 30 (cheia) e tenta inserir 40, recebendo 'Fila cheia'."
+            },
+            {
+              "line": 28,
+              "explanation": "Remove 10 (rpos vai a 1), insere 40 no índice 0 reaproveitado e deixa rpos == spos == 1."
+            }
+          ],
+          "takeaway": "Quando 40 entra depois da remoção de 10, `spos` dá a volta para o índice 0 sem deslocar 20 nem 30 — mantendo inserção e remoção em O(1)."
+        }
+      ],
+      "edgeCases": [
+        {
+          "title": "Remover de fila vazia gera None controlado, não falha não tratada",
+          "explanation": "Numa fila com arranjo fixo sem guarda explícita, avançar `rpos` sem checar fila vazia desloca ponteiros para lixo ou lança IndexError.",
+          "example": {
+            "id": "ed.pf.empty-queue-error",
+            "title": "Tentativa insegura de pop em lista vazia do Python",
+            "purpose": "Demonstrar o erro de execução real caso alguém use `.pop()` sem verificar se há itens.",
+            "code": "fila = []\nfila.pop(0)",
+            "expectedError": "IndexError",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Inicializa uma fila vazia."
+              },
+              {
+                "line": 2,
+                "explanation": "Chamar `pop(0)` diretamente sem guarda levanta `IndexError`."
+              }
+            ],
+            "takeaway": "Sempre verifique se a estrutura contém elementos antes de remover; além disso, `list.pop(0)` desloca todos os itens e tem custo O(n)."
+          }
+        }
+      ],
+      "aiReview": [
+        {
+          "title": "Erro de condição cheia/vazia na fila circular",
+          "request": "Peça a uma IA para implementar `push` em uma fila circular de vetor fixo com `rpos`, `spos` e `MAX` usando `None` nas posições livres.",
+          "generated": {
+            "id": "ed.pf.ai-bad",
+            "title": "Fila circular gerada com diagnóstico invertido e falha ao dar a volta",
+            "purpose": "Reproduzir erro clássico de ponteiro e mensagem invertida visto em implementações apressadas (inspirado no diagnóstico da aula).",
+            "code": "MAX = 3\nfila = [None, 20, 30]\nrpos, spos = 1, 0\n\ndef push_quebrado(valor):\n    global rpos, spos\n    if rpos == spos and fila[rpos] is not None:\n        return \"Fila Vazia!!\"\n    if spos == MAX - 1 and rpos == 0:\n        return \"Fila Cheia\"\n    fila[spos] = valor\n    spos = (spos + 1) % MAX\n    return \"OK\"\n\nprint(push_quebrado(40))\nprint(push_quebrado(50))",
+            "expectedOutput": "OK\nFila Vazia!!",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Define capacidade máxima igual a 3."
+              },
+              {
+                "line": 2,
+                "explanation": "Simula estado onde índice 0 está livre após um pop e índices 1 e 2 ocupados."
+              },
+              {
+                "line": 3,
+                "explanation": "`rpos = 1` (próximo a sair) e `spos = 0` (próximo slot livre)."
+              },
+              {
+                "line": 5,
+                "explanation": "Função `push` com falha lógica."
+              },
+              {
+                "line": 6,
+                "explanation": "Declara acesso às variáveis globais."
+              },
+              {
+                "line": 7,
+                "explanation": "Quando `rpos == spos` com slot não nulo a fila está CHEIA..."
+              },
+              {
+                "line": 8,
+                "explanation": "BUG: imprime/retorna 'Fila Vazia!!' exatamente quando a fila está cheia!"
+              },
+              {
+                "line": 9,
+                "explanation": "Testa caso adicional redundante com `MAX - 1`."
+              },
+              {
+                "line": 10,
+                "explanation": "Retorna 'Fila Cheia' apenas quando ainda estava no fim."
+              },
+              {
+                "line": 11,
+                "explanation": "Grava novo valor."
+              },
+              {
+                "line": 12,
+                "explanation": "Avança `spos` circularmente."
+              },
+              {
+                "line": 13,
+                "explanation": "Retorna confirmação."
+              },
+              {
+                "line": 15,
+                "explanation": "Insere 40 no índice 0 e deixa `spos == rpos == 1` (fila cheia)."
+              },
+              {
+                "line": 16,
+                "explanation": "Ao tentar inserir 50 em fila cheia, recebe falsamente 'Fila Vazia!!'."
+              }
+            ],
+            "takeaway": "Checar `rpos == spos` sem separar mensagem e estado engana quem lê o log; além disso, manter contador `qtd` elimina testes confusos de borda."
+          },
+          "diagnosis": [
+            "Na linha 8, quando `rpos == spos` e a posição está ocupada, a fila atingiu capacidade total — retornar 'Fila Vazia!!' inverte completamente o diagnóstico do erro.",
+            "Combinar vários testes manuais sobre `spos == MAX - 1` e `fila[rpos] != None` é frágil e difícil de auditar quando `rpos` dá a volta."
+          ],
+          "correction": {
+            "id": "ed.pf.ai-fixed",
+            "title": "Fila circular com contador `qtd` e diagnóstico inequívoco",
+            "purpose": "Corrigir a mensagem e simplificar os testes de cheia/vazia mantendo o estado em um dicionário explícito.",
+            "code": "def criar_fila(cap):\n    return {\"cap\": cap, \"dados\": [None] * cap, \"rpos\": 0, \"spos\": 0, \"qtd\": 0}\n\ndef push_seguro(fila, valor):\n    if fila[\"qtd\"] == fila[\"cap\"]:\n        return \"Fila Cheia!!\"\n    fila[\"dados\"][fila[\"spos\"]] = valor\n    fila[\"spos\"] = (fila[\"spos\"] + 1) % fila[\"cap\"]\n    fila[\"qtd\"] += 1\n    return \"OK\"\n\nf = {\"cap\": 3, \"dados\": [None, 20, 30], \"rpos\": 1, \"spos\": 0, \"qtd\": 2}\nprint(push_seguro(f, 40))\nprint(push_seguro(f, 50))",
+            "expectedOutput": "OK\nFila Cheia!!",
+            "lineNotes": [
+              {
+                "line": 1,
+                "explanation": "Construtor simples sem estado global oculto."
+              },
+              {
+                "line": 2,
+                "explanation": "Inclui `qtd` iniciando em zero."
+              },
+              {
+                "line": 4,
+                "explanation": "Recebe explicitamente a fila alvo e o valor."
+              },
+              {
+                "line": 5,
+                "explanation": "Teste direto e único de capacidade cheia via `qtd == cap`."
+              },
+              {
+                "line": 6,
+                "explanation": "Retorna diagnóstico correto quando lotada."
+              },
+              {
+                "line": 7,
+                "explanation": "Escreve no índice de escrita `spos`."
+              },
+              {
+                "line": 8,
+                "explanation": "Avança ponteiro com aritmética modular."
+              },
+              {
+                "line": 9,
+                "explanation": "Atualiza contador de itens armazenados."
+              },
+              {
+                "line": 10,
+                "explanation": "Retorna 'OK' após gravação."
+              },
+              {
+                "line": 12,
+                "explanation": "Reproduz o mesmo cenário inicial com 2 itens ocupados."
+              },
+              {
+                "line": 13,
+                "explanation": "Aceita 40 no último slot livre."
+              },
+              {
+                "line": 14,
+                "explanation": "Recusa 50 com a mensagem exata 'Fila Cheia!!'."
+              }
+            ],
+            "takeaway": "Separar um contador `qtd` elimina a ambiguidade quando `rpos == spos` e torna trivial distinguir fila vazia (`qtd == 0`) de fila cheia (`qtd == cap`)."
+          },
+          "acceptanceChecks": [
+            {
+              "scenario": "Inserir quando a fila já está na capacidade máxima após wrap-around",
+              "expected": "Retorna 'Fila Cheia!!' sem sobrescrever posição existente",
+              "why": "Confirma que a condição de parada protege o dado mais antigo e informa o erro certo."
+            },
+            {
+              "scenario": "Esvaziar totalmente a fila",
+              "expected": "Permite novas inserções aproveitando todas as posições de 0 até cap - 1",
+              "why": "Garante que `qtd` e ponteiros voltam a operar sem desperdício de capacidade."
+            }
+          ]
+        }
+      ],
+      "advancedConnections": [
+        {
+          "title": "Listas sequenciais, deque e custo de `pop(0)`",
+          "explanation": "Na fila implementada sobre `list` comum, `pop(0)` move todos os itens seguintes (O(n)), ao passo que a fila circular ou `collections.deque` mantém O(1) nas duas pontas.",
+          "topicIds": [
+            "estruturas-de-dados.sequencias",
+            "algoritmos.complexidade"
+          ],
+          "caution": "Não assuma que remover do início de qualquer lista em Python custa o mesmo que remover do fim."
+        },
+        {
+          "title": "Uso em percursos de grafos e árvores",
+          "explanation": "Busca em largura (BFS) utiliza uma fila FIFO para visitar vizinhos por camada, enquanto busca em profundidade (DFS) utiliza pilha LIFO ou recursão.",
+          "topicIds": [
+            "estruturas-de-dados.percursos-e-ciclos",
+            "estruturas-de-dados.arvores"
+          ],
+          "caution": "Trocar fila por pilha altera completamente a ordem de visita e o caminho mínimo em grafos sem peso."
+        }
+      ],
+      "reviewChecklist": [
+        "Verifiquei se a operação `pop` testa vazio antes de acessar o vetor ou a lista?",
+        "Na fila circular, há uma forma inequívoca (`qtd` ou sentinela) para distinguir cheia de vazia quando `rpos == spos`?",
+        "Evitei `list.pop(0)` em filas que crescem com n?"
+      ],
+      "sources": [
+        {
+          "sourceId": "algoritmos-26-2-slides",
+          "locator": "Estrutura de Dados - Estruturas Básicas (1).pdf (p. 1–24), Fila_Circular (1).xlsx e scripts 48081.py, 48082.py, 48083.py",
+          "use": "Definições LIFO/FIFO, aplicação de pilha em delimitadores, índices rpos/spos e diagnóstico da falha de mensagem em 48083.py."
+        },
+        {
+          "sourceId": "python-datastructures",
+          "locator": "Python 3.12 Tutorial — cap. 5.1.1 (Using Lists as Stacks) e 5.1.2 (Using Lists as Queues / collections.deque)",
+          "use": "Confirmação do custo O(1) no topo com list vs recomendação de estrutura própria/deque em filas."
+        },
+        {
+          "sourceId": "python-collections-deque",
+          "locator": "CPython 3.12 Doc/library/collections.rst — collections.deque(maxlen=N)",
+          "use": "Comprovar o descarte automático do item mais antigo na extremidade oposta em deque limitada na explicação complementar C3."
+        }
+      ]
+    },
+    "prequestions": [
+      {
+        "id": "ed.pf.pre1",
+        "prompt": "Se colocarmos os valores 10, 20 e 30 primeiro em uma pilha e depois em uma fila, qual valor sai primeiro de cada uma?",
+        "modelAnswer": "Na pilha (LIFO) sai primeiro o 30, último inserido. Na fila (FIFO) sai primeiro o 10, primeiro inserido."
+      },
+      {
+        "id": "ed.pf.pre2",
+        "prompt": "Numa fila linear com vetor de 5 posições onde `spos` chegou a 5 após várias inserções e remoções, por que não dá mais para inserir mesmo havendo posições livres no começo?",
+        "modelAnswer": "Porque uma fila linear simples apenas incrementa `spos` até o limite do vetor sem voltar ao índice 0; é justamente esse desperdício que a fila circular resolve."
+      }
+    ],
+    "why": {
+      "problem": "Muitos processos precisam respeitar estritamente a ordem de chegada (atendimento e buffers) ou a ordem inversa da mais recente para a mais antiga (chamadas de função, desfazer e validações sintáticas).",
+      "cost": "Trocar pilha por fila inverte prioridades, usar `pop(0)` degrada para O(n) por operação e esquecer o contorno circular desperdiça espaço ou sobrescreve itens ainda não lidos."
+    },
+    "mentalModel": {
+      "analogy": "Pilha é como uma pilha de pratos onde só pegamos e colocamos no topo; fila é um guichê único onde quem chega entra atrás e o atendimento acontece na frente; fila circular dobra as pontas desse corredor em círculo.",
+      "limits": "Estruturas lineares simples não oferecem busca rápida por valor no meio nem remoção arbitrária sem quebrar suas invariantes.",
+      "trace": {
+        "headers": [
+          "Operação",
+          "rpos",
+          "spos",
+          "qtd (MAX=3)",
+          "Vetor [0, 1, 2]"
+        ],
+        "rows": [
+          [
+            "init(3)",
+            "0",
+            "0",
+            "0",
+            "[None, None, None]"
+          ],
+          [
+            "push(10), push(20), push(30)",
+            "0",
+            "0",
+            "3",
+            "[10, 20, 30]"
+          ],
+          [
+            "pop() -> 10",
+            "1",
+            "0",
+            "2",
+            "[None, 20, 30]"
+          ],
+          [
+            "push(40)",
+            "1",
+            "1",
+            "3",
+            "[40, 20, 30]"
+          ]
+        ]
+      }
+    },
+    "concept": {
+      "definition": "Pilha (LIFO) e fila (FIFO) definem contratos restritos de acesso pelas extremidades, garantindo previsibilidade na ordem de processamento.",
+      "parts": [
+        "Pilha usa um único ponto ativo (topo) para inserir (`push`) e remover (`pop`).",
+        "Fila separa entrada (`spos`) e saída (`rpos`); na fila circular, ambos avançam módulo `cap`."
+      ],
+      "code": "pilha = []\nfila = []\nfor x in [1, 2, 3]:\n    pilha.append(x)\n    fila.append(x)\nprint(pilha.pop(), fila.pop(0))",
+      "expectedOutput": "3 1"
+    },
+    "workedExamples": [
+      {
+        "problem": "Simular inserção de três tarefas e execução em pilha vs. fila linear com ponteiro de leitura (sem deslocar elementos).",
+        "subgoals": [
+          {
+            "label": "Processar com pilha (LIFO)",
+            "code": "pilha = []\nfor item in [\"A\", \"B\", \"C\"]:\n    pilha.append(item)\nsaida_pilha = [pilha.pop(), pilha.pop(), pilha.pop()]",
+            "why": "Cada `.pop()` retira do final da lista, revertendo a sequência para C, B, A."
+          },
+          {
+            "label": "Processar com fila por índice rpos (FIFO)",
+            "code": "fila = [\"A\", \"B\", \"C\"]\nrpos = 0\nsaida_fila = []\nwhile rpos < len(fila):\n    saida_fila.append(fila[rpos])\n    rpos += 1\nprint(saida_pilha, saida_fila)",
+            "why": "Ler avançando `rpos` mantém ordem de chegada A, B, C sem precisar chamar `pop(0)`."
+          }
+        ],
+        "expectedOutput": "['C', 'B', 'A'] ['A', 'B', 'C']"
+      }
+    ],
+    "misconceptions": [
+      {
+        "tag": "ed.pilha-igual-fila",
+        "claim": "Pilha e fila são praticamente iguais porque ambas guardam valores em lista Python.",
+        "refutation": "Armazenamento em lista é só o detalhe interno; o contrato de remoção muda completamente quem sai em seguida.",
+        "correct": "Em pilha sai o último inserido (LIFO); em fila sai o primeiro inserido (FIFO)."
+      },
+      {
+        "tag": "ed.rpos-spos-vazio",
+        "claim": "Na fila circular, sempre que `rpos == spos`, a fila está vazia.",
+        "refutation": "Após preencher exatamente todas as `MAX` posições em círculo, `spos` dá a volta e volta a coincidir com `rpos`.",
+        "correct": "`rpos == spos` ocorre tanto com fila vazia quanto cheia; é obrigatório consultar o contador `qtd` ou marcar/verificar conteúdo do slot."
+      }
+    ],
+    "uses": [
+      {
+        "context": "Pilha de chamadas e desfazer/refazer",
+        "description": "Editores empilham ações recentes para desfazer exatamente a última alteração realizada."
+      },
+      {
+        "context": "Filas de impressão, mensagens e requisições",
+        "description": "Sistemas atendem solicitações por ordem de chegada garantindo que ninguém fique eternamente no fim."
+      },
+      {
+        "context": "Buffers circulares em drivers e áudio",
+        "description": "Capacidade fixa sem realocação de memória permite fluxo contínuo de produtor e consumidor em O(1)."
+      }
+    ],
+    "efficiency": {
+      "naive": "fila = list(range(5))\nsaida = []\nwhile fila:\n    saida.append(fila.pop(0))\nprint(saida)",
+      "better": "from collections import deque\nfila = deque(range(5))\nsaida = []\nwhile fila:\n    saida.append(fila.popleft())\nprint(saida)",
+      "criterion": "Ambas produzem a mesma lista FIFO, mas `list.pop(0)` desloca todos os n-1 elementos restantes a cada remoção (O(n) por pop, O(n^2) total), enquanto `collections.deque.popleft()` ou uma fila circular remove da frente em O(1).",
+      "expectedOutput": "[0, 1, 2, 3, 4]"
+    },
+    "summary": "Pilhas impõem ordem LIFO e resolvem histórico e aninhamento de delimitadores; filas impõem FIFO para ordem de chegada. Em arranjo fixo, usar aritmética modular e controle explícito de quantidade transforma um vetor comum em fila circular O(1) sem ambiguidade entre cheia e vazia.",
+    "selfExplain": [
+      {
+        "id": "ed.pf.se1",
+        "prompt": "Por que precisamos de um contador `qtd` (ou inspeção explícita da casa `rpos`) além de comparar `rpos == spos` em uma fila circular?",
+        "modelAnswer": "Porque tanto no estado inicial completamente vazio quanto após inserir exatamente `cap` elementos (voltando ao índice de partida), `rpos` e `spos` apontam para o mesmo índice."
+      }
+    ],
+    "retrieval": [
+      {
+        "id": "ed.pf.ret1",
+        "prompt": "Se executarmos `push(1)`, `push(2)`, `pop()`, `push(3)` em uma pilha e em uma fila, quais valores ficam e qual sai no `pop()` seguinte?",
+        "modelAnswer": "Na pilha, o primeiro `pop()` tira 2, sobra [1, 3] e o próximo `pop()` tira 3. Na fila, o primeiro `pop()` tira 1, sobra [2, 3] e o próximo `pop()` tira 2."
+      },
+      {
+        "id": "ed.pf.ret2",
+        "prompt": "Para `cap = 5` e `spos = 4`, qual é o novo valor de `spos` na fila circular após mais um `push`?",
+        "modelAnswer": "O cálculo `(4 + 1) % 5` resulta em 0, fazendo o ponteiro retornar ao início do arranjo."
+      },
+      {
+        "id": "ed.pf.ret3",
+        "prompt": "Por que `collections.deque` (ou fila circular) evita gargalo em comparação a `list.pop(0)`?",
+        "modelAnswer": "Porque `list.pop(0)` precisa mover todos os elementos seguintes uma posição para a esquerda (O(n)), enquanto deque e fila circular apenas atualizam ponteiros em O(1)."
+      }
+    ],
+    "layerSections": [
+      {
+        "id": "pilhas-filas-c1",
+        "layer": "C1",
+        "title": "Camada 1 (Base) — Rastreamento passo a passo da fila circular",
+        "summary": "Acompanhar ponteiros, tamanho válido, itens removidos e próximo elemento a sair sem alterar outros ponteiros.",
+        "explanation": [
+          "Em uma fila circular FIFO de capacidade fixa, cada operação modifica apenas o ponteiro ligado a ela e o contador de elementos válidos. Ao inserir, escrevemos na posição indicada por `fim`, avançamos apenas `fim` com aritmética modular e somamos 1 em `tamanho`.",
+          "Ao remover, lemos o item em `inicio`, avançamos apenas `inicio` com aritmética modular e subtraímos 1 de `tamanho`. Valores antigos podem permanecer fisicamente nas posições liberadas do vetor até uma nova escrita, mas estão fora do conjunto de itens válidos."
+        ],
+        "callout": {
+          "label": "Equivalência de notação",
+          "text": "Neste piloto, `inicio` equivale a `rpos` (próximo item a sair), `fim` equivale a `spos` (próxima posição livre de inserção) e `tamanho` equivale a `qtd` (quantidade de itens válidos)."
+        }
+      },
+      {
+        "id": "pilhas-filas-c2",
+        "layer": "C2",
+        "title": "Camada 2 (Mecanismo e aplicação) — Diagnóstico de falha e testes de regressão",
+        "summary": "Reproduzir sintomas a partir de um chamado, identificar condições ambíguas e validar fronteiras com testes.",
+        "explanation": [
+          "Um teste de regressão eficaz registra estado inicial, sequência exata de operações e saídas observáveis para todos os casos de contrato: fila realmente vazia, remoção após preenchimento total, recusa quando cheia sem sobrescrita e reaproveitamento das posições liberadas.",
+          "Quando uma condição testa apenas igualdade entre ponteiros (`inicio == fim` ou `rpos == spos`), os dois extremos do ciclo (fila totalmente vazia e fila totalmente cheia) tornam-se indistinguíveis sem consultar `tamanho` (ou `qtd`)."
+        ]
+      },
+      {
+        "id": "pilhas-filas-c3",
+        "layer": "C3",
+        "title": "Camada 3 (Domínio e integração) — Políticas de sobrecarga e recuperação após reinício",
+        "summary": "Escolher estrutura e política de lotação segundo garantias de negócio, visibilidade de perda e durabilidade.",
+        "isComplementary": true,
+        "explanation": [
+          "Compare três opções arquiteturais de fila sob carga elevada: (1) um buffer circular fixo exige política explícita ao lotar — sobrescrever o item mais antigo com contagem visível de descartes, rejeitar devolvendo erro ao produtor ou bloquear até surgir espaço; (2) uma `collections.deque(maxlen=N)` descarta automaticamente o item mais antigo na extremidade oposta quando um novo entra pelo final já lotado; e (3) uma lista sem limite cresce indefinidamente enquanto chegam eventos, podendo esgotar memória.",
+          "Em qualquer uma dessas estruturas apenas em memória RAM, o reinício do processo apaga os eventos enfileirados. Fluxos que admitem perda amostral (como métricas de depuração) podem priorizar descarte controlado com contador visível; fluxos críticos (como confirmações de pagamento) exigem registro durável que sobreviva a reinícios antes de confirmar a aceitação ao produtor, ou rejeição/controle de pressão explícito."
+        ],
+        "callout": {
+          "label": "Conteúdo complementar do piloto",
+          "text": "As políticas de sobrecarga e durabilidade ampliam a aula básica de fila circular (p. 18–24 e Fila_Circular) com foco em decisões operacionais de produção."
+        }
+      }
+    ]
+  },
+  "exercises": [
+    {
+      "id": "ed.pf.v2.ex1",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Ordem de saída em pilha vs. fila",
+      "prompt": "Os números 4, 8 e 12 são inseridos nessa sequência em uma pilha P e em uma fila F (ambas inicialmente vazias). Qual será o resultado de remover um item de P seguido de remover um item de F?",
+      "difficulty": 1,
+      "skills": [
+        "LIFO vs FIFO"
+      ],
+      "explanation": "Na pilha (LIFO) sai o último que entrou (12); na fila (FIFO) sai o primeiro que entrou (4).",
+      "type": "MISCONCEPTION_QUIZ",
+      "options": [
+        {
+          "id": "a",
+          "text": "P remove 4 e F remove 4.",
+          "misconceptionTag": "ed.pilha-igual-fila",
+          "feedback": "Na pilha, a remoção sempre ocorre pelo topo (último inserido), não pelo início."
+        },
+        {
+          "id": "b",
+          "text": "P remove 12 e F remove 4.",
+          "feedback": "Correto: LIFO remove o último (12) e FIFO remove o primeiro (4)."
+        },
+        {
+          "id": "c",
+          "text": "P remove 4 e F remove 12.",
+          "feedback": "As políticas ficaram trocadas: 12 é o último a entrar (sai primeiro da pilha)."
+        }
+      ],
+      "solution": {
+        "optionId": "b"
+      },
+      "layer": "C1",
+      "scope": "JUNIOR",
+      "lessonSection": "pilhas-filas-c1",
+      "objective": "Distinguir ordem de saída LIFO (pilha) e FIFO (fila)."
+    },
+    {
+      "id": "ed.pf.v2.c1",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Rastrear uma fila circular a partir de um chamado",
+      "difficulty": 1,
+      "skills": [
+        "fila circular",
+        "rastreamento passo a passo",
+        "ponteiros e tamanho"
+      ],
+      "layer": "C1",
+      "scope": "JUNIOR",
+      "lessonSection": "pilhas-filas-c1",
+      "allowDirectPractice": true,
+      "objective": "Reproduzir um chamado passo a passo e comprovar qual item permanece disponível após duas remoções.",
+      "context": "Um teste de regressão precisa comprovar qual item ainda está disponível após duas remoções. Você recebe a regra da fila (equivalente a `inicio=rpos`, `fim=spos`, `tamanho=qtd`) e entrega a tabela de rastreamento para revisão.",
+      "prerequisites": [
+        "Diferenciar política FIFO dos papéis de `inicio`, `fim` e `tamanho` em capacidade fixa."
+      ],
+      "prompt": "A fila tem capacidade 4 e começa em `(inicio=0, fim=0, tamanho=0)`. Insira A, B e C, em ordem. Depois execute duas remoções. Preencha o estado após cada operação, anote os itens removidos (se houver) e indique o próximo item a sair ao final.",
+      "type": "STRUCTURED_RESPONSE",
+      "layout": "TABLE",
+      "generalCriteria": [
+        "Atualize apenas o ponteiro correspondente à operação (`fim` ao inserir; `inicio` ao remover) e `tamanho`.",
+        "Registre qual item foi devolvido em cada `remover()` (ou `Nenhum` nas inserções).",
+        "Indique corretamente qual elemento permanece na posição `inicio` ao fim da sequência."
+      ],
+      "hints": [
+        "Diferencie próximo item a sair (`inicio`) de próxima posição de inserção (`fim`).",
+        "Em cada linha, atualize apenas o ponteiro usado pela operação e o contador `tamanho`.",
+        "Nas duas últimas linhas, confira qual ponteiro localiza o próximo item a sair."
+      ],
+      "groups": [
+        {
+          "id": "op-1",
+          "label": "1. inserir(\"A\")",
+          "fields": [
+            {
+              "id": "inicio",
+              "label": "inicio",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "fim",
+              "label": "fim",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "tamanho",
+              "label": "tamanho",
+              "kind": "integer",
+              "min": 0,
+              "max": 4
+            },
+            {
+              "id": "removido",
+              "label": "Item removido",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "nenhum",
+                  "label": "Nenhum (-)"
+                },
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "op-2",
+          "label": "2. inserir(\"B\")",
+          "fields": [
+            {
+              "id": "inicio",
+              "label": "inicio",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "fim",
+              "label": "fim",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "tamanho",
+              "label": "tamanho",
+              "kind": "integer",
+              "min": 0,
+              "max": 4
+            },
+            {
+              "id": "removido",
+              "label": "Item removido",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "nenhum",
+                  "label": "Nenhum (-)"
+                },
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "op-3",
+          "label": "3. inserir(\"C\")",
+          "fields": [
+            {
+              "id": "inicio",
+              "label": "inicio",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "fim",
+              "label": "fim",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "tamanho",
+              "label": "tamanho",
+              "kind": "integer",
+              "min": 0,
+              "max": 4
+            },
+            {
+              "id": "removido",
+              "label": "Item removido",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "nenhum",
+                  "label": "Nenhum (-)"
+                },
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "op-4",
+          "label": "4. remover()",
+          "fields": [
+            {
+              "id": "inicio",
+              "label": "inicio",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "fim",
+              "label": "fim",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "tamanho",
+              "label": "tamanho",
+              "kind": "integer",
+              "min": 0,
+              "max": 4
+            },
+            {
+              "id": "removido",
+              "label": "Item removido",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "nenhum",
+                  "label": "Nenhum (-)"
+                },
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "op-5",
+          "label": "5. remover()",
+          "fields": [
+            {
+              "id": "inicio",
+              "label": "inicio",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "fim",
+              "label": "fim",
+              "kind": "integer",
+              "min": 0,
+              "max": 3
+            },
+            {
+              "id": "tamanho",
+              "label": "tamanho",
+              "kind": "integer",
+              "min": 0,
+              "max": 4
+            },
+            {
+              "id": "removido",
+              "label": "Item removido",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "nenhum",
+                  "label": "Nenhum (-)"
+                },
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "estado-final",
+          "label": "Conclusão da regressão",
+          "prompt": "Qual item ainda está disponível como próximo a sair após as cinco operações?",
+          "fields": [
+            {
+              "id": "proximo",
+              "label": "Próximo a sair",
+              "kind": "select",
+              "options": [
+                {
+                  "value": "a",
+                  "label": "A"
+                },
+                {
+                  "value": "b",
+                  "label": "B"
+                },
+                {
+                  "value": "c",
+                  "label": "C"
+                },
+                {
+                  "value": "vazia",
+                  "label": "Nenhum (fila vazia)"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "solution": {
+        "expected": {
+          "op-1.inicio": [
+            0
+          ],
+          "op-1.fim": [
+            1
+          ],
+          "op-1.tamanho": [
+            1
+          ],
+          "op-1.removido": [
+            "nenhum"
+          ],
+          "op-2.inicio": [
+            0
+          ],
+          "op-2.fim": [
+            2
+          ],
+          "op-2.tamanho": [
+            2
+          ],
+          "op-2.removido": [
+            "nenhum"
+          ],
+          "op-3.inicio": [
+            0
+          ],
+          "op-3.fim": [
+            3
+          ],
+          "op-3.tamanho": [
+            3
+          ],
+          "op-3.removido": [
+            "nenhum"
+          ],
+          "op-4.inicio": [
+            1
+          ],
+          "op-4.fim": [
+            3
+          ],
+          "op-4.tamanho": [
+            2
+          ],
+          "op-4.removido": [
+            "a"
+          ],
+          "op-5.inicio": [
+            2
+          ],
+          "op-5.fim": [
+            3
+          ],
+          "op-5.tamanho": [
+            1
+          ],
+          "op-5.removido": [
+            "b"
+          ],
+          "estado-final.proximo": [
+            "c"
+          ]
+        },
+        "fieldFeedback": {
+          "op-4.fim": "Na remoção (passo 4), `fim` não se altera — confira qual ponteiro aponta para o próximo item a sair.",
+          "op-5.fim": "Na remoção (passo 5), `fim` não se altera — apenas `inicio` avança e `tamanho` diminui.",
+          "estado-final.proximo": "Com `inicio = 2` e `tamanho = 1`, confira qual elemento foi gravado na posição 2."
+        },
+        "groupFeedback": {
+          "op-4": "Revise o passo 4: ao remover, sai o primeiro item inserido (FIFO) e apenas `inicio` + `tamanho` mudam.",
+          "op-5": "Revise o passo 5: após remover B, resta 1 item válido apontado por `inicio`."
+        }
+      },
+      "explanation": "Os estados são `(0,1,1)`, `(0,2,2)`, `(0,3,3)`, `(1,3,2)` e `(2,3,1)`. Saem A e B, deixando C como o próximo a sair na posição `inicio=2`. Valores antigos eventualmente presentes nas posições 0 e 1 permanecem fora dos itens válidos porque `tamanho` vale 1."
+    },
+    {
+      "id": "ed.pf.v2.ex2",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Diagnosticar implementação defeituosa de fila circular",
+      "prompt": "Selecione TODAS as falhas presentes no trecho conceitual abaixo (baseado em erros comuns de fila circular).",
+      "difficulty": 2,
+      "skills": [
+        "revisão de estrutura",
+        "fronteiras"
+      ],
+      "explanation": "Imprimir 'Fila Vazia' no teste de lotação inverte o erro, e não usar módulo `% MAX` faz `spos` estourar o índice após o fim do arranjo.",
+      "type": "ERRONEOUS_EXAMPLE",
+      "items": [
+        {
+          "id": "i1",
+          "text": "if qtd == MAX: print('Fila Vazia!!')  # mensagem para fila cheia"
+        },
+        {
+          "id": "i2",
+          "text": "spos = (spos + 1) % MAX  # avanço circular do índice de escrita"
+        },
+        {
+          "id": "i3",
+          "text": "spos = spos + 1  # sem checar retorno a 0 ao atingir MAX - 1"
+        },
+        {
+          "id": "i4",
+          "text": "if qtd == 0: return None  # proteção de remoção em fila vazia"
+        }
+      ],
+      "solution": {
+        "faultyItemIds": [
+          "i1",
+          "i3"
+        ]
+      },
+      "layer": "C2",
+      "scope": "PLENO",
+      "lessonSection": "pilhas-filas-c2",
+      "objective": "Diagnosticar falhas de avanço circular e mensagens de fronteira."
+    },
+    {
+      "id": "ed.pf.v2.ex3",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Montar função segura de pop em pilha",
+      "prompt": "Ordene e indente os blocos para definir `pop_seguro(p)` evitando remoção em lista vazia e imprimindo `20 None`.",
+      "difficulty": 1,
+      "skills": [
+        "pilha",
+        "guarda de vazio"
+      ],
+      "explanation": "A verificação `if not p:` deve preceder `p.pop()`, retornando `None` com recuo dentro do `if`.",
+      "type": "PARSONS",
+      "blocks": [
+        {
+          "id": "b1",
+          "code": "def pop_seguro(p):",
+          "distractor": false
+        },
+        {
+          "id": "b2",
+          "code": "if not p:",
+          "distractor": false
+        },
+        {
+          "id": "b3",
+          "code": "return None",
+          "distractor": false
+        },
+        {
+          "id": "b4",
+          "code": "return p.pop()",
+          "distractor": false
+        },
+        {
+          "id": "d1",
+          "code": "return p.pop(0)",
+          "distractor": true
+        },
+        {
+          "id": "b5",
+          "code": "pilha = [20]",
+          "distractor": false
+        },
+        {
+          "id": "b6",
+          "code": "print(pop_seguro(pilha), pop_seguro(pilha))",
+          "distractor": false
+        }
+      ],
+      "solution": {
+        "orders": [
+          [
+            {
+              "id": "b1",
+              "indent": 0
+            },
+            {
+              "id": "b2",
+              "indent": 1
+            },
+            {
+              "id": "b3",
+              "indent": 2
+            },
+            {
+              "id": "b4",
+              "indent": 1
+            },
+            {
+              "id": "b5",
+              "indent": 0
+            },
+            {
+              "id": "b6",
+              "indent": 0
+            }
+          ]
+        ],
+        "output": "20 None"
+      },
+      "layer": "C1",
+      "scope": "JUNIOR",
+      "lessonSection": "pilhas-filas-c1",
+      "objective": "Montar função segura de remoção em pilha evitando lista vazia."
+    },
+    {
+      "id": "ed.pf.v2.ex4",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Prever verificação de delimitadores com pilha",
+      "prompt": "Analise a execução da função de casamento e preveja os três valores booleanos impressos.",
+      "difficulty": 2,
+      "skills": [
+        "casamento de delimitadores",
+        "pilha"
+      ],
+      "explanation": "`(a)` fecha corretamente (`True`), `)(` falha na primeira tentativa porque pilha está vazia (`False`), `[()]` fecha em ordem inversa válida (`True`).",
+      "type": "PRIMM_PREDICT",
+      "code": "def checa(s):\n    par = {\")\": \"(\", \"]\": \"[\"}\n    st = []\n    for c in s:\n        if c in \"([\": st.append(c)\n        elif c in \")]\":\n            if not st or st.pop() != par[c]: return False\n    return not st\n\nprint(checa(\"(a)\"), checa(\")(\"), checa(\"[()]\"))",
+      "solution": {
+        "output": "True False True"
+      },
+      "layer": "C2",
+      "scope": "PLENO",
+      "lessonSection": "pilhas-filas-c2",
+      "objective": "Prever o resultado booleano do casamento de delimitadores com pilha."
+    },
+    {
+      "id": "ed.pf.v2.c2",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Investigar uma remoção que falha e validar por testes",
+      "difficulty": 2,
+      "skills": [
+        "depuração",
+        "invariantes cheia/vazia",
+        "testes de regressão"
+      ],
+      "layer": "C2",
+      "scope": "PLENO",
+      "lessonSection": "pilhas-filas-c2",
+      "objective": "Reproduzir uma falha de contrato a partir de um chamado, aplicar a menor correção e escrever testes que cubram reutilização de posições.",
+      "context": "Chamado recebido: \"Com três itens, consigo remover o primeiro normalmente. Com quatro, o sistema diz `fila vazia`. Tentei inserir um quinto item e recebi `fila cheia`.\" A fila tem capacidade 4, começa em `(inicio=0, fim=0, tamanho=0)` e as funções devolvem mensagem nos casos de recusa, preservando os itens armazenados.",
+      "prerequisites": [
+        "Rastrear fila circular sem ambiguidade entre `inicio`, `fim` e `tamanho`."
+      ],
+      "prompt": "Construa uma sequência de reprodução registrando a primeira divergência e a condição responsável. Entregue o trecho corrigido com a menor mudança que preserve o contrato de 4 posições úteis e descreva testes com entradas e saídas esperadas (fila vazia, rejeição cheia sem sobrescrita e preenchimento após liberar 2 posições). Você pode experimentar o código no laboratório Python separado do tópico antes de enviar sua resposta escrita.",
+      "type": "OPEN_RESPONSE",
+      "code": "def inserir(item):\n    global fim, tamanho\n    if tamanho == capacidade:\n        return \"fila cheia\"\n    dados[fim] = item\n    fim = (fim + 1) % capacidade\n    tamanho += 1\n\ndef remover():\n    global inicio, tamanho\n    if inicio == fim:\n        return \"fila vazia\"\n    item = dados[inicio]\n    inicio = (inicio + 1) % capacidade\n    tamanho -= 1\n    return item",
+      "codeLanguage": "Python",
+      "labTopicId": "estruturas-de-dados.pilhas-e-filas",
+      "generalCriteria": [
+        "Apresente sequência que leve ao estado ambíguo de fila cheia e mostre exatamente onde o comportamento diverge.",
+        "Corrija preservando as 4 posições úteis (sem desperdiçar um slot fixo).",
+        "Especifique entradas e saídas esperadas cobrindo fila realmente vazia, rejeição sem sobrescrita quando cheia e reaproveitamento circular após duas remoções."
+      ],
+      "hints": [
+        "Compare o estado de dois casos que deveriam retornar resultados diferentes.",
+        "Registre os ponteiros (`inicio`, `fim`) e o contador (`tamanho`) imediatamente antes de remover.",
+        "Identifique qual dado distingue fila cheia de fila vazia mesmo quando os ponteiros coincidem."
+      ],
+      "fields": [
+        {
+          "id": "reproducao",
+          "label": "Reprodução e diagnóstico da falha",
+          "prompt": "Informe a sequência que reproduz o problema, o estado `(inicio, fim, tamanho)` no instante da divergência e a condição defeituosa.",
+          "placeholder": "Ex.: Ao inserir A, B, C, D o estado passa a...",
+          "multiline": true,
+          "minLength": 20,
+          "maxLength": 2500
+        },
+        {
+          "id": "trecho-corrigido",
+          "label": "Trecho corrigido (menor alteração)",
+          "prompt": "Cole ou escreva a versão corrigida mantendo as 4 posições úteis.",
+          "placeholder": "def remover(): ...",
+          "multiline": true,
+          "isCode": true,
+          "minLength": 15,
+          "maxLength": 3000
+        },
+        {
+          "id": "testes-propostos",
+          "label": "Testes com entradas e saídas esperadas",
+          "prompt": "Descreva os casos de teste: fila realmente vazia, recusa ao inserir com 4 itens sem sobrescrever e preenchimento + 2 remoções + 2 novas inserções.",
+          "placeholder": "Caso 1 (vazia): ... Caso 2 (cheia): ... Caso 3 (reaproveitamento): ...",
+          "multiline": true,
+          "minLength": 25,
+          "maxLength": 3000
+        }
+      ],
+      "rubric": [
+        {
+          "id": "rub-repro",
+          "label": "Reprodução objetiva",
+          "description": "Demonstra 4 inserções levando a `(inicio=0, fim=0, tamanho=4)` onde `remover()` diverge retornando `'fila vazia'` em vez de `'A'`."
+        },
+        {
+          "id": "rub-fix",
+          "label": "Correção mínima e preservação da capacidade",
+          "description": "Substitui `if inicio == fim:` por `if tamanho == 0:` em `remover()`, mantendo as 4 posições úteis (sem sacrificar 1 slot)."
+        },
+        {
+          "id": "rub-vazia-cheia",
+          "label": "Vazia e rejeição sem sobrescrita",
+          "description": "Testa remoção em fila realmente vazia (`(0,0,0)`) e inserção com fila cheia verificando que os 4 itens originais são drenados intactos (não só a string de erro)."
+        },
+        {
+          "id": "rub-wrap",
+          "label": "Reaproveitamento circular completo",
+          "description": "Testa sequência inserir A–D, remover A e B, inserir E e F e drenar obtendo exatamente C, D, E, F."
+        }
+      ],
+      "solution": {
+        "referenceSections": [
+          {
+            "label": "Reprodução e causa raiz",
+            "content": "Ao inserir A, B, C e D em fila de capacidade 4, `fim` retorna a 0 e o estado fica `(inicio=0, fim=0, tamanho=4)`. Ao chamar `remover()`, `inicio == fim` é verdadeiro tanto para fila vazia quanto para cheia, então a função devolve indevidamente `\"fila vazia\"` em vez de retornar `'A'` e chegar a `(1, 0, 3)`. Reservar uma posição reduziria a capacidade útil para 3."
+          },
+          {
+            "label": "Trecho corrigido em remover()",
+            "isCode": true,
+            "content": "def remover():\n    global inicio, tamanho\n    if tamanho == 0:\n        return \"fila vazia\"\n    item = dados[inicio]\n    inicio = (inicio + 1) % capacidade\n    tamanho -= 1\n    return item"
+          },
+          {
+            "label": "Casos de teste esperados",
+            "content": "1) Vazia real: `remover()` em `(0,0,0)` devolve `\"fila vazia\"` e mantém `(0,0,0)`. 2) Cheia e sem sobrescrita: inserir A–D e tentar `inserir('E')` retorna `\"fila cheia\"`, e drenar em seguida devolve A, B, C, D. 3) Reaproveitamento: inserir A–D, remover A e B, inserir E e F e drenar a fila deve resultar na saída C, D, E, F."
+          }
+        ]
+      },
+      "explanation": "Como `inicio == fim` ocorre tanto quando `tamanho == 0` quanto quando `tamanho == capacidade`, o teste de fila vazia deve consultar `tamanho == 0` para preservar todas as 4 posições úteis."
+    },
+    {
+      "id": "ed.pf.v2.c3",
+      "lessonId": "estruturas-de-dados.pilhas-e-filas.v2",
+      "topicId": "estruturas-de-dados.pilhas-e-filas",
+      "title": "Escolher política de sobrecarga e recuperação",
+      "difficulty": 3,
+      "skills": [
+        "arquitetura de filas",
+        "políticas de sobrecarga",
+        "durabilidade e tradeoffs"
+      ],
+      "layer": "C3",
+      "scope": "SENIOR",
+      "lessonSection": "pilhas-filas-c3",
+      "objective": "Decidir estrutura, política de sobrecarga, plano de medição e aprovações considerando riscos por fluxo.",
+      "context": "Um serviço usa fila para dois fluxos: (1) métricas de depuração que podem perder amostras desde que a perda fique visível; (2) confirmações de pagamento já aceitas, que precisam ser recuperáveis. O produtor pode operar acima da capacidade por 30 segundos, e a taxa exata do pico ainda não foi medida.",
+      "prerequisites": [
+        "Leitura da explicação complementar C3 sobre buffer circular fixo, deque(maxlen), lista sem limite e registro durável."
+      ],
+      "prompt": "Redija uma recomendação técnica curta para a equipe: compare buffer circular fixo, deque limitada e lista sem limite; escolha uma política para cada fluxo; informe o que confirmar antes de dimensionar; proponha um teste de sobrecarga e um de reinício; e indique quem aprova cada política e quem sofre os impactos.",
+      "type": "OPEN_RESPONSE",
+      "generalCriteria": [
+        "Separe as garantias exigidas para métricas de depuração vs. confirmações de pagamento.",
+        "Compare explicitamente limites de memória, comportamento ao encher e impacto de reinício entre as três estruturas.",
+        "Deixe explícita a incerteza da taxa de pico e defina critérios observáveis para sobrecarga e reinício."
+      ],
+      "hints": [
+        "Separe o que pode ser perdido com visibilidade daquilo que precisa ser recuperado após reinício.",
+        "Avalie pressão sobre memória, produtor e consumidor em cada estrutura e política.",
+        "Defina em que momento o serviço pode confirmar ao cliente/produtor que recebeu um pagamento."
+      ],
+      "fields": [
+        {
+          "id": "comparacao-estruturas",
+          "label": "Comparação entre buffer fixo, deque limitada e lista sem limite",
+          "placeholder": "Compare consumo de memória, descarte na lotação e comportamento em reinício...",
+          "multiline": true,
+          "minLength": 25,
+          "maxLength": 2500
+        },
+        {
+          "id": "politicas-por-fluxo",
+          "label": "Política escolhida para métricas vs. pagamentos",
+          "placeholder": "Métricas: ... Pagamentos: ... (incluindo quando confirmar recebimento)...",
+          "multiline": true,
+          "minLength": 25,
+          "maxLength": 2500
+        },
+        {
+          "id": "dimensionamento-e-testes",
+          "label": "O que medir antes de dimensionar e testes de sobrecarga/reinício",
+          "placeholder": "Métricas de pico a confirmar e dois testes com resultado observável...",
+          "multiline": true,
+          "minLength": 25,
+          "maxLength": 2500
+        },
+        {
+          "id": "aprovacao-e-impacto",
+          "label": "Quem aprova cada política e quem sente os efeitos",
+          "placeholder": "Aprovadores e impactados por descarte, rejeição explícita ou espera...",
+          "multiline": true,
+          "minLength": 20,
+          "maxLength": 2000
+        }
+      ],
+      "rubric": [
+        {
+          "id": "rub-fluxos",
+          "label": "Separação das garantias por fluxo",
+          "description": "Distingue perda tolerável (desde que contabilizada) em métricas vs. recuperabilidade obrigatória após confirmação em pagamentos."
+        },
+        {
+          "id": "rub-estruturas",
+          "label": "Comparação das três estruturas",
+          "description": "Analisa buffer circular fixo (política explícita), deque limitada (sobrescrita silenciosa do mais antigo) e lista sem limite (risco de OOM) e lembra perda em RAM no reinício."
+        },
+        {
+          "id": "rub-politica",
+          "label": "Política e regra de confirmação",
+          "description": "Propõe buffer limitado com sobrescrita e contador de descartes para métricas; para pagamentos, confirma somente após gravação durável com rejeição explícita ou backpressure."
+        },
+        {
+          "id": "rub-dimensionamento-testes",
+          "label": "Pico desconhecido e testes observáveis",
+          "description": "Aponta a necessidade de medir a taxa real do pico de 30s (e vazão de consumo/disco) e especifica teste de sobrecarga acima da capacidade + teste de reinício verificando recuperação."
+        },
+        {
+          "id": "rub-stakeholders",
+          "label": "Aprovação e partes afetadas",
+          "description": "Indica quem aprova e quem sofre o efeito (operações e consumidores de métricas no descarte; equipe de pagamentos e usuários afetados por latência/rejeição controlada)."
+        }
+      ],
+      "solution": {
+        "referenceSections": [
+          {
+            "label": "Comparação e escolha de políticas",
+            "content": "Lista sem limite arrisca esgotar memória durante rajadas de 30s; `deque(maxlen=N)` limita memória, mas descarta silenciosamente itens antigos na lotação; buffer circular fixo permite controlar explicitamente a política. Para métricas de depuração: buffer circular limitado (ou deque limitada encapsulada) com política de sobrescrever incrementando contador visível de amostras descartadas. Para pagamentos: nunca confirmar antes do registro durável; usar persistência durável combinada com rejeição explícita (ou controle de pressão limitado) antes da confirmação ao produtor."
+          },
+          {
+            "label": "Dimensionamento, testes e impactos",
+            "content": "Antes de dimensionar a capacidade, medir a taxa de entrada do pico de 30s, taxa média do consumidor, latência de gravação durável e orçamento de memória. Teste de sobrecarga: injetar eventos acima da capacidade por 30s e verificar contador de descartes visível nas métricas + rejeições explícitas sem confirmar pagamentos perdidos nem estourar memória. Teste de reinício: aceitar confirmações duráveis, reiniciar o processo antes de drenar e comprovar recuperação integral dos pagamentos aceitos. Operações e times de observabilidade aprovam/sentem perda em métricas; negócio/pagamentos aprovam política de rejeição/espera e clientes sentem eventual atraso ou retentativa."
+          }
+        ],
+        "criticalFailureNote": "Falha crítica na revisão: qualquer solução que confirme recebimento de pagamento ao produtor e posteriormente permita descarte silencioso em sobrecarga ou perda ao reiniciar."
+      },
+      "explanation": "Decisões de fila em produção equilibram uso finito de memória, visibilidade de perdas toleráveis e persistência durável antes de emitir confirmações críticas."
+    }
+  ]
+}

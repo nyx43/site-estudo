@@ -8,7 +8,15 @@ import { publicLesson } from "../../src/lib/study/public";
 import { orderLessons } from "../../src/lib/study/catalog";
 
 const seeds = await loadStudy();
-const current = seeds.filter((seed) => seed.lesson.teaching);
+const latestByTopic = new Map<string, (typeof seeds)[number]>();
+for (const seed of seeds) {
+  if (!seed.lesson.teaching) continue;
+  const previous = latestByTopic.get(seed.lesson.topicId);
+  if (!previous || previous.lesson.version < seed.lesson.version) {
+    latestByTopic.set(seed.lesson.topicId, seed);
+  }
+}
+const current = [...latestByTopic.values()];
 const sourceIds = new Set((await loadSources()).map((source) => source.id));
 const topicIds = new Set((await loadCurriculum()).flatMap((subject) => subject.modules.flatMap((item) => item.topics.map((topic) => `${subject.slug}.${topic.slug}`))));
 const example = current[0].lesson.teaching!.commands[0].examples[0];
@@ -26,11 +34,14 @@ describe("autoria aprofundada", () => {
       "web-dev.http-e-rest",
     ];
     expect(topicIds).toEqual([...pythonTopics, ...phase3Topics].sort());
-    expect(seeds).toHaveLength(11);
+    expect(seeds).toHaveLength(13);
     expect(seeds.some((seed) => seed.lesson.id === "python.lacos-de-repeticao.v1")).toBe(true);
+    expect(seeds.some((seed) => seed.lesson.id === "estruturas-de-dados.pilhas-e-filas.v2")).toBe(true);
+    expect(seeds.some((seed) => seed.lesson.id === "requisitos.funcionais-e-nao-funcionais.v2")).toBe(true);
+    expect(sourceIds).toContain("python-collections-deque");
     const pythonCurrent = current.filter((seed) => seed.lesson.topicId.startsWith("python."));
     expect(pythonCurrent.flatMap((seed) => seed.exercises)).toHaveLength(32);
-    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(68);
+    expect(current.flatMap((seed) => seed.exercises)).toHaveLength(71);
     expect(current.find((seed) => seed.lesson.topicId === "web-dev.http-e-rest")?.lesson.exampleMode).toBe("STATIC_CODE");
     expect(current.find((seed) => seed.lesson.topicId === "banco-de-dados.modelo-relacional")?.lesson.exampleMode).toBe("STATIC_CODE");
     expect(current.find((seed) => seed.lesson.topicId === "requisitos.funcionais-e-nao-funcionais")?.lesson.exampleMode).toBe("CONCEPTUAL_ARTIFACT");

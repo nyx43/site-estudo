@@ -429,7 +429,7 @@ export function PythonLab({ lab }: { lab: PublicLab }) {
               text={`Modo livre em Python. ${lab.intro}`}
             >
               <span className="eyebrow">EXPERIMENTAÇÃO LIVRE</span>
-              <h2>Experimente laços e entradas à vontade</h2>
+              <h2>Experimente o código e teste entradas à vontade</h2>
               <p>Escreva qualquer código em Python 3, teste entradas em stdin e observe os resultados na sandbox.</p>
             </TtsBlock>
           )}

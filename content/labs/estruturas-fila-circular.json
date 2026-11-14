@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "lab-estruturas-fila-circular",
+  "topicId": "estruturas-de-dados.pilhas-e-filas",
+  "title": "Laboratório Python — Fila Circular (C2)",
+  "intro": "Experimente a implementação defeituosa da fila circular na sandbox Python 3 isolada. Os resultados das execuções ficam salvos apenas neste navegador e servem para apoiar sua resposta escrita em C2.",
+  "language": "python",
+  "starterFreeCode": "capacidade = 4\ndados = [None] * capacidade\ninicio = 0\nfim = 0\ntamanho = 0\n\ndef inserir(item):\n    global fim, tamanho\n    if tamanho == capacidade:\n        return \"fila cheia\"\n    dados[fim] = item\n    fim = (fim + 1) % capacidade\n    tamanho += 1\n\ndef remover():\n    global inicio, tamanho\n    if inicio == fim:\n        return \"fila vazia\"\n    item = dados[inicio]\n    inicio = (inicio + 1) % capacidade\n    tamanho -= 1\n    return item\n\nfor item in [\"A\", \"B\", \"C\", \"D\"]:\n    inserir(item)\nprint(\"Após A–D:\", inicio, fim, tamanho, \"remover() ->\", remover())\n",
+  "challenges": [
+    {
+      "id": "fila-circular-c2",
+      "title": "Corrigir remoção com 4 posições úteis e reaproveitamento",
+      "prompt": "Operações suportadas na entrada padrão (uma por linha): `INSERIR <valor>`, `REMOVER`, `ESTADO` e `DRENAR`. Reproduza a falha quando 4 itens são inseridos, faça a menor correção possível mantendo todas as 4 posições úteis e execute os 4 casos fixos (fila vazia, remoção após 4 inserções, recusa quando cheia sem sobrescrita e reaproveitamento circular A–D, -A, -B, +E, +F -> C D E F).",
+      "hint": "Compare o valor de `(inicio, fim, tamanho)` em fila vazia e após 4 inserções antes de chamar `remover()`. Apenas alterar `if inicio == fim:` para consultar `tamanho` preserva as 4 posições úteis.",
+      "defaultStdin": "INSERIR A\nINSERIR B\nINSERIR C\nINSERIR D\nESTADO\nREMOVER\nESTADO\n",
+      "starterCode": "import sys\n\ncapacidade = 4\ndados = [None] * capacidade\ninicio = 0\nfim = 0\ntamanho = 0\n\ndef inserir(item):\n    global fim, tamanho\n    if tamanho == capacidade:\n        return \"fila cheia\"\n    dados[fim] = item\n    fim = (fim + 1) % capacidade\n    tamanho += 1\n\ndef remover():\n    global inicio, tamanho\n    if inicio == fim:\n        return \"fila vazia\"\n    item = dados[inicio]\n    inicio = (inicio + 1) % capacidade\n    tamanho -= 1\n    return item\n\nfor linha in sys.stdin:\n    partes = linha.strip().split(maxsplit=1)\n    if not partes:\n        continue\n    op = partes[0].upper()\n    if op == \"INSERIR\" and len(partes) == 2:\n        res = inserir(partes[1])\n        if res is not None:\n            print(res)\n    elif op == \"REMOVER\":\n        print(remover())\n    elif op == \"ESTADO\":\n        print(inicio, fim, tamanho)\n    elif op == \"DRENAR\":\n        saidas = []\n        while tamanho > 0:\n            saidas.append(str(remover()))\n        print(\" \".join(saidas) if saidas else \"vazia\")\n",
+      "referenceSolution": "import sys\n\ncapacidade = 4\ndados = [None] * capacidade\ninicio = 0\nfim = 0\ntamanho = 0\n\ndef inserir(item):\n    global fim, tamanho\n    if tamanho == capacidade:\n        return \"fila cheia\"\n    dados[fim] = item\n    fim = (fim + 1) % capacidade\n    tamanho += 1\n\ndef remover():\n    global inicio, tamanho\n    if tamanho == 0:\n        return \"fila vazia\"\n    item = dados[inicio]\n    inicio = (inicio + 1) % capacidade\n    tamanho -= 1\n    return item\n\nfor linha in sys.stdin:\n    partes = linha.strip().split(maxsplit=1)\n    if not partes:\n        continue\n    op = partes[0].upper()\n    if op == \"INSERIR\" and len(partes) == 2:\n        res = inserir(partes[1])\n        if res is not None:\n            print(res)\n    elif op == \"REMOVER\":\n        print(remover())\n    elif op == \"ESTADO\":\n        print(inicio, fim, tamanho)\n    elif op == \"DRENAR\":\n        saidas = []\n        while tamanho > 0:\n            saidas.append(str(remover()))\n        print(\" \".join(saidas) if saidas else \"vazia\")\n",
+      "tests": [
+        {
+          "id": "t-vazia",
+          "name": "Fila realmente vazia",
+          "description": "Remover com fila vazia devolve 'fila vazia' e preserva (0, 0, 0).",
+          "stdin": "REMOVER\nESTADO\n",
+          "expectedOutput": "fila vazia\n0 0 0"
+        },
+        {
+          "id": "t-quatro-itens-remove",
+          "name": "Remoção com capacidade cheia (4 itens)",
+          "description": "Após inserir A–D chegando em (0, 0, 4), remover devolve A e atualiza para (1, 0, 3).",
+          "stdin": "INSERIR A\nINSERIR B\nINSERIR C\nINSERIR D\nESTADO\nREMOVER\nESTADO\n",
+          "expectedOutput": "0 0 4\nA\n1 0 3"
+        },
+        {
+          "id": "t-cheia-sem-sobrescrita",
+          "name": "Recusa de 5º item sem sobrescrever",
+          "description": "Tentar inserir E com 4 itens retorna 'fila cheia' e preserva A B C D na drenagem.",
+          "stdin": "INSERIR A\nINSERIR B\nINSERIR C\nINSERIR D\nINSERIR E\nDRENAR\nESTADO\n",
+          "expectedOutput": "fila cheia\nA B C D\n0 0 0"
+        },
+        {
+          "id": "t-reaproveitamento",
+          "name": "Reaproveitamento circular das posições",
+          "description": "Inserir A–D, remover A e B, inserir E e F (voltando a inicio == fim == 2) e drenar na ordem C D E F.",
+          "stdin": "INSERIR A\nINSERIR B\nINSERIR C\nINSERIR D\nREMOVER\nREMOVER\nINSERIR E\nINSERIR F\nESTADO\nDRENAR\n",
+          "expectedOutput": "A\nB\n2 2 4\nC D E F"
+        }
+      ]
+    }
+  ]
+}
