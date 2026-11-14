@@ -32,7 +32,7 @@ export function checkOrigin(request: Request) {
   if (browserOrigin.host !== (request.headers.get("host") ?? url.host) || browserOrigin.protocol !== url.protocol) throw new StudyError(403, "Origem da requisição não permitida.");
 }
 
-export async function readStudyJson(request: Request): Promise<unknown> {
+export async function readStudyJson(request: Request, maxBytes = 16384): Promise<unknown> {
   checkOrigin(request);
   if (!request.headers.get("content-type")?.startsWith("application/json")) throw new StudyError(415, "Envie dados em JSON.");
   const reader = request.body?.getReader();
@@ -44,7 +44,7 @@ export async function readStudyJson(request: Request): Promise<unknown> {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > 16384) { await reader.cancel(); throw new StudyError(413, "Resposta muito longa."); }
+      if (size > maxBytes) { await reader.cancel(); throw new StudyError(413, "Resposta muito longa."); }
       body += decoder.decode(value, { stream: true });
     }
     body += decoder.decode();

@@ -1,5 +1,8 @@
 import { execFile } from "node:child_process";
+import { loadLabs } from "../src/lib/content/load-labs";
 import { loadStudy } from "../src/lib/content/load-study";
+import { normalizeLabOutput } from "../src/lib/lab/public";
+import { getDefaultSandboxRunner } from "../src/lib/lab/sandbox";
 import type { ExplainedExample } from "../src/lib/study/teaching-schema";
 
 type Check = { code: string; expectedOutput?: string; expectedError?: string; stdin?: string; title?: string };
@@ -40,4 +43,24 @@ for (const seed of await loadStudy()) {
   for (const example of examples) { await execute(example); count++; if (example.expectedError) expectedErrors++; }
 }
 if (!count) throw new Error("Nenhum exemplo foi executado.");
-console.log(`${count} exemplos/soluções verificados em sandbox sem rede ou acesso ao projeto (${expectedErrors} erro(s) intencional(is) confirmado(s)).`);
+const labRunner = getDefaultSandboxRunner();
+let labCases = 0;
+for (const lab of await loadLabs()) {
+  const starterFree = await labRunner.execute({ code: lab.starterFreeCode });
+  if (starterFree.exitCode !== 0 || starterFree.timedOut) {
+    throw new Error(`Código inicial livre do laboratório ${lab.id} falhou: ${starterFree.stderr}`);
+  }
+  labCases++;
+  for (const challenge of lab.challenges) {
+    for (const testCase of challenge.tests) {
+      const result = await labRunner.execute({ code: challenge.referenceSolution, stdin: testCase.stdin });
+      const actual = normalizeLabOutput(result.stdout);
+      const expected = normalizeLabOutput(testCase.expectedOutput);
+      if (result.exitCode !== 0 || result.timedOut || actual !== expected) {
+        throw new Error(`Solução do desafio ${challenge.id}/${testCase.id} falhou: esperado ${JSON.stringify(expected)}, obtido ${JSON.stringify(actual)} (stderr: ${result.stderr})`);
+      }
+      labCases++;
+    }
+  }
+}
+console.log(`${count} exemplos/soluções e ${labCases} verificações de laboratório confirmados em sandbox sem rede ou acesso ao projeto (${expectedErrors} erro(s) intencional(is) confirmado(s)).`);

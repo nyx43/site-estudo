@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, BookOpen, Check, CircleHelp, Flag, ListChecks, Route } from "lucide-react";
 import { catalog } from "@/lib/catalog";
+import { loadLabByTopic } from "@/lib/content/load-labs";
 import { getStudyService } from "@/lib/study";
 
 export const dynamic = "force-dynamic";
@@ -17,11 +18,12 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
   if (!result) notFound();
   const { subject, module, topic } = result;
   const studyLesson = process.env.CATALOG_STORAGE === "files" ? null : await getStudyService().lesson(topic.id);
+  const lab = await loadLabByTopic(topic.id);
   const prerequisites = await Promise.all(topic.plan.prerequisites.map((id) => catalog.findTopic(id)));
   return <div className={`page-container detail-page accent-${subject.accent}`}>
     <Link href={`/disciplinas/${subject.slug}`} className="back-link"><ArrowLeft size={16} /> {subject.name}</Link>
     <header className="detail-header"><span className="eyebrow">{module.title}</span><h1>{topic.title}</h1><p>{topic.summary}</p><span className="status-pill">Plano da aula · Em preparação</span></header>
-    {studyLesson ? <div className="study-banner"><div><span className="eyebrow">AULA COMPLETA DISPONÍVEL</span><h2>Do conceito à prática.</h2><p>Explore a aula e os {studyLesson.exercises.length} exercícios. Conteúdo em revisão pedagógica.</p></div><Link className="button primary" href={`/aulas/${topic.id}`}>Ler aula completa</Link></div> : <div className="notice"><BookOpen size={18} /><p>Você está consultando o planejamento deste tópico. A aula e os exercícios ainda não estão disponíveis para estudo.</p></div>}
+    {studyLesson ? <div className="study-banner"><div><span className="eyebrow">AULA COMPLETA DISPONÍVEL</span><h2>Do conceito à prática.</h2><p>Explore a aula e os {studyLesson.exercises.length} exercícios. Conteúdo em revisão pedagógica.</p></div><div className="study-banner-actions"><Link className="button primary" href={`/aulas/${topic.id}`}>Ler aula completa</Link>{lab && <Link className="button secondary" href={`/laboratorio/${topic.id}`}>Laboratório Python</Link>}</div></div> : <div className="notice"><BookOpen size={18} /><p>Você está consultando o planejamento deste tópico. A aula e os exercícios ainda não estão disponíveis para estudo.</p></div>}
     <div className="topic-plan-grid">
       <section className="plan-panel"><h2><Flag size={20} /> Objetivos de aprendizagem</h2><ul className="check-list">{topic.plan.objectives.map((objective) => <li key={objective}><Check size={16} /><span>{objective}</span></li>)}</ul></section>
       <section className="plan-panel"><h2><Route size={20} /> Antes deste tópico</h2>{prerequisites.length ? <ul className="prerequisite-list">{prerequisites.map((item) => item && <li key={item.topic.id}><Link href={`/disciplinas/${item.subject.slug}/${item.topic.slug}`}>{item.topic.title}<span>{item.subject.name}</span></Link></li>)}</ul> : <p>Nenhum pré-requisito cadastrado. Este é um dos pontos de entrada da trilha.</p>}</section>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, BookOpen } from "lucide-react";
 import { getStudyService } from "@/lib/study";
 import { catalog } from "@/lib/catalog";
+import { loadLabByTopic } from "@/lib/content/load-labs";
 import { loadSources } from "@/lib/content/load-sources";
 import { articleSections, levelLabels } from "@/lib/study/labels";
 import {
@@ -18,6 +19,7 @@ export default async function LessonArticle({ params }: { params: Promise<{ topi
   const result = await getStudyService().lesson((await params).topicId);
   if (!result) notFound();
   const { lesson, exercises } = result;
+  const lab = await loadLabByTopic(lesson.topicId);
   const teaching = lesson.teaching;
   const sources = await loadSources();
   const subjects = await catalog.listSubjects();
@@ -64,6 +66,11 @@ export default async function LessonArticle({ params }: { params: Promise<{ topi
           <Link className="text-link" href={`/estudar/${lesson.topicId}?version=${lesson.version}`}>
             Estudo guiado e {exercises.length} exercícios <ArrowRight size={16} />
           </Link>
+          {lab && (
+            <Link className="text-link" href={`/laboratorio/${lesson.topicId}`}>
+              Laboratório Python ({lab.challenges.length} desafios) <ArrowRight size={16} />
+            </Link>
+          )}
         </div>
       </header>
       <div className="notice">

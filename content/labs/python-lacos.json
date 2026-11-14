@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "lab-python-lacos",
+  "topicId": "python.lacos-de-repeticao",
+  "title": "Laboratório: Laços de repetição em Python",
+  "intro": "Execute código Python real em uma sandbox isolada, simule entradas via stdin e valide sua solução com testes automáticos.",
+  "language": "python",
+  "starterFreeCode": "linguagens = [\"Python\", \"SQL\", \"HTML\"]\nfor indice, nome in enumerate(linguagens, start=1):\n    print(f\"{indice}. {nome}\")\n\n# Dica: use input() para ler linhas da caixa Entrada simulada (stdin).",
+  "challenges": [
+    {
+      "id": "contagem-regressiva",
+      "title": "1. Contagem regressiva",
+      "prompt": "Leia um número inteiro positivo n com input() e imprima os números de n até 1, um por linha. Ao terminar o laço, imprima 'Fogo!'.",
+      "starterCode": "n = int(input())\n# Escreva um laço for com range() para imprimir de n até 1\n\nprint(\"Fogo!\")",
+      "referenceSolution": "n = int(input())\nfor numero in range(n, 0, -1):\n    print(numero)\nprint(\"Fogo!\")",
+      "hint": "Use range(n, 0, -1) no laço for para diminuir de 1 em 1 até chegar a 1.",
+      "defaultStdin": "3",
+      "tests": [
+        {
+          "id": "case-3",
+          "name": "Contagem a partir de 3",
+          "description": "Para entrada 3, deve imprimir 3, 2, 1 e Fogo!.",
+          "stdin": "3\n",
+          "expectedOutput": "3\n2\n1\nFogo!"
+        },
+        {
+          "id": "case-1",
+          "name": "Caso limite n = 1",
+          "description": "Para entrada 1, deve imprimir apenas 1 e Fogo!.",
+          "stdin": "1\n",
+          "expectedOutput": "1\nFogo!"
+        },
+        {
+          "id": "case-5",
+          "name": "Contagem a partir de 5",
+          "description": "Deve repetir corretamente para contagens maiores.",
+          "stdin": "5\n",
+          "expectedOutput": "5\n4\n3\n2\n1\nFogo!"
+        }
+      ]
+    },
+    {
+      "id": "soma-pares",
+      "title": "2. Soma dos números pares",
+      "prompt": "Leia um inteiro positivo limite usando input(). Percorra os inteiros de 1 até limite (inclusive), some apenas os números pares e imprima no formato 'Soma dos pares: X'.",
+      "starterCode": "limite = int(input())\ntotal = 0\n# Percorra de 1 até limite e acumule apenas os pares em total\n\nprint(f\"Soma dos pares: {total}\")",
+      "referenceSolution": "limite = int(input())\ntotal = 0\nfor numero in range(1, limite + 1):\n    if numero % 2 != 0:\n        continue\n    total += numero\nprint(f\"Soma dos pares: {total}\")",
+      "hint": "Dentro do for de range(1, limite + 1), use numero % 2 == 0 (ou continue quando for ímpar) para atualizar total.",
+      "defaultStdin": "6",
+      "tests": [
+        {
+          "id": "case-6",
+          "name": "Limite igual a 6",
+          "description": "2 + 4 + 6 = 12.",
+          "stdin": "6\n",
+          "expectedOutput": "Soma dos pares: 12"
+        },
+        {
+          "id": "case-1",
+          "name": "Sem pares no intervalo",
+          "description": "Com limite igual a 1, a soma deve ser 0.",
+          "stdin": "1\n",
+          "expectedOutput": "Soma dos pares: 0"
+        },
+        {
+          "id": "case-9",
+          "name": "Limite ímpar (9)",
+          "description": "2 + 4 + 6 + 8 = 20.",
+          "stdin": "9\n",
+          "expectedOutput": "Soma dos pares: 20"
+        }
+      ]
+    },
+    {
+      "id": "sentinela-while",
+      "title": "3. Leitura até sentinela zero",
+      "prompt": "Leia números inteiros, um por linha, usando while até ler 0 (o 0 encerra o laço e não entra na soma). Ao final, imprima 'Lidos: Q | Soma: S'.",
+      "starterCode": "quantidade = 0\nsoma = 0\nnumero = int(input())\nwhile numero != 0:\n    # Atualize quantidade, soma e leia o próximo número\n    break\nprint(f\"Lidos: {quantidade} | Soma: {soma}\")",
+      "referenceSolution": "quantidade = 0\nsoma = 0\nnumero = int(input())\nwhile numero != 0:\n    quantidade += 1\n    soma += numero\n    numero = int(input())\nprint(f\"Lidos: {quantidade} | Soma: {soma}\")",
+      "hint": "Dentro do while numero != 0:, incremente quantidade, some numero em soma e leia novamente numero = int(input()) antes de fechar o bloco.",
+      "defaultStdin": "10\n5\n-3\n0",
+      "tests": [
+        {
+          "id": "case-varios",
+          "name": "Sequência mista",
+          "description": "Lê 10, 5 e -3 antes do sentinela 0.",
+          "stdin": "10\n5\n-3\n0\n",
+          "expectedOutput": "Lidos: 3 | Soma: 12"
+        },
+        {
+          "id": "case-zero-imediato",
+          "name": "Zero logo na primeira linha",
+          "description": "Deve encerrar sem contar ou somar o zero.",
+          "stdin": "0\n",
+          "expectedOutput": "Lidos: 0 | Soma: 0"
+        },
+        {
+          "id": "case-unico",
+          "name": "Um número válido",
+          "description": "Lê 42 e encerra em seguida no 0.",
+          "stdin": "42\n0\n",
+          "expectedOutput": "Lidos: 1 | Soma: 42"
+        }
+      ]
+    }
+  ]
+}

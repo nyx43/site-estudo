@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CheckCircle2, Terminal } from "lucide-react";
 import { lessonSteps, type Answer } from "@/lib/study/schema";
 import { canCompleteStep } from "@/lib/study/progress";
 import type { AttemptView, LessonView, ProgressChange } from "@/lib/study/service";
@@ -29,7 +30,7 @@ const stepLabels = [
 ];
 type ExerciseState = { exercise: PublicExercise; attempt: AttemptView | null };
 
-export function StudyWorkspace({ initial }: { initial: LessonView }) {
+export function StudyWorkspace({ initial, hasLab = false }: { initial: LessonView; hasLab?: boolean }) {
   const [view, setView] = useState(initial);
   const firstPending = Math.max(0, lessonSteps.findIndex((step) => !view.progress.completedSteps.includes(step)));
   const [stepIndex, setStepIndex] = useState(firstPending);
@@ -163,6 +164,11 @@ export function StudyWorkspace({ initial }: { initial: LessonView }) {
             {completedExercises}/{view.exercises.length}
           </span>
         </button>
+        {hasLab && (
+          <Link className="lab-outline-link" href={`/laboratorio/${lesson.topicId}`}>
+            <Terminal size={14} aria-hidden="true" /> Laboratório Python
+          </Link>
+        )}
         <small>Progresso salvo neste ambiente.</small>
       </aside>
 
