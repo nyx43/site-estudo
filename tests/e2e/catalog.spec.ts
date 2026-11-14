@@ -5,6 +5,10 @@ const definitions = await loadCurriculum();
 test("busca, filtros, currículo e navegação em todas as telas", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
+  const faviconResponse = await page.request.get("/favicon.ico");
+  expect(faviconResponse.status()).toBe(200);
+  const svgIconResponse = await page.request.get("/icon.svg");
+  expect(svgIconResponse.status()).toBe(200);
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Conhecimento que/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Disciplinas do semestre (26.2)", exact: true })).toBeVisible();

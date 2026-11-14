@@ -8,7 +8,7 @@ O projeto começa como site e deve acomodar dezenas de disciplinas e um aplicati
 
 ## Executar
 
-Requisitos: Node.js 24 e npm. Versões exatas das dependências estão no `package-lock.json`.
+Requisitos: Node.js (`>=22.12.0 <25`, conforme `engines.node` no `package.json`) e npm. Para o laboratório Python real e `npm run verify:examples`, também são necessários em Linux `/usr/bin/bwrap` (`bubblewrap`), `/usr/bin/python3` e suporte a *unprivileged user namespaces*. Versões exatas das dependências estão no `package-lock.json`.
 
 ```bash
 npm ci
@@ -42,8 +42,11 @@ Esse modo lê e valida os JSONs em `content/curriculum`. É uma consulta somente
 | `npm run typecheck` | TypeScript estrito e tipos de rotas Next |
 | `npm test` | Contratos, currículo, busca, serviço e tratamento de erros da API |
 | `npm run test:db` | Migração real, seed repetível e equivalência entre adaptadores; usa SQLite temporário |
+| `npm run db:backup` | Copia `data/estudo.db` com `VACUUM INTO` para `ESTUDO_BACKUP_DIR` (fora do repo) e valida integridade/contagens |
+| `npm run db:backup:verify` | Restaura um backup em diretório temporário externo para testar integridade sem tocar no original |
+| `npm run verify:examples` | Verifica exemplos e soluções de referência dos laboratórios na sandbox `bubblewrap` |
 | `npm run build` | Build de produção e tipos |
-| `npm run test:e2e` | Navegação, busca, filtros e API em Chromium desktop e móvel |
+| `npm run test:e2e` | Navegação, busca, filtros, laboratório e API em Chromium desktop e móvel |
 | `npm run check` | Currículo, lint, tipos, testes unitários, banco e build |
 
 Playwright usa `/usr/bin/chromium` quando disponível e, caso contrário, o navegador instalado por `npx playwright install chromium`. Também é possível definir `CHROMIUM_PATH`. Os percursos criam seu próprio banco em `.cache/e2e-*.db` e servidor na porta 3100. Eles não reutilizam o servidor ou o progresso de desenvolvimento. Não execute um servidor no mesmo diretório de build durante `npm run build`.
@@ -58,7 +61,17 @@ Variáveis e Condicionais têm 6 exercícios cada; Laços tem 12 e Listas e dici
 
 A versão 1 de Laços permanece preservada. A versão 2 aprofunda o conteúdo sem alterar respostas ou tentativas antigas; quem já estudava a v1 pode retomá-la pelo link na aula guiada. Há cinco versões armazenadas e 44 exercícios no histórico, dos quais quatro versões e 32 exercícios são atuais.
 
-Os programas do aluno não são executados. Os exemplos e gabaritos Python do conteúdo podem ser verificados offline com `npm run verify:examples`, que exige Python 3 e bubblewrap funcional. O comando usa sandbox sem rede ou acesso ao checkout, com limites de tempo, memória, escrita e saída; falha se o isolamento não estiver disponível. No sandbox interno do agente na nuvem, esse comando precisa de uma execução aprovada fora dele para criar o sandbox bubblewrap. O comando não faz parte de `check`, e sua execução deve ser reportada separadamente.
+### Laboratório de programação Python
+
+O piloto em `/laboratorio/python.lacos-de-repeticao` (acessível a partir de `/aulas/python.lacos-de-repeticao` e das rotas de estudo do tópico) oferece Modo livre e 3 desafios guiados com entrada `stdin`, saída `stdout`/`stderr`, testes automáticos, cancelamento ativo de execução (botão **Cancelar**), leitura em voz alta (TTS) nos enunciados e salvamento automático de rascunhos no `localStorage` (`estudo-lab-drafts-v1`), exibindo o selo `"Passou nos testes automáticos"` após aprovação nos casos definidos (sem sugerir domínio do conteúdo).
+
+A execução roda sempre dentro de sandbox `bubblewrap` **fail-closed** (`--unshare-all`, `--unshare-user`, `--disable-userns`, `--cap-drop ALL`, `--clearenv`, sistema somente leitura, `/sandbox` `0555`, `/tmp` limitado a 1 MB, `RLIMIT_AS=128MB`, `RLIMIT_CPU=2s`, `RLIMIT_NPROC=0`, limite de 16 KB por stream e timeout de 2,5 s). Requisitos no host: Linux com `/usr/bin/bwrap`, `/usr/bin/python3` e *unprivileged user namespaces*. Se o ambiente bloquear user namespaces ou faltar algum binário, `/api/lab/status` sinaliza indisponibilidade na interface (desabilitando **Executar código** e **Rodar testes**, enquanto edição e rascunhos permanecem ativos) e `POST /api/lab/run` responde HTTP `503 SANDBOX_UNAVAILABLE`, **nunca** executando `python3` sem isolamento.
+
+Os exemplos e soluções de referência dos laboratórios (`content/labs/*.json`) podem ser verificados offline com `npm run verify:examples`. Em ambientes Linux restritos sem `bwrap`/user namespaces, `npm run verify:examples` falha propositalmente; o comando não faz parte de `npm run check`, e seu uso em CI/local deve ser reportado separadamente.
+
+### Backup e restauração do SQLite
+
+Para gerar e validar cópias consistentes de `data/estudo.db` sempre fora do repositório usando `ESTUDO_BACKUP_DIR`, consulte [docs/BACKUP.md](docs/BACKUP.md) (`npm run db:backup` e `npm run db:backup:verify`).
 
 A revisão humana continua necessária para fatos, linguagem e qualidade pedagógica. Não converter `AUTO_CHECKED` em `VERIFIED` apenas por os testes passarem.
 
@@ -92,6 +105,7 @@ Para alterar o banco, edite `src/lib/db/schema.ts`, gere uma migração com `npm
 - [Fila de revisão posterior](docs/REVIEW_QUEUE.md)
 - [Orientações para agentes](AGENTS.md)
 - [Resultados e pendências de validação](docs/VALIDATION.md)
+- [Backup e restauração do SQLite](docs/BACKUP.md)
 
 O documento mestre v2.3 é uma referência de produto; as decisões posteriores do usuário prevalecem. Slides e livros futuros serão fontes para gerar aulas, lições e exercícios próprios, com capítulos/páginas rastreáveis. Os arquivos crus não entram em `public/` ou no Git. O fluxo para os próximos agentes está em `docs/AUTHORING.md`; não existe uploader ou geração automática por IA nesta versão.
 
@@ -103,5 +117,7 @@ O documento mestre v2.3 é uma referência de produto; as decisões posteriores 
 - `POST /api/attempts`: inicia ou retoma uma sessão com `exerciseId`, após concluir a aula.
 - `POST /api/attempts/[id]/submissions`: envia `requestId` UUID e uma resposta discriminada por `type`.
 - `POST /api/attempts/[id]/give-up`: consulta a solução e encerra a sessão sem acerto.
+- `GET /api/lab/status`: verifica rapidamente a disponibilidade real da sandbox `bubblewrap` e limites configurados (`Cache-Control: private, no-store`).
+- `POST /api/lab/run`: executa código Python ou bateria de testes na sandbox isolada; exige `Origin` de loopback e valida cabeçalho `Host` em allowlist de loopback (`127.0.0.1`, `localhost`, `[::1]`) contra DNS rebinding; aceita abortamento HTTP para encerrar o grupo de processos em execução.
 
 Dados de estudo são pessoais e locais ao serviço de usuário único, sem autenticação ou sincronização entre dispositivos nesta versão. Antes de expor o serviço para outras pessoas, será necessário definir acesso e separar os históricos.
