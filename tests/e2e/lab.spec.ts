@@ -1,4 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
+import { assertSandboxAvailable, readSandboxSkipDirective } from "../sandbox-policy";
+
+const sandboxPolicy = readSandboxSkipDirective("tests/e2e/lab.spec.ts");
 
 async function installLabSpeechMock(page: Page) {
   await page.addInitScript(() => {
@@ -56,6 +59,11 @@ async function installLabSpeechMock(page: Page) {
   });
 }
 
+async function openLab(page: Page) {
+  await page.goto("/laboratorio/python.lacos-de-repeticao");
+  await expect(page.getByRole("heading", { name: "Laboratório: Laços de repetição em Python" })).toBeVisible();
+}
+
 async function expectNoHorizontalOverflow(page: Page) {
   const { scrollWidth, viewportWidth } = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
@@ -64,105 +72,202 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(scrollWidth).toBeLessThanOrEqual(viewportWidth);
 }
 
-test("navegação, execução com stdin, stderr, persistência de rascunho e testes automáticos no laboratório", async ({
-  page,
-}, testInfo) => {
-  if (testInfo.project.name === "mobile") {
-    await page.setViewportSize({ width: 360, height: 800 });
-  }
-
+test("navegação da aula de laços para o laboratório preserva rota e conteúdo", async ({ page }) => {
   await page.goto("/aulas/python.lacos-de-repeticao");
-  await expect(page.getByRole("link", { name: /Laboratório Python/ })).toBeVisible();
-  await page.getByRole("link", { name: /Laboratório Python/ }).click();
+  const labLink = page.getByRole("link", { name: /Laboratório Python/ });
+  await expect(labLink).toBeVisible();
+  await labLink.click();
 
+  await expect(page).toHaveURL(/\/laboratorio\/python\.lacos-de-repeticao$/);
   await expect(page.getByRole("heading", { name: "Laboratório: Laços de repetição em Python" })).toBeVisible();
-  await expectNoHorizontalOverflow(page);
+});
 
-  // Executa no Modo livre primeiro e valida saída real
-  await page.getByRole("button", { name: "Modo livre" }).click();
-  await page.getByRole("button", { name: "Executar código" }).click();
-  await expect(page.getByTestId("lab-stdout")).toContainText("1. Python");
-  await expect(page.getByTestId("lab-stdout")).toContainText("3. HTML");
-  await expect(page.getByText("Execução concluída (código 0)")).toBeVisible();
+test("persistência de rascunho de código e stdin após recarregar e restauração inicial", async ({ page }) => {
+  await openLab(page);
 
-  // Volta ao Desafio 1 e valida stderr de erro de execução
-  await page.getByRole("button", { name: /1\. Contagem regressiva/ }).click();
   const codeEditor = page.getByLabel("Código Python");
   const stdinEditor = page.getByLabel("Entrada simulada (stdin)");
 
-  await codeEditor.fill("print(10 / 0)");
-  await page.getByRole("button", { name: "Executar código" }).click();
-  await expect(page.getByTestId("lab-stderr")).toContainText('File "codigo.py"');
-  await expect(page.getByTestId("lab-stderr")).toContainText("ZeroDivisionError");
-
-  // Testa persistência local de rascunho após reload + restauração do código inicial
   await codeEditor.fill("n = int(input())\nprint(f'Teste {n}')");
   await stdinEditor.fill("9");
   await page.reload();
+
   await expect(page.getByLabel("Código Python")).toHaveValue("n = int(input())\nprint(f'Teste {n}')");
   await expect(page.getByLabel("Entrada simulada (stdin)")).toHaveValue("9");
+  await expect(page.getByText("Rascunho salvo localmente")).toBeVisible();
 
   await page.getByRole("button", { name: "Restaurar início" }).click();
   await expect(page.getByLabel("Entrada simulada (stdin)")).toHaveValue("3");
-
-  // Roda testes automáticos com código incompleto -> falha esperada
-  await page.getByRole("button", { name: /Rodar testes \(3\)/ }).click();
-  await expect(page.getByTestId("lab-test-summary")).toContainText("0 de 3 testes passaram");
-
-  // Envia solução correta, executa com stdin e valida 3/3 testes automáticos
-  await page.getByLabel("Código Python").fill(
-    "n = int(input())\nfor numero in range(n, 0, -1):\n    print(numero)\nprint(\"Fogo!\")",
-  );
-  await page.getByLabel("Entrada simulada (stdin)").fill("2");
-  await page.getByRole("button", { name: "Executar código" }).click();
-  await expect(page.getByTestId("lab-stdout")).toHaveText("2\n1\nFogo!");
-
-  await page.getByRole("button", { name: /Rodar testes \(3\)/ }).click();
-  await expect(page.getByTestId("lab-test-summary")).toContainText("Passou nos testes automáticos");
-  await expect(page.getByLabel("Passou nos testes automáticos")).toBeVisible();
-
-  await expectNoHorizontalOverflow(page);
+  await expect(page.getByText("Código inicial")).toBeVisible();
 });
 
-test("acessibilidade de teclado, TTS do enunciado e temas claro/escuro no laboratório", async ({
-  page,
-}, testInfo) => {
-  if (testInfo.project.name === "mobile") {
-    await page.setViewportSize({ width: 360, height: 800 });
-  }
+test("leitura em voz alta (TTS) narra e destaca enunciado do desafio", async ({ page }) => {
   await installLabSpeechMock(page);
+  await openLab(page);
 
-  await page.goto("/laboratorio/python.lacos-de-repeticao");
-  await expect(page.getByRole("heading", { name: "1. Contagem regressiva" })).toBeVisible();
-
-  // TTS funciona no enunciado do desafio e destaca o bloco ativo
   const listenButton = page.getByRole("button", { name: /Ouvir enunciado de 1\. Contagem regressiva/ });
   await expect(listenButton).toBeEnabled();
   await listenButton.click();
+
   await expect(page.locator(".tts-block-active")).toContainText("1. Contagem regressiva");
-  const spoken = await page.evaluate(
+  const spokenCount = await page.evaluate(
     () => (window as unknown as { __labTtsSpoken: string[] }).__labTtsSpoken.length,
   );
-  expect(spoken).toBeGreaterThanOrEqual(1);
-  await page.evaluate(() => (window as unknown as { __finishLabTts: () => void }).__finishLabTts());
+  expect(spokenCount).toBeGreaterThanOrEqual(1);
 
-  // Tab não aprisiona foco por padrão; modo Tab = 4 espaços pode ser ativado e desligado com Escape
+  await page.evaluate(() => (window as unknown as { __finishLabTts: () => void }).__finishLabTts());
+});
+
+test("navegação por teclado no editor evita armadilha de Tab e aceita modo de 4 espaços com Esc", async ({
+  page,
+}) => {
+  await openLab(page);
+
   const codeEditor = page.getByLabel("Código Python");
   await codeEditor.focus();
   await page.keyboard.press("Tab");
-  const stillFocusedInCode = await codeEditor.evaluate((el) => document.activeElement === el);
-  expect(stillFocusedInCode).toBe(false);
+  const stayedOnEditor = await codeEditor.evaluate((el) => document.activeElement === el);
+  expect(stayedOnEditor).toBe(false);
 
   await page.getByRole("button", { name: "Tab = 4 espaços" }).click();
   await codeEditor.fill("");
   await codeEditor.focus();
   await page.keyboard.press("Tab");
   await expect(codeEditor).toHaveValue("    ");
+
   await page.keyboard.press("Escape");
   await expect(page.getByRole("status").filter({ hasText: "Tab voltou ao modo de navegação" })).toBeVisible();
+});
 
-  // Tema escuro alterna normalmente sem overflow
+test("alternância para tema escuro preserva estrutura do laboratório", async ({ page }) => {
+  await openLab(page);
+
   await page.getByRole("button", { name: /Modo escuro/ }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: "Executar código" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
+});
+
+test("viewport estreita de 360px não gera transbordamento horizontal", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 800 });
+  await openLab(page);
+
+  await expect(page.getByRole("heading", { name: "1. Contagem regressiva" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+
+  await page.getByRole("button", { name: "Modo livre" }).click();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("sandbox indisponível desabilita execução com explicação clara mantendo edição e rascunhos", async ({
+  page,
+}) => {
+  await page.route("**/api/lab/status", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          available: false,
+          reason: "user namespaces bloqueados nesta máquina de teste.",
+          checkedAt: "2026-11-13T22:00:00.000Z",
+          limits: { timeoutMs: 2500, memoryMb: 128, maxOutputKb: 16, cpuSeconds: 2 },
+        },
+        meta: { version: 1 },
+      }),
+    });
+  });
+
+  await openLab(page);
+
+  const alertBanner = page.getByRole("alert").filter({ hasText: "Execução temporariamente indisponível" });
+  await expect(alertBanner).toBeVisible();
+  await expect(alertBanner).toContainText("user namespaces bloqueados");
+
+  const runButton = page.getByRole("button", { name: "Executar código" });
+  const testsButton = page.getByRole("button", { name: /Rodar testes/ });
+  await expect(runButton).toBeDisabled();
+  await expect(testsButton).toBeDisabled();
+
+  const codeEditor = page.getByLabel("Código Python");
+  await expect(codeEditor).toBeEnabled();
+  await codeEditor.fill("print('rascunho offline funcionando')");
+  await page.reload();
+  await expect(page.getByLabel("Código Python")).toHaveValue("print('rascunho offline funcionando')");
+});
+
+test.describe("execução real Python na sandbox bubblewrap", () => {
+  test.beforeAll(async () => {
+    await assertSandboxAvailable("tests/e2e/lab.spec.ts");
+  });
+
+  test.beforeEach(() => {
+    test.skip(sandboxPolicy.shouldSkip, sandboxPolicy.warning ?? "SANDBOX_TESTS=skip");
+  });
+
+  test("modo livre executa código inicial e exibe saída com código 0", async ({ page }) => {
+    await openLab(page);
+    await page.getByRole("button", { name: "Modo livre" }).click();
+    await page.getByRole("button", { name: "Executar código" }).click();
+
+    await expect(page.getByTestId("lab-stdout")).toContainText("1. Python");
+    await expect(page.getByTestId("lab-stdout")).toContainText("3. HTML");
+    await expect(page.getByText("Execução concluída (código 0)")).toBeVisible();
+  });
+
+  test("execução repassa entrada simulada via stdin para input()", async ({ page }) => {
+    await openLab(page);
+
+    await page.getByLabel("Código Python").fill("nome = input().strip()\nprint(f'Olá, {nome}!')");
+    await page.getByLabel("Entrada simulada (stdin)").fill("Ada");
+    await page.getByRole("button", { name: "Executar código" }).click();
+
+    await expect(page.getByTestId("lab-stdout")).toHaveText("Olá, Ada!");
+  });
+
+  test("erro de execução aparece em stderr citando codigo.py", async ({ page }) => {
+    await openLab(page);
+
+    await page.getByLabel("Código Python").fill("print(10 / 0)");
+    await page.getByRole("button", { name: "Executar código" }).click();
+
+    await expect(page.getByTestId("lab-stderr")).toContainText('File "codigo.py"');
+    await expect(page.getByTestId("lab-stderr")).toContainText("ZeroDivisionError");
+  });
+
+  test("testes automáticos mostram reprovação parcial e depois selo Passou nos testes automáticos", async ({
+    page,
+  }) => {
+    await openLab(page);
+
+    await page.getByRole("button", { name: /Rodar testes \(3\)/ }).click();
+    await expect(page.getByTestId("lab-test-summary")).toContainText("0 de 3 testes passaram");
+
+    await page.getByLabel("Código Python").fill(
+      'n = int(input())\nfor numero in range(n, 0, -1):\n    print(numero)\nprint("Fogo!")',
+    );
+    await page.getByRole("button", { name: /Rodar testes \(3\)/ }).click();
+
+    await expect(page.getByTestId("lab-test-summary")).toContainText("Passou nos testes automáticos");
+    await expect(page.getByLabel("Passou nos testes automáticos")).toBeVisible();
+  });
+
+  test("botão Cancelar interrompe loop infinito e permite executar código logo depois", async ({ page }) => {
+    await openLab(page);
+
+    const codeEditor = page.getByLabel("Código Python");
+    await codeEditor.fill("import time\nwhile True:\n    time.sleep(0.05)");
+    await page.getByRole("button", { name: "Executar código" }).click();
+
+    const cancelButton = page.getByRole("button", { name: "Cancelar" });
+    await expect(cancelButton).toBeVisible();
+    await cancelButton.click();
+
+    await expect(page.getByRole("status").filter({ hasText: "Execução cancelada." })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Executar código" })).toBeEnabled();
+
+    await codeEditor.fill("print('recuperado')");
+    await page.getByRole("button", { name: "Executar código" }).click();
+    await expect(page.getByTestId("lab-stdout")).toHaveText("recuperado");
+  });
 });
